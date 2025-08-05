@@ -12,12 +12,12 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 // import OrderPlaced from './pages/module/order/order-placed';
 // import UnusedProduct from './pages/module/order/Unused-product';
 
-function App() {
-  return (
-    <div className="App">
+// function App() {
+//   return (
+//     <div className="App">
      
-     <BrowserRouter>
-      <Routes>
+//      <BrowserRouter>
+//       <Routes>
        
         {/* <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -30,10 +30,20 @@ function App() {
         <Route path="/order-processing" element={<OrderProcessing />} />
         <Route path="/order-placed" element={<OrderPlaced />} />
         <Route path="/unused-product" element={<UnusedProduct />} /> */}
-      </Routes>
-    </BrowserRouter>
+//       </Routes>
+//     </BrowserRouter>
 
-  </div>
+//   </div>
+
+function App() {
+  return (
+    <div className="app-container">
+      <Sidebar />
+      <div className="main-content">
+        <Navbar />
+        <Dashboard />
+      </div>
+    </div>
   );
 }
 
