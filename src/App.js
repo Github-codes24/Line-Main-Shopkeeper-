@@ -1,31 +1,12 @@
-import React from 'react';
-// import Sidebar from './components/layout/sidebar';
-import Payment from './pages/module/payment/payment';
-// import Navbar from './components/layout/navbar';
-// import Dashboard from './pages/dashboard';
-import './App.css';
-// import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
-
-function App() {
+import React from "react";
+// import PaymentProcess from "./pages/module/payment/payment-process";
+import Payment from "./pages/module/payment/payment";
+function App(){
   return (
-    <div className="App">
-     
-     {/* <BrowserRouter>
-      <Routes> */}
-       {/* <Navbar/> */}
-       {/* <Sidebar/> */}
-       <Payment/>
-        {/* <Route path="/" element={<Dashboard />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/order-management" element={<Navbar />} /> */}
-        {/* <Route path="/sidebar" element={<Sidebar />} /> */}
-        {/* <Route path="/top-worker" element={<TopWorker />} /> */}
-      {/* </Routes>
-    </BrowserRouter> */}
-
-  </div>
-  );
+    <div>
+      {/* <PaymentProcess/> */}
+      <Payment/>
+    </div>
+  )
 }
-
 export default App;
