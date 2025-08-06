@@ -1,28 +1,31 @@
 import React from 'react';
-import Sidebar from './components/layout/sidebar';
-import Navbar from './components/layout/navbar';
-// import Dashboard from './pages/dashboard';
-import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import SideNav from './components/layout/sidebar';
 
+import Dashboard from './pages/dashboard';
+import './App.css';
+// import BigProduct from './pages/module/big-product/bigProduct';
+// import BigProductAdd from './pages/module/big-product/bigProductAdd';
+// import BigProductEdit from './pages/module/big-product/bigProductEdit';
+// import BigProductView from './pages/module/big-product/bigProductView';
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-     
-     <BrowserRouter>
-      <Routes>
-       
-        {/* <Route path="/" element={<Dashboard />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/order-management" element={<Navbar />} /> */}
-        {/* <Route path="/sidebar" element={<Sidebar />} /> */}
-        {/* <Route path="/top-worker" element={<TopWorker />} /> */}
-      </Routes>
-    </BrowserRouter>
+    <div className="app-container flex">
+      <Sidebar />
+      <div className="flex-1">
+        <Navbar />
 
-  </div>
+        {/* <Routes>
+          <Route path="/" element={<BigProduct />} />
+          <Route path="/bigProductAdd" element={<BigProductAdd />} />
+          <Route path="/bigProductEdit" element={<BigProductEdit />} />
+          <Route path="/bigProductView" element={<BigProductView />} />
+        </Routes> */}
+      </div>
+    </div>
   );
 }
+
 
 export default App;
