@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import OrderDetails from './order-details';
+import OrderDetails from './order-pending';
 import OtpModal from './otpModal';
 
 const OrderProcessing = () => {
@@ -57,7 +56,7 @@ const OrderProcessing = () => {
         <div>
             {/* Use OrderDetail as-is */}
             <OrderDetails
-                showButtons={true}
+                showButtons={false}
                 orderStatus="Work in Progress"
                 orderStatusColor="#0088FF"
                 customAdditionalDetails={details}
@@ -95,3 +94,5 @@ const LabelInput = ({ label, value }) => (
 );
 
 export default OrderProcessing;
+
+
