@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import OrderDetails from './order-details';
 import OtpModal from './otpModal';
@@ -94,5 +95,3 @@ const LabelInput = ({ label, value }) => (
 );
 
 export default OrderProcessing;
-
-
