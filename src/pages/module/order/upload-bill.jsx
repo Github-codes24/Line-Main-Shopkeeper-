@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { FaMinus, FaPlus } from "react-icons/fa";
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const sampleProducts = [
     { id: 1, name: "Ambuja Cement", price: 360, unit: "Bag" },
@@ -24,6 +25,11 @@ const UploadBill = () => {
             return acc;
         }, {})
     );
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const fromPage = location.state?.from || '/'; // fallback if state is missing
+
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -59,7 +65,8 @@ const UploadBill = () => {
         <div className="p-3 bg-gray-100 min-h-screen">
             <div className="bg-white shadow-sm rounded-lg px-3 py-2">
                 <div className="flex items-center space-x-4">
-                    <IoArrowBackCircleOutline className="text-4xl text-[#0D2E28]" />
+                    <IoArrowBackCircleOutline className="text-4xl text-[#0D2E28]"
+                        onClick={() => navigate(fromPage)} />
                     <h2 className="text-2xl font-medium text-[#0D2E28] mt-1">Upload Bill</h2>
                 </div>
             </div>
@@ -123,9 +130,9 @@ const UploadBill = () => {
                         </div>
                     </div>
 
-                     <div className='ml-80 mt-3'>
-                            <p className='text-base font-medium text-[#007E74] pl-6 cursor-pointer'>+ Add More Product</p>
-                        </div>
+                    <div className='ml-80 mt-3'>
+                        <p className='text-base font-medium text-[#007E74] pl-6 cursor-pointer'>+ Add More Product</p>
+                    </div>
                 </div>
 
                 {/* Action Buttons */}

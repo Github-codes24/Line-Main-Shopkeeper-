@@ -49,7 +49,7 @@ const SuccessModal = ({ isOpen, onClose }) => {
 };
 
 // OrderDeatils
-const OrderDetails = ({ showButtons = true, customButtons = null, orderStatus = "Pending", orderStatusColor = "#FFCC00", customAdditionalDetails = null }) => {
+const OrderPending = ({ showButtons = true, customButtons = null, orderStatus = "Pending", orderStatusColor = "#FFCC00", customAdditionalDetails = null }) => {
   const [showModal, setShowModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -82,6 +82,12 @@ const OrderDetails = ({ showButtons = true, customButtons = null, orderStatus = 
               value="ORD8468163287164"
             />
           </div>
+
+          {/* {Otp && (
+            <div className="mt-6">
+              {Otp}
+            </div>
+          )} */}
 
           {/* Customer Details */}
           <div>
@@ -148,7 +154,7 @@ const OrderDetails = ({ showButtons = true, customButtons = null, orderStatus = 
                   </tbody>
                   <tfoot>
                     <tr className="border-t font-semibold">
-                      <td colSpan="1" className="p-2 text-left">Final Amount</td>
+                      <td colSpan="3" className="p-2 text-left">Final Amount</td>
                       <td colSpan="4" className="p-2 text-center">{total.toLocaleString()}</td>
                     </tr>
                   </tfoot>
@@ -250,4 +256,4 @@ const LabelInput = ({ label, value }) => (
   </div>
 );
 
-export default OrderDetails;
+export default OrderPending;

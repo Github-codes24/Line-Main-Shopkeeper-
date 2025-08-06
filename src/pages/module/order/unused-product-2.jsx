@@ -3,7 +3,7 @@ import { IoArrowBackCircleOutline } from "react-icons/io5";
 import ServiceImg from "../../../assests/Frame 1261155363.jpg";
 import { useNavigate } from 'react-router-dom';
 
-const UnusedProduct = () => {
+const UnusedProduct2 = () => {
     const navigate = useNavigate();
     const data = [
         { id: 1, product: "Ambuja cement", price: "380rs/bag", qty: "4 Bag", amount: 400 },
@@ -220,14 +220,14 @@ const UnusedProduct = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-center space-x-5 mt-6">
+                    {/* <div className="flex justify-center space-x-5 mt-6">
                         <button
                             onClick={() => navigate('/upload-bill')}
                             className="px-10 py-2 border-1 bg-[#007E74] text-white font-medium rounded-lg"
                         >
                             Settle Payment
                         </button>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
@@ -247,6 +247,6 @@ const LabelInput = ({ label, value }) => (
     </div>
 );
 
-export default UnusedProduct;
+export default UnusedProduct2;
 
 
