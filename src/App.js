@@ -1,27 +1,18 @@
 import React from 'react';
-import SideNav from './components/layout/sidebar';
-
+//import Sidebar from './components/side-nav';
+import  Navbar  from './components/navbar'
 import Dashboard from './pages/dashboard';
+import SmallProduct from './pages/smallproduct';
 import './App.css';
-// import BigProduct from './pages/module/big-product/bigProduct';
-// import BigProductAdd from './pages/module/big-product/bigProductAdd';
-// import BigProductEdit from './pages/module/big-product/bigProductEdit';
-// import BigProductView from './pages/module/big-product/bigProductView';
-import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="app-container flex">
-      <Sidebar />
-      <div className="flex-1">
+    <div className="app-container">
+      {/* <Sidebar /> */}
+      <div className="main-content">
         <Navbar />
-
-        {/* <Routes>
-          <Route path="/" element={<BigProduct />} />
-          <Route path="/bigProductAdd" element={<BigProductAdd />} />
-          <Route path="/bigProductEdit" element={<BigProductEdit />} />
-          <Route path="/bigProductView" element={<BigProductView />} />
-        </Routes> */}
+        <Dashboard />
+        <SmallProduct />
       </div>
     </div>
   );
