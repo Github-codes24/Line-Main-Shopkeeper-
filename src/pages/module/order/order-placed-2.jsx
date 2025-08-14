@@ -3,7 +3,7 @@ import { IoArrowBackCircleOutline } from "react-icons/io5";
 import ServiceImg from "../../../assests/Frame 1261155363.jpg";
 import { useNavigate } from 'react-router-dom';
 
-const OrderPlaced = () => {
+const OrderPlaced2 = () => {
     const navigate = useNavigate();
 
     const products = [
@@ -183,12 +183,14 @@ const OrderPlaced = () => {
                                     </div>
                                 </div>
                             </div>
+                            {/* Action Buttons */}
                             <div className="flex justify-center space-x-5 mt-6">
-                                <button
-                                    onClick={() => navigate('/upload-bill', { state: { from: '/order-placed' } })}
-                                    className="px-10 py-2 border-1 bg-[#D9F1EB] border-[#007E74] text-[#007E74] font-medium rounded-md"
-                                >
+                                <button className="px-12 py-2 border-1 bg-[#D9F1EB] border-[#007E74] font-medium text-[#007E74] rounded-lg"
+                                onClick={() => navigate('/upload-bill', { state: { from: '/order-placed-2' } })}>
                                     Upload Bill
+                                </button>
+                                <button className="px-12 py-2 bg-[#007E74] text-white font-medium rounded-md">
+                                    Settle Payment
                                 </button>
                             </div>
                         </div>
@@ -212,6 +214,6 @@ const LabelInput = ({ label, value }) => (
     </div>
 );
 
-export default OrderPlaced;
+export default OrderPlaced2;
 
 

@@ -1,4 +1,11 @@
 import React from 'react';
+
+import Sidebar from './components/layout/sidebar';
+import Navbar from './components/layout/navbar';
+import Dashboard from './pages/dashboard';
+import './App.css';
+// import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
 // import { Card } from 'react-bootstrap';
 import Navbar from './components/navbar';
 // import BigProduct from './pages/module/big-product/bigProduct';
@@ -17,6 +24,7 @@ import SmallProductView from './pages/module/small-product/smallProductView';
 // import Navbar from './components/navbar';
 // import Dashboard from './pages/dashboard';
 // import './App.css';
+
 
 function App() {
   return (
@@ -48,3 +56,4 @@ function App() {
 
 
 export default App;
+
