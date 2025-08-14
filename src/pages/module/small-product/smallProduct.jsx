@@ -42,32 +42,32 @@ const products = [
   },
 ];
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "Pending":
-      return "text-yellow-500";
-    case "Approved":
-      return "text-green-500";
-    case "Rejected":
-      return "text-red-500";
-    case "Add By Admin":
-      return "text-green-500";
-    default:
-      return "text-gray-500";
-  }
-};
+// const getStatusColor = (status) => {
+//   switch (status) {
+//     case "Pending":
+//       return "text-yellow-500";
+//     case "Approved":
+//       return "text-green-500";
+//     case "Rejected":
+//       return "text-red-500";
+//     case "Add By Admin":
+//       return "text-green-500";
+//     default:
+//       return "text-gray-500";
+//   }
+// };
 
-const BigProduct = () => {
+const SmallProduct = () => {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate("/BigProductEdit"); // replace with your route
+    navigate("/SmallProductEdit"); // replace with your route
   };
   const handleView = () => {
-    navigate("/BigProductView"); // replace with your route
+    navigate("/SmallProductView"); // replace with your route
   };
    const handleAdd = () => {
-    navigate("/BigProductAdd"); // replace with your route
+    navigate("/SmallProductAdd"); // replace with your route
   };
 
   const [filterOpen, setFilterOpen] = useState(false);
@@ -104,18 +104,14 @@ const BigProduct = () => {
       {/* Main Content */}
       <main className="flex-1 p-3  gap-2">
         <div className="flex justify-between items-center mb-4 shadow-xl bg-white h-16 border  rounded-xl p-2">
-          <h1 className="text-xl font-semibold ml-2">Big Product List</h1>
+          <h1 className="text-xl font-semibold ml-2">Small Product List</h1>
           <div className="flex border-[#16b1a2] border-2  rounded-full w-72 ">
             <img className="  p-1 " src="Search.png" alt="" />
 
             <input
               type="text"
               placeholder=" Search by Product Name..."
-
-              className="outline-none  border placeholder:text-black   "
-
               className="  placeholder:text-black"
-
             />
           </div>
           <button onClick={handleAdd} className="bg-[#007E74] text-white px-4 rounded-lg h-10 mr-2 ">
@@ -189,7 +185,6 @@ const BigProduct = () => {
                   <th className="p-2">Product Name</th>
                   <th className="p-2">Product Category</th>
                   <th className="p-2">Product Price</th>
-                  <th className="p-2">Approval Status</th>
                   <th className="p-2">Action</th>
                 </tr>
               </thead>
@@ -207,13 +202,13 @@ const BigProduct = () => {
                     <td className="p-2">{product.name}</td>
                     <td className="p-2">{product.category}</td>
                     <td className="p-2">{product.price}</td>
-                    <td
+                    {/* <td
                       className={`p-2 font-semibold ${getStatusColor(
                         product.status
                       )}`}
                     >
                       {product.status}
-                    </td>
+                    </td> */}
                     <td className="p-2 flex gap-2 text-gray-700">
                       <Eye
                         onClick={handleView}
@@ -260,4 +255,4 @@ const BigProduct = () => {
   );
 };
 
-export default BigProduct;
+export default SmallProduct;
