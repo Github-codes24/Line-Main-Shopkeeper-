@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
-import OrderDetails from './order-details';
 import OtpModal from './otpModal';
+import OrderManagement from './order-management';
 
 const OrderProcessing = () => {
     const [showOtpModal, setShowOtpModal] = useState(false);
@@ -56,7 +55,7 @@ const OrderProcessing = () => {
     return (
         <div>
             {/* Use OrderDetail as-is */}
-            <OrderDetails
+            <OrderManagement
                 showButtons={true}
                 orderStatus="Work in Progress"
                 orderStatusColor="#0088FF"
