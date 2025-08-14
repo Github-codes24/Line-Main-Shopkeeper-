@@ -111,7 +111,11 @@ const BigProduct = () => {
             <input
               type="text"
               placeholder=" Search by Product Name..."
+
+              className="outline-none  border placeholder:text-black   "
+
               className="  placeholder:text-black"
+
             />
           </div>
           <button onClick={handleAdd} className="bg-[#007E74] text-white px-4 rounded-lg h-10 mr-2 ">
