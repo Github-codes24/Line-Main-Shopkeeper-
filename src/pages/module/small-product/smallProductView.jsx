@@ -5,12 +5,13 @@ const SmallProductView = () => {
     const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate('/'); // replace with your route
-  };
-  const handleEdit = () => {
-    navigate('/bigProductEdit'); // replace with your route
-  };
-  
+  navigate('/small-product');
+};
+
+const handleEdit = (id) => {
+  navigate(`/small-product/edit/${id}`);
+};
+
 
   return (
     <div className="flex flex-col bg-[#E0E9E9] font-medium  text-[#0D2E28] ">

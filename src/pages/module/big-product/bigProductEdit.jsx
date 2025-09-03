@@ -5,8 +5,9 @@ const BigProductEdit = () => {
     const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate('/'); // replace with your route
-  };
+  navigate('/big-product');
+};
+
   
 
   return (

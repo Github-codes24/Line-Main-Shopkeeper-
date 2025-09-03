@@ -2,12 +2,12 @@ import { Search } from "lucide-react"; // for the search icon
 
 export default function ProductListHeader() {
   return (
-    <div className="flex items-center justify-between bg-white p-3 rounded-lg shadow">
+    <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-3 bg-white p-3 rounded-lg shadow">
       {/* Title */}
-      <h4 className=" font-semibold">Product List</h4>
+      <h4 className="font-semibold text-lg sm:text-base">Product List</h4>
 
       {/* Search bar */}
-      <div className="flex items-center border border-teal-600 rounded-full px-5 py-1 w-[300px]">
+      <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px]">
         <Search className="text-teal-600 mr-2" size={18} />
         <input
           type="text"
@@ -17,7 +17,7 @@ export default function ProductListHeader() {
       </div>
 
       {/* Button */}
-      <button className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700">
+      <button className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 w-full sm:w-auto">
         Go Offline
       </button>
     </div>

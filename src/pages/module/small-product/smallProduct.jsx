@@ -1,74 +1,38 @@
-import React from "react";
-import { Eye, Pencil, Trash2 } from "lucide-react";
-import { Filter, X } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Eye, Pencil, Trash2, Filter, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-const products = [
-  {
-    id: 1,
-    name: "PVC Wire Cable (Red Colour)",
-    category: "Electrician",
-    price: "₹499",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    name: "Havells 9W LED Bulb",
-    category: "Electrician",
-    price: "₹399",
-    status: "Add By Admin",
-  },
-  {
-    id: 3,
-    name: "UPVC Plumbing Pipe (Schedule - 40) - 40m...",
-    category: "Plumber",
-    price: "₹499",
-    status: "Approved",
-  },
-  {
-    id: 4,
-    name: "Asian Paints Ultima Weather Proof Exterior...",
-    category: "Painter",
-    price: "₹499",
-    status: "Rejected",
-  },
-  {
-    id: 5,
-    name: "UXCELL Plush Sleeve Cover Wall Paint Paintin...",
-    category: "Painter",
-    price: "₹499",
-    status: "Add By Admin",
-  },
-];
-
-// const getStatusColor = (status) => {
-//   switch (status) {
-//     case "Pending":
-//       return "text-yellow-500";
-//     case "Approved":
-//       return "text-green-500";
-//     case "Rejected":
-//       return "text-red-500";
-//     case "Add By Admin":
-//       return "text-green-500";
-//     default:
-//       return "text-gray-500";
-//   }
-// };
+     import { Search } from "lucide-react";
 
 const SmallProduct = () => {
   const navigate = useNavigate();
 
-  const handleEdit = () => {
-    navigate("/SmallProductEdit"); // replace with your route
+  // ✅ Keep products in state
+  const [products, setProducts] = useState([
+    { id: 1, name: "PVC Wire Cable (Red Colour)", category: "Electrician", price: "₹499", status: "Pending" },
+    { id: 2, name: "Havells 9W LED Bulb", category: "Electrician", price: "₹399", status: "Add By Admin" },
+    { id: 3, name: "UPVC Plumbing Pipe (Schedule - 40) - 40m...", category: "Plumber", price: "₹499", status: "Approved" },
+    { id: 4, name: "Asian Paints Ultima Weather Proof Exterior...", category: "Painter", price: "₹499", status: "Rejected" },
+    { id: 5, name: "UXCELL Plush Sleeve Cover Wall Paint Paintin...", category: "Painter", price: "₹499", status: "Add By Admin" },
+  ]);
+
+  // ✅ Fix delete handler
+  const handleDelete = (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this product?");
+    if (confirmed) {
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+    }
   };
-  const handleView = () => {
-    navigate("/SmallProductView"); // replace with your route
-  };
-   const handleAdd = () => {
-    navigate("/SmallProductAdd"); // replace with your route
-  };
+
+  const handleAdd = () => navigate("/small-product/add");
+
+const handleEdit = (id) => {
+  navigate(`/small-product/edit/${id}`);
+};
+
+const handleView = (id) => {
+  navigate(`/small-product/view/${id}`);
+};
+
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([
@@ -100,51 +64,73 @@ const SmallProduct = () => {
   };
 
   return (
-    <div className="flex bg-[#E0E9E9] font-medium ">
-      {/* Main Content */}
-      <main className="flex-1 p-3  gap-2">
-        <div className="flex justify-between items-center mb-4 shadow-xl bg-white h-16 border  rounded-xl p-2">
-          <h1 className="text-xl font-semibold ml-2">Small Product List</h1>
-          <div className="flex border-[#16b1a2] border-2  rounded-full w-72 ">
-            <img className="  p-1 " src="Search.png" alt="" />
+    <div className="flex bg-[#E0E9E9] font-medium min-h-screen">
+      <main className="flex-1 p-3 gap-2">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4 shadow-xl bg-white border rounded-xl p-3 gap-3">
+          <h1 className="text-lg md:text-xl font-semibold">Small Product List</h1>
 
-            <input
-              type="text"
-              placeholder=" Search by Product Name..."
-              className="  placeholder:text-black"
-            />
-          </div>
-          <button onClick={handleAdd} className="bg-[#007E74] text-white px-4 rounded-lg h-10 mr-2 ">
+     
+
+{/* Search bar */}
+<div className="flex border-[#16b1a2] border-2 rounded-full w-full md:w-72 max-w-md items-center">
+  <Search className="w-5 h-5 text-[#16b1a2] ml-2" />
+  <input
+    type="text"
+    placeholder=" Search by Product Name..."
+    className="w-full placeholder:text-black rounded-full px-2 py-1 focus:outline-none"
+  />
+</div>
+
+
+          {/* Add Product button */}
+          <button
+            onClick={handleAdd}
+            className="bg-[#007E74] text-white px-4 py-2 rounded-lg w-full md:w-auto"
+          >
             + Add New Product
           </button>
         </div>
 
-        {/* Search and Filter */}
-        <div className="bg-white  shadow-xl flex flex-wrap gap-2 mb-4 items-center relative rounded-lg p-2 ">
-          <button
-            onClick={() => setFilterOpen(!filterOpen)}
-            className="border px-2 py-1 rounded bg-[#E0E9E9]"
-          >
-            <Filter className="w-4 h-4 text-gray-600" />
-          </button>
-
-          {/* Active Filters */}
-          {selectedFilters.map((filter) => (
-            <span
-              key={filter}
-              className="flex items-center bg-gray-200 px-3 py-1 rounded-full text-sm"
+        {/* Filters + Table */}
+        <div className="bg-white shadow-xl flex flex-col gap-3 mb-4 relative rounded-lg p-3">
+          {/* Filter bar */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setFilterOpen(!filterOpen)}
+              className="border px-2 py-1 rounded bg-[#E0E9E9]"
             >
-              {filter}
-              <X
-                className="w-4 h-4 ml-2 cursor-pointer"
-                onClick={() => removeFilter(filter)}
-              />
-            </span>
-          ))}
+              <Filter className="w-4 h-4 text-gray-600" />
+            </button>
+
+            {/* Active Filters */}
+            <div className="flex flex-wrap gap-2">
+              {selectedFilters.map((filter) => (
+                <span
+                  key={filter}
+                  className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm"
+                >
+                  {filter}
+                  <X
+                    className="w-4 h-4 ml-2 cursor-pointer"
+                    onClick={() => removeFilter(filter)}
+                  />
+                </span>
+              ))}
+            </div>
+
+            {/* Reset Filter Button */}
+            <button
+              onClick={() => setSelectedFilters([])}
+              className="ml-auto px-4 py-1 rounded text-sm border border-[#007E74] bg-[#D9F1EB] text-[#007E74]"
+            >
+              Reset Filter
+            </button>
+          </div>
 
           {/* Dropdown Filter Menu */}
           {filterOpen && (
-            <div className="absolute top-12 left-2 bg-white border rounded shadow-md p-4 w-64 z-50">
+            <div className="absolute top-16 left-3 bg-white border rounded shadow-md p-4 w-64 z-50">
               <div className="flex justify-between items-center mb-2">
                 <h4 className="font-semibold text-sm">Expertise</h4>
                 <X
@@ -167,18 +153,10 @@ const SmallProduct = () => {
             </div>
           )}
 
-          {/* Reset Filter Button */}
-          <button
-            onClick={() => setSelectedFilters([])}
-            className="ml-auto  px-5 py-1 rounded text-sm border-1 border-[#007E74] bg-[#D9F1EB] text-[#007E74]"
-          >
-            Reset Filter
-          </button>
-
           {/* Table */}
-          <div className="border border-black rounded-lg  p-2 w-full">
-            <table className="w-full text-left border rounded-lg shadow-lg">
-              <thead className=" bg-[#E0E9E9]">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border rounded-lg shadow-lg min-w-[600px]">
+              <thead className="bg-[#e0e9e9] text-sm md:text-base">
                 <tr>
                   <th className="p-2">Sr.No.</th>
                   <th className="p-2">Product Image</th>
@@ -188,7 +166,7 @@ const SmallProduct = () => {
                   <th className="p-2">Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="text-sm md:text-base">
                 {products.map((product, index) => (
                   <tr key={product.id} className="border-t">
                     <td className="p-2">{index + 1}</td>
@@ -196,54 +174,48 @@ const SmallProduct = () => {
                       <img
                         src="PVC.png"
                         alt="product"
-                        className="w-12 h-12 rounded border-1 border-[#007E74]"
+                        className="w-10 h-10 md:w-12 md:h-12 rounded border border-[#007E74]"
                       />
                     </td>
                     <td className="p-2">{product.name}</td>
                     <td className="p-2">{product.category}</td>
                     <td className="p-2">{product.price}</td>
-                    {/* <td
-                      className={`p-2 font-semibold ${getStatusColor(
-                        product.status
-                      )}`}
-                    >
-                      {product.status}
-                    </td> */}
                     <td className="p-2 flex gap-2 text-gray-700">
-                      <Eye
-                        onClick={handleView}
-                        className="w-4 h-4 cursor-pointer text-red-600"
+                    <Eye
+  onClick={() => handleView(product.id)}
+  className="w-4 h-4 cursor-pointer text-[#007E74]"
+/>
+                    <Pencil
+  onClick={() => handleEdit(product.id)}
+  className="w-4 h-4 cursor-pointer text-[#007E74]"
+/>
+                      <Trash2
+                        onClick={() => handleDelete(product.id)}
+                        className="w-4 h-4 cursor-pointer text-[#007E74]"
                       />
-                      <Pencil
-                        onClick={handleEdit}
-                        className="w-4 h-4 cursor-pointer text-red-600"
-                      />
-                      <Trash2 className="w-4 h-4 cursor-pointer text-red-600" />
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="w-full p-2 text-sm font-semibold text-black  ">
-            Showing 1 to 5 of 5 Entries
-            <div className=" absolute bottom-2 right-2 flex items-center gap-2  rounded-xl  ">
-              <button className="px-1 py-1 text-teal-700 hover:bg-purple-100 rounded">
+
+          {/* Pagination */}
+          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-2 p-2 text-sm font-semibold text-black">
+            <span>Showing {products.length} of {products.length} Entries</span>
+            <div className="flex items-center gap-2">
+              <button className="px-2 py-1 text-teal-700 hover:bg-purple-100 rounded">
                 &lt;
               </button>
-
-              <button className="px-2  rounded bg-teal-700 text-white">
+              <button className="px-3 py-1 rounded bg-teal-700 text-white">
                 1
               </button>
-
-              <button className="px-2 rounded bg-teal-100 text-teal-700">
+              <button className="px-3 py-1 rounded bg-teal-100 text-teal-700">
                 2
               </button>
-
-              <button className="px-2 rounded bg-teal-100 text-teal-700">
+              <button className="px-3 py-1 rounded bg-teal-100 text-teal-700">
                 3
               </button>
-
               <button className="px-2 py-1 text-teal-700 hover:bg-purple-100 rounded">
                 &gt;
               </button>

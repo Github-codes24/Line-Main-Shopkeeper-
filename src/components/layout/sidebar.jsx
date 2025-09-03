@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   FaTachometerAlt,
   FaUserTie,
@@ -6,56 +7,59 @@ import {
   FaBoxes,
   FaShoppingCart,
   FaMoneyBill,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 
 const Sidebar = () => {
-  return (
-    <div className="h-screen w-64 bg-[#19a699] text-white flex flex-col shadow-lg">
+  const [isOrdersOpen, setIsOrdersOpen] = useState(false);
 
-     
+  const linkClasses = ({ isActive }) =>
+  `flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition no-underline 
+   ${isActive ? "bg-[#007e74] text-white" : "bg-white text-[#007e74] hover:bg-[#e6f5f3]"}`;
+
+  return (
+    <div className="h-screen w-64 bg-[#19a699] text-white flex flex-col shadow-lg mb-2">
       {/* Menu */}
-      <nav className="flex-1 mt-4 flex flex-col gap-1 px-3">
-        {/* Dashboard (active) */}
-        <div className="flex items-center gap-3 px-4 py-3 bg-teal-700 rounded-lg cursor-pointer font-medium transition">
+      <nav className="flex flex-col gap-y-3 m-3">
+        <NavLink to="/" end className={linkClasses}>
           <FaTachometerAlt className="text-lg" />
           <span>Dashboard</span>
-        </div>
+        </NavLink>
 
-        {/* Worker */}
-        <div className="flex items-center gap-3 px-4 py-3 hover:bg-teal-600 rounded-lg cursor-pointer font-medium transition">
+        <NavLink to="/worker" className={linkClasses}>
           <FaUserTie className="text-lg" />
           <span>Worker</span>
-        </div>
+        </NavLink>
 
-        {/* Small Product */}
-        <div className="flex items-center gap-3 px-4 py-3 hover:bg-teal-600 rounded-lg cursor-pointer font-medium transition">
+        <NavLink to="/small-product" className={linkClasses}>
           <FaBox className="text-lg" />
           <span>Small Product</span>
-        </div>
+        </NavLink>
 
-        {/* Big Product */}
-        <div className="flex items-center gap-3 px-4 py-3 hover:bg-teal-600 rounded-lg cursor-pointer font-medium transition">
+        <NavLink to="/big-product" className={linkClasses}>
           <FaBoxes className="text-lg" />
           <span>Big Product</span>
-        </div>
+        </NavLink>
 
-        {/* Order */}
-        <div className="flex items-center gap-3 px-4 py-3 hover:bg-teal-600 rounded-lg cursor-pointer font-medium transition">
-          <FaShoppingCart className="text-lg" />
-          <span>Order</span>
-        </div>
+        {/* Orders Button */}
+        <NavLink
+          to="/orders"
+          className={linkClasses}
+        >
+          <span className="flex items-center gap-3">
+            <FaShoppingCart className="text-lg" />
+            <span>Orders</span>
+          </span>
+        </NavLink>
 
         {/* Payments */}
-        <div className="flex items-center gap-3 px-4 py-3 hover:bg-teal-600 rounded-lg cursor-pointer font-medium transition">
+        <NavLink to="/payment" className={linkClasses}>
           <FaMoneyBill className="text-lg" />
-          <span>Payments</span>
-        </div>
+          <span>Payment</span>
+        </NavLink>
       </nav>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-teal-500 text-sm text-center">
-        © 2025 MyApp
-      </div>
     </div>
   );
 };

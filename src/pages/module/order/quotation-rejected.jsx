@@ -1,6 +1,7 @@
 import React from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
-import ServiceImg from "../../../assests/Frame 1261155363.jpg";
+import ServiceImg from "../../../assets/Frame 1261155363.jpg";
+import { useNavigate } from "react-router-dom";
 
 const products = [
     { name: "PVC Wire", price: 400, qty: 1 },
@@ -15,6 +16,7 @@ const total = products.reduce((sum, item) => sum + calculateAmount(item.price, i
 
 // OrderDeatils
 const QuotationRejected = () => {
+        const navigate = useNavigate();
 
     const orderId = 'ORD8468163287164';
     // const orderStatus = "Pending"
@@ -23,7 +25,10 @@ const QuotationRejected = () => {
         <div className="min-h-screen bg-gray-100 p-3">
             <div className=" bg-white shadow-sm rounded-lg px-3 py-2">
                 <div className="flex items-center space-x-4">
-                    <IoArrowBackCircleOutline className="text-4xl text-[#0D2E28]" />
+                     <IoArrowBackCircleOutline 
+                                className="text-4xl text-[#0D2E28] cursor-pointer hover:text-[#007E74]"
+                                onClick={() => navigate(-1)}  
+                              />
                     <h2 className="text-2xl font-medium text-[#0D2E28] mt-1">Order Details</h2>
                 </div>
             </div>

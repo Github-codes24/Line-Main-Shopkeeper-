@@ -3,6 +3,7 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import { Filter, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 
 const products = [
   {
@@ -60,15 +61,17 @@ const getStatusColor = (status) => {
 const BigProduct = () => {
   const navigate = useNavigate();
 
-  const handleEdit = () => {
-    navigate("/BigProductEdit"); // replace with your route
-  };
-  const handleView = () => {
-    navigate("/BigProductView"); // replace with your route
-  };
-   const handleAdd = () => {
-    navigate("/BigProductAdd"); // replace with your route
-  };
+  const handleAdd = () => {
+  navigate("/big-product/add");
+};
+
+const handleEdit = (id) => {
+  navigate(`/big-product/edit/${id}`);
+};
+
+const handleView = (id) => {
+  navigate(`/big-product/view/${id}`); // add this route in index.js
+};
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([
@@ -105,19 +108,15 @@ const BigProduct = () => {
       <main className="flex-1 p-3  gap-2">
         <div className="flex justify-between items-center mb-4 shadow-xl bg-white h-16 border  rounded-xl p-2">
           <h1 className="text-xl font-semibold ml-2">Big Product List</h1>
-          <div className="flex border-[#16b1a2] border-2  rounded-full w-72 ">
-            <img className="  p-1 " src="Search.png" alt="" />
-
-            <input
-              type="text"
-              placeholder=" Search by Product Name..."
-
-              className="outline-none  border placeholder:text-black   "
-
-              className="  placeholder:text-black"
-
-            />
-          </div>
+          {/* Search bar */}
+<div className="flex border-[#16b1a2] border-2 rounded-full w-full md:w-72 max-w-md items-center">
+  <Search className="w-5 h-5 text-[#16b1a2] ml-2" />
+  <input
+    type="text"
+    placeholder=" Search by Product Name..."
+    className="w-full placeholder:text-black rounded-full px-2 py-1 focus:outline-none"
+  />
+</div>
           <button onClick={handleAdd} className="bg-[#007E74] text-white px-4 rounded-lg h-10 mr-2 ">
             + Add New Product
           </button>
@@ -136,7 +135,7 @@ const BigProduct = () => {
           {selectedFilters.map((filter) => (
             <span
               key={filter}
-              className="flex items-center bg-gray-200 px-3 py-1 rounded-full text-sm"
+              className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm"
             >
               {filter}
               <X
@@ -182,7 +181,7 @@ const BigProduct = () => {
           {/* Table */}
           <div className="border border-black rounded-lg  p-2 w-full">
             <table className="w-full text-left border rounded-lg shadow-lg">
-              <thead className=" bg-[#E0E9E9]">
+              <thead className=" bg-[#e0e9e9]">
                 <tr>
                   <th className="p-2">Sr.No.</th>
                   <th className="p-2">Product Image</th>
@@ -215,15 +214,15 @@ const BigProduct = () => {
                       {product.status}
                     </td>
                     <td className="p-2 flex gap-2 text-gray-700">
-                      <Eye
-                        onClick={handleView}
-                        className="w-4 h-4 cursor-pointer text-red-600"
-                      />
-                      <Pencil
-                        onClick={handleEdit}
-                        className="w-4 h-4 cursor-pointer text-red-600"
-                      />
-                      <Trash2 className="w-4 h-4 cursor-pointer text-red-600" />
+                     <Eye
+  onClick={() => handleView(product.id)}
+  className="w-4 h-4 cursor-pointer text-green-600"
+/>
+<Pencil
+  onClick={() => handleEdit(product.id)}
+  className="w-4 h-4 cursor-pointer text-green-600"
+/>
+                      <Trash2 className="w-4 h-4 cursor-pointer text-green-600" />
                     </td>
                   </tr>
                 ))}

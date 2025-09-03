@@ -1,6 +1,4 @@
 import React from "react";
-import Sidebar from "../components/layout/sidebar";
-import Navbar from "../components/layout/navbar";
 import Card from "../components/cards/card";
 import OrderManagement from "../components/cards/OrderTable";
 import TopSellingProduct from "../components/cards/Products";
@@ -9,19 +7,11 @@ import Searchbar from "../components/layout/Searchbar";
 
 const DashboardPage = () => {
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
-      {/* Navbar on top */}
-      <Navbar />
-
-      {/* Sidebar + Main Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-6">
+   <div className="min-h-screen flex flex-col bg-gray-100 overflow-x-hidden mt-2">
+  <div className="flex flex-1">
+    <main className="flex-1 overflow-y-auto p-2">
           {/* Searchbar Section */}
-          <div className="mb-6">
+          <div className="mb-4">
             <Searchbar />
           </div>
 

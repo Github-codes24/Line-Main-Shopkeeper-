@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { TbSearch } from "react-icons/tb";
+import { TbSearch, TbFilter } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { HiOutlineEye } from 'react-icons/hi';
-import { TbFilter } from "react-icons/tb";
 import FilterPanel from './FilterPanel';
+import { useNavigate } from 'react-router-dom';
 
 const allOrders = [
   { id: 1, orderNo: 'ORDB8468163287164', customer: 'Theresa Webb', service: 'Plumber', status: 'Pending' },
@@ -25,16 +25,13 @@ const statusColor = {
   Rejected: 'text-[#EC2D01]',
 };
 
-// const expertiseList = ['Electrician', 'Plumber', 'Painter', 'Carpenter', 'AC Repair', 'Tile Fitting'];
-// const statusList = ['Pending', 'Work in Progress', 'Completed', 'Rejected'];
-
 const OrderManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilter, setShowFilter] = useState(false);
-
   const [selectedExpertise, setSelectedExpertise] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const navigate = useNavigate();
 
   const toggleFilter = (type, value) => {
     const updater = type === 'expertise' ? setSelectedExpertise : setSelectedStatus;
@@ -54,15 +51,30 @@ const OrderManagement = () => {
     setCurrentPage(1);
   };
 
-  const ordersPerPage = 5;
+  const handleView = (order) => {
+    switch (order.status) {
+      case "Pending":
+        navigate(`/orders/pending/${order.id}`);
+        break;
+      case "Work in Progress":
+        navigate(`/orders/workinprogress/${order.id}`);
+        break;
+      case "Completed":
+        navigate(`/orders/completed/${order.id}`);
+        break;
+      case "Rejected":
+        navigate(`/orders/rejected/${order.id}`);
+        break;
+      default:
+        navigate(`/orders/${order.id}`);
+    }
+  };
 
-  // Apply filters and search
+  const ordersPerPage = 5;
   const filteredOrders = allOrders.filter(order => {
     const matchesSearch = order.orderNo.toLowerCase().includes(searchQuery.toLowerCase());
-
     const matchesExpertise = selectedExpertise.length === 0 || selectedExpertise.includes(order.service);
     const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(order.status);
-
     return matchesSearch && matchesExpertise && matchesStatus;
   });
 
@@ -128,7 +140,15 @@ const OrderManagement = () => {
         </div>
 
         {showFilter && (
-          <div className="absolute top-11 -left-2 z-50 h-full w-70 overflow-y-auto p-4">
+          <div className="absolute top-11 -left-2 z-50 w-72 bg-white border rounded-lg shadow-lg p-4">
+            {/* Close Icon for Filter Popup */}
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-lg font-medium text-[#0D2E28]">Filters</h2>
+              <RxCross2
+                className="cursor-pointer text-[#007E74] text-xl"
+                onClick={() => setShowFilter(false)}
+              />
+            </div>
             <FilterPanel
               selectedExpertise={selectedExpertise}
               selectedStatus={selectedStatus}
@@ -159,7 +179,12 @@ const OrderManagement = () => {
                     <td className="py-2 px-4">{order.customer}</td>
                     <td className="py-2 px-4">{order.service}</td>
                     <td className={`py-2 px-4 ${statusColor[order.status]}`}>{order.status}</td>
-                    <td className="py-2 px-4"><HiOutlineEye className="text-[#007E74] text-lg cursor-pointer" /></td>
+                    <td className="py-2 px-4 flex justify-center">
+                      <HiOutlineEye
+                        className="text-[#007E74] text-lg cursor-pointer"
+                        onClick={() => handleView(order)}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

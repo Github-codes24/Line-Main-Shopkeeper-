@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 const BigProductView = () => {
     const navigate = useNavigate();
 
-  const handleBack = () => {
-    navigate('/'); // replace with your route
-  };
-  const handleEdit = () => {
-    navigate('/bigProductEdit'); // replace with your route
-  };
+  const handleBack = () => navigate('/big-product');
+
+ const handleEdit = (id) => {
+  navigate(`/big-product/edit/${id}`); 
+};
+
   
 
   return (

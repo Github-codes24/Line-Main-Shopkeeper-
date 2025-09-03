@@ -1,6 +1,6 @@
 import React from 'react';
 import { IoArrowBackCircleOutline } from "react-icons/io5";
-import ServiceImg from "../../../assests/Frame 1261155363.jpg";
+import ServiceImg from "../../../assets/Frame 1261155363.jpg";
 import { useNavigate } from 'react-router-dom';
 
 const OrderPlaced = () => {

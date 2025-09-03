@@ -6,8 +6,9 @@ const BigProductAdd = () => {
   const navigate = useNavigate()
 
    const handleBack = () => {
-    navigate('/'); // replace with your route
-  };
+  navigate('/big-product');
+};
+
   return (
     <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28]  ">
       <div className=" flex bg-white m-2 border rounded-lg shadow-lg p-2">

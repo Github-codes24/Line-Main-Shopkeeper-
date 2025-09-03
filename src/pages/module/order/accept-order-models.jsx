@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import W_img from '../../../assests/Frame 1261155429.jpg';
+import W_img from '../../../assets/Frame 1261155429.jpg';
 
 const AcceptOrderModals = ({ isOpen, onClose, orderId }) => {
     //   const [showRejectedModal, setShowRejectedModal] = useState(false);
@@ -172,7 +172,7 @@ const AcceptOrderModals = ({ isOpen, onClose, orderId }) => {
                                 className="px-20 py-2 bg-[#007E74] text-white rounded-lg font-semibold"
                                 onClick={() => {
                                     setShowAssignModal(false); // Close modal
-                                    navigate('/order-processing'); // Navigate to processing page
+                                    navigate('/order-management'); // Navigate to processing page
                                 }}
                             >
                                 Assign
