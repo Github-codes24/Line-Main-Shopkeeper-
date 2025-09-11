@@ -67,7 +67,7 @@ const WorkerView = () => {
         {/* Edit Button */}
         <div className="flex justify-center">
           <button
-            onClick={() => navigate(`/worker-edit/${id}`, { state: worker })}
+            onClick={() => navigate(`/worker/worker-edit/${id}`, { state: worker })}
             className="px-8 py-2 bg-teal-700 text-white rounded hover:bg-teal-800 transition"
           >
             Edit

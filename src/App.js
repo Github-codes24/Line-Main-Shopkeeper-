@@ -59,6 +59,7 @@ function App() {
             <Route path="/worker" element={<Worker />} />
          <Route path="/worker/worker-view/:id" element={<WorkerView />} />
          <Route path="/worker/worker-edit/:id" element={<WorkerEdit />} />
+         
 
 \
 
