@@ -1,75 +1,105 @@
 import React from "react";
-import {motion} from "framer-motion";
-import {useFormik} from "formik";
+import { motion } from "framer-motion";
+import { useFormik } from "formik";
 import * as Yup from "yup";
-import "react-toastify/dist/ReactToastify.css";
-import {FiMail} from "react-icons/fi";
-import {useNavigate} from "react-router-dom";
-import useAuth from "../../hook/auth/useAuth";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../../hook/useAuth";
 
 const AdminLogin = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { loading, generateOtp } = useAuth(); // custom hook
 
-    const {loading, generateOtp} = useAuth();
+  const formik = useFormik({
+    initialValues: {
+      role: "",
+      emailOrPhone: "",
+    },
+    validationSchema: Yup.object({
+      role: Yup.string().required("Role is required"),
+      emailOrPhone: Yup.string().required("Email or Mobile Number is required"),
+    }),
+    onSubmit: async (values) => {
+      const payload = { contact: values.emailOrPhone, role: values.role };
+      const success = await generateOtp(payload);
 
-    const formik = useFormik({
-        initialValues: {
-            emailOrPhone: "",
-        },
-        validationSchema: Yup.object({
-            emailOrPhone: Yup.string().required("Email or Mobile Number is required"),
-        }),
-        onSubmit: async (values) => {
-            const payload = {contact: values.emailOrPhone};
+      if (success) {
+        sessionStorage.setItem("contact", values.emailOrPhone);
+        sessionStorage.setItem("role", values.role);
+        navigate("/verify-otp");
+      }
+    },
+  });
 
-            generateOtp(payload);
-            sessionStorage.setItem("contact", values.emailOrPhone);
-        },
-    });
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-teal-600">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="bg-white rounded-xl shadow-md p-8 w-full max-w-md"
+      >
+        <h1 className="text-2xl font-bold text-teal-700 text-center">
+          LineMan Logo
+        </h1>
+        <h2 className="text-md font-semibold text-gray-800 text-center mt-2">
+          Shopkeeper Login
+        </h2>
+        <p className="text-sm text-gray-500 text-center mb-6 mt-1">
+          Please Log In To Your Account
+        </p>
 
-    return (
-        <div className="flex items-center justify-center min-h-screen bg-teal-600">
-            <motion.div
-                initial={{opacity: 0, scale: 0.8}}
-                animate={{opacity: 1, scale: 1}}
-                transition={{duration: 0.4}}
-                className="bg-gray-50 rounded-2xl shadow-xl p-8 w-full max-w-sm text-center"
-            >
-                <h1 className="text-2xl font-bold text-teal-700 mb-2">LineMan Logo</h1>
-                <h2 className="text-lg font-semibold text-gray-800">ADMIN LOGIN</h2>
-                <p className="text-sm text-gray-500 mt-1 mb-6">Please Log In To Your Account</p>
+        <form onSubmit={formik.handleSubmit} className="space-y-4">
+          {/* Role Select */}
+          <select
+            name="role"
+            className={`w-full border ${
+              formik.touched.role && formik.errors.role
+                ? "border-red-500"
+                : "border-teal-500"
+            } rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400`}
+            {...formik.getFieldProps("role")}
+          >
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="shopkeeper">Shopkeeper</option>
+            <option value="user">User</option>
+          </select>
+          {formik.touched.role && formik.errors.role && (
+            <div className="text-red-500 text-xs">{formik.errors.role}</div>
+          )}
 
-                <form onSubmit={formik.handleSubmit} className="space-y-4">
-                    <div className="relative">
-                        <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-teal-600" />
-                        <input
-                            type="email"
-                            name="emailOrPhone"
-                            placeholder="Enter Your Email"
-                            className={`pl-10 w-full border ${
-                                formik.touched.emailOrPhone && formik.errors.emailOrPhone
-                                    ? "border-red-500"
-                                    : "border-teal-500"
-                            } rounded-md py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400`}
-                            {...formik.getFieldProps("emailOrPhone")}
-                        />
-                        {formik.touched.emailOrPhone && formik.errors.emailOrPhone ? (
-                            <div className="text-red-500 text-xs mt-1">{formik.errors.emailOrPhone}</div>
-                        ) : null}
-                    </div>
+          {/* Email/Phone Input */}
+          <input
+            type="text"
+            name="emailOrPhone"
+            placeholder="Enter Your Email / Mobile Number"
+            className={`w-full border ${
+              formik.touched.emailOrPhone && formik.errors.emailOrPhone
+                ? "border-red-500"
+                : "border-teal-500"
+            } rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400`}
+            {...formik.getFieldProps("emailOrPhone")}
+          />
+          {formik.touched.emailOrPhone && formik.errors.emailOrPhone && (
+            <div className="text-red-500 text-xs">
+              {formik.errors.emailOrPhone}
+            </div>
+          )}
 
-                    <motion.button
-                        whileHover={{scale: 1.05}}
-                        whileTap={{scale: 0.95}}
-                        type="submit"
-                        className="w-full bg-teal-700 text-white py-2 rounded-md shadow-md hover:bg-teal-800 transition"
-                    >
-                        Log In
-                    </motion.button>
-                </form>
-            </motion.div>
-        </div>
-    );
+          {/* Submit Button */}
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            type="submit"
+            disabled={loading}
+            className="w-full bg-teal-700 text-white py-2 rounded-md hover:bg-teal-800 transition disabled:opacity-50"
+          >
+            {loading ? "Sending OTP..." : "Log In"}
+          </motion.button>
+        </form>
+      </motion.div>
+    </div>
+  );
 };
 
 export default AdminLogin;

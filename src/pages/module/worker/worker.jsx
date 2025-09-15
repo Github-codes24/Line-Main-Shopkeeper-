@@ -173,7 +173,7 @@ const Worker = () => {
             className="flex items-center text-[#06A77D] text-sm gap-2 hover:text-[#05745a]"
           >
             <Filter size={20} />
-            <span>Filter</span>
+
           </button>
 
           {/* Display selected filters beside the Filter button */}

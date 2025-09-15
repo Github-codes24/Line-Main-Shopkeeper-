@@ -1,68 +1,87 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Card from "../components/cards/card";
-import OrderManagement from "../components/cards/OrderTable";
+import OrderTable from "../components/cards/OrderTable";
 import TopSellingProduct from "../components/cards/Products";
 import TopWorker from "../components/cards/worker-card";
-import Searchbar from "../components/layout/Searchbar";
+
+import useFetch from "../../src/hook/useFetch";
+import conf from "../../src/hook/useFetch";
 
 const DashboardPage = () => {
+  const [fetchData] = useFetch();
+
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    getDashboardData();
+  }, []);
+
+  const getDashboardData = async () => {
+    try {
+      setLoading(true);
+      const result = await fetchData({
+        method: "GET",
+        url: `${conf.apiBaseUrl}/shopkeeper/dashboard`,
+      });
+
+      if (result.success) {
+        setDashboardData(result.data);
+      } else {
+        toast.error(result.message || "Failed to load dashboard");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error fetching dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <p className="p-6">Loading dashboard...</p>;
+  if (!dashboardData) return null;
+
+  const { stats, orderManagement, topSellingProduct, topWorker } = dashboardData;
+
   return (
-   <div className="min-h-screen flex flex-col bg-gray-100 overflow-x-hidden mt-2">
-  <div className="flex flex-1">
-    <main className="flex-1 overflow-y-auto p-2">
-          {/* Searchbar Section */}
-          <div className="mb-4">
-            <Searchbar />
-          </div>
+    <div className="p-4 space-y-6">
+      <ToastContainer />
 
-          {/* Cards Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card
-              title="Total Sales"
-              value="10,259"
-              change="+2.1% This Month"
-              gradient="from-blue-500 to-blue-400"
-              icon="💰"
-            />
-            <Card
-              title="Total Worker"
-              value="10,259"
-              change="+2.1% This Month"
-              gradient="from-orange-400 to-orange-300"
-              icon="⛏"
-            />
-            <Card
-              title="Total Customer"
-              value="10,259"
-              change="-2.1% This Month"
-              gradient="from-green-400 to-green-300"
-              icon="👥"
-            />
-            <Card
-              title="Total Order"
-              value="10,259"
-              change="+2.1% This Month"
-              gradient="from-purple-500 to-pink-400"
-              icon="🎯"
-            />
-          </div>
-
-          {/* Order Management + Top Selling Product */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow p-4">
-              <OrderManagement />
-            </div>
-            <div className="bg-white rounded-xl shadow p-4">
-              <TopSellingProduct />
-            </div>
-          </div>
-
-          {/* Top Worker Section */}
-          <div className="bg-white rounded-xl shadow p-4">
-            <TopWorker />
-          </div>
-        </main>
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card
+          title="Total Sales"
+          value={stats?.totalSales?.value}
+          change={stats?.totalSales?.change}
+        />
+        <Card
+          title="Total Worker"
+          value={stats?.totalWorker?.value}
+          change={stats?.totalWorker?.change}
+        />
+        <Card
+          title="Total Customer"
+          value={stats?.totalCustomer?.value}
+          change={stats?.totalCustomer?.change}
+        />
+        <Card
+          title="Total Order"
+          value={stats?.totalOrder?.value}
+          change={stats?.totalOrder?.change}
+        />
       </div>
+
+      {/* Order Table & Products */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <OrderTable orders={orderManagement} />
+        <TopSellingProduct products={topSellingProduct} />
+      </div>
+
+      {/* Workers */}
+      <TopWorker workers={topWorker} />
     </div>
   );
 };

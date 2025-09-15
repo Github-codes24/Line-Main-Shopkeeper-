@@ -3,19 +3,16 @@ import { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState(null);
+    const [auth, setAuth] = useState(false);
 
-  // Load from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem("auth");
-    if (stored) {
-      setAuth(JSON.parse(stored));
-    }
-  }, []);
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        setAuth(!!token);
+    }, []);
 
-  return (
-    <AuthContext.Provider value={{ auth, setAuth }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider value={{ auth, setAuth }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };

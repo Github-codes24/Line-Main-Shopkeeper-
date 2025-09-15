@@ -1,9 +1,8 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 
 import Sidebar from "./components/layout/sidebar";
 import Navbar from "./components/layout/navbar";
-
 import Dashboard from "./pages/dashboard";
 
 // Worker
@@ -30,80 +29,87 @@ import OrderPlaced from "./pages/module/order/order-placed";
 import OrderProcessing from "./pages/module/order/order-processing";
 import OrderCompleted from "./pages/module/order/quotation-approved";
 import OrderRejected from "./pages/module/order/quotation-rejected";
-import PendingOrder from "./pages/module/order/order-pending";
+import QuotationWaiting from "./pages/module/order/quotation-waiting";
 
-// payment
+// Payment
 import PaymentProcess from "./pages/module/payment/payment-process";
 import Payment from "./pages/module/payment/payment";
 
-import "./App.css";
-import QuotationWaiting from "./pages/module/order/quotation-waiting";
+// Auth
+import Login from "./pages/auth/login";
+import OtpVerification from "./pages/auth/VerifyOpt";
+import ProtectedRoute from "./route/protected";
+import PublicRoute from "./route/public";
 
-function App() {
+import "./App.css";
+
+// ✅ Layout with Navbar + Sidebar for authenticated users
+function AppLayout() {
   return (
     <div className="h-screen flex flex-col">
-      {/* Navbar */}
       <Navbar />
-
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
         <Sidebar />
-
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto bg-gray-100 p-3">
-          <Routes>
-            {/* Dashboard */}
-            <Route path="/" element={<Dashboard />} />
-
-            {/* Worker */}
-            <Route path="/worker" element={<Worker />} />
-         <Route path="/worker/worker-view/:id" element={<WorkerView />} />
-         <Route path="/worker/worker-edit/:id" element={<WorkerEdit />} />
-         
-
-\
-
-            {/* Small Product */}
-            <Route path="/small-product" element={<SmallProduct />} />
-            <Route path="/small-product/add" element={<SmallProductAdd />} />
-            <Route
-              path="/small-product/edit/:id"
-              element={<SmallProductEdit />}
-            />
-            <Route
-              path="/small-product/view/:id"
-              element={<SmallProductView />}
-            />
-
-            
-            {/* Big Product */}
-            <Route path="/big-product" element={<BigProduct />} />
-            <Route path="/big-product/add" element={<BigProductAdd />} />
-            <Route path="/big-product/edit/:id" element={<BigProductEdit />} />
-            <Route path="/big-product/view/:id" element={<BigProductView />} />
-
-
-            {/* Orders */}
-            <Route path="/orders" element={<OrderManagement />} />
-            <Route path="/orders/pending" element={<OrderPending />} />
-            <Route path="/orders/placed" element={<OrderPlaced />} />
-            <Route path="/orders/processing" element={<OrderProcessing />} />
-            <Route path="/orders" element={<OrderManagement />} />
-<Route path="/orders/pending/:id" element={<OrderPending />} />
-<Route path="/orders/processing/:id" element={<OrderProcessing />} />
-<Route path="/orders/completed/:id" element={<OrderCompleted />} />
-<Route path="/orders/rejected/:id" element={<OrderRejected />} />
- <Route path="/orders/pending/:id" element={<PendingOrder />} />
- <Route path="/orders/workinprogress/:id" element={< QuotationWaiting/>} />
-           
-           {/* Payment */}
-<Route path="/payment" element={<Payment />} />
-<Route path="/payment/process/:id" element={<PaymentProcess />} />
-
-          </Routes>
+        <main className="flex-1 overflow-y-auto p-4">
+          <Outlet /> {/* 👈 Protected child routes render here */}
         </main>
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      {/* Default route "/" → always go to login */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
+      {/* Public Routes (only for guests) */}
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/verify-otp" element={<OtpVerification />} />
+      </Route>
+
+      {/* Protected Routes (only for logged-in users) */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Worker */}
+          <Route path="/worker" element={<Worker />} />
+          <Route path="/worker/worker-view/:id" element={<WorkerView />} />
+          <Route path="/worker/worker-edit/:id" element={<WorkerEdit />} />
+
+          {/* Small Product */}
+          <Route path="/small-product" element={<SmallProduct />} />
+          <Route path="/small-product/add" element={<SmallProductAdd />} />
+          <Route path="/small-product/edit/:id" element={<SmallProductEdit />} />
+          <Route path="/small-product/view/:id" element={<SmallProductView />} />
+
+          {/* Big Product */}
+          <Route path="/big-product" element={<BigProduct />} />
+          <Route path="/big-product/add" element={<BigProductAdd />} />
+          <Route path="/big-product/edit/:id" element={<BigProductEdit />} />
+          <Route path="/big-product/view/:id" element={<BigProductView />} />
+
+          {/* Orders */}
+          <Route path="/orders" element={<OrderManagement />} />
+          <Route path="/orders/pending" element={<OrderPending />} />
+          <Route path="/orders/placed" element={<OrderPlaced />} />
+          <Route path="/orders/processing" element={<OrderProcessing />} />
+          <Route path="/orders/completed/:id" element={<OrderCompleted />} />
+          <Route path="/orders/rejected/:id" element={<OrderRejected />} />
+          <Route path="/orders/workinprogress/:id" element={<QuotationWaiting />} />
+
+          {/* Payment */}
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/payment/process/:id" element={<PaymentProcess />} />
+
+          {/* Catch-all → dashboard */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Route>
+      </Route>
+    </Routes>
   );
 }
 
