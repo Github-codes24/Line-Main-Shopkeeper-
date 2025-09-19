@@ -53,7 +53,7 @@ const useAuth = () => {
             if (res) {
                 sessionStorage.setItem("token", res?.token);
                 sessionStorage.setItem("shopId", res?.data?.shopId);
-                navigate("/profile");
+                navigate("/dashboard");
                 setLoading(false);
             }
         } catch (error) {
@@ -107,7 +107,13 @@ const useAuth = () => {
         }
     };
 
-    return {loading, shopkeeperLogin, loginResponse, verifyOTP, fetchProfile, profile, updateProfile};
+    const logoutAdmin = () => {
+        setUserInfo({
+            isAuthenticated: true,
+        });
+    };
+
+    return {loading, shopkeeperLogin, loginResponse, verifyOTP, fetchProfile, profile, updateProfile, logoutAdmin};
 };
 
 export default useAuth;
