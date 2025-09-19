@@ -1,8 +1,8 @@
-import { createContext, useState, useEffect } from "react";
+import {createContext, useState, useEffect} from "react";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
     const [auth, setAuth] = useState(false);
 
     useEffect(() => {
@@ -10,9 +10,5 @@ export const AuthProvider = ({ children }) => {
         setAuth(!!token);
     }, []);
 
-    return (
-        <AuthContext.Provider value={{ auth, setAuth }}>
-            {children}
-        </AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={{auth, setAuth}}>{children}</AuthContext.Provider>;
 };

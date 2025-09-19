@@ -4,46 +4,48 @@ import {toast, ToastContainer} from "react-toastify";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import "react-toastify/dist/ReactToastify.css";
-import {useNavigate} from "react-router-dom";
-
-import manimage from "../../assets/images/man-image.png";
-import useAuth from "../../hook/auth/useAuth";
+import {useNavigate, useParams} from "react-router-dom";
+// import manimage from "../../assets/images/man-image.png";
+// import useAuth from "../../hook/auth/useAuth";
+import useAuth from "../../hook/useAuth";
 
 const AdminEditProfile = () => {
     const [photo, setPhoto] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
     const navigate = useNavigate();
-
-    const {loading, getProfile, adminProfile, updateAdminProfile} = useAuth();
+    const {loading, fetchProfile, profile, updateProfile} = useAuth();
+    const {id} = useParams();
 
     useEffect(() => {
-        getProfile();
+        fetchProfile();
     }, []);
 
     const validationSchema = Yup.object({
         fullName: Yup.string().required("Full Name is required"),
-        phone: Yup.string()
-        .matches(/^(\+91[-\s]?)?[0-9]{10}$/, "Phone number is not valid")
-        .required("Phone number is required"),
-        email: Yup.string().email("Invalid email format").required("Email is required"),
+        // phone: Yup.string()
+        // .matches(/^(\+91[-\s]?)?[0-9]{10}$/, "Phone number is not valid")
+        // .required("Phone number is required"),
+        // email: Yup.string().email("Invalid email format").required("Email is required"),
     });
 
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
-            fullName: adminProfile?.name || "",
-            phone: adminProfile?.mobile || "",
-            email: adminProfile?.email || "",
+            fullName: profile?.ownerName || "",
+            phone: profile?.contact || "",
+            email: profile?.email || "",
         },
         validationSchema: validationSchema,
 
         onSubmit: async (values, {setSubmitting, resetForm}) => {
             let payload = {
-                name: values.fullName,
-                mobile: values.phone,
-                email: values.email,
+                ownerName: values.fullName,
+                // mobile: values.phone,
+                // email: values.email,
             };
-            updateAdminProfile(payload);
+            // updateAdminProfile(payload);
+
+            updateProfile(payload);
             setSubmitting(false);
         },
     });
@@ -147,7 +149,7 @@ const AdminEditProfile = () => {
 
                                         {/* Phone */}
                                         <div className="flex items-center">
-                                            <label className="w-40 font-medium">Phone Number:</label>
+                                            <label className="w-40 font-medium">Contact:</label>
                                             <div className="flex-1">
                                                 <input
                                                     type="text"
@@ -164,7 +166,7 @@ const AdminEditProfile = () => {
                                         </div>
 
                                         {/* Email */}
-                                        <div className="flex items-center">
+                                        {/* <div className="flex items-center">
                                             <label className="w-40 font-medium">Email ID:</label>
                                             <div className="flex-1">
                                                 <input
@@ -179,14 +181,14 @@ const AdminEditProfile = () => {
                                                     <div className="text-red-500 text-sm">{formik.errors.email}</div>
                                                 )}
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
 
                                     {/* Right section */}
-                                    <div className="flex flex-col items-center">
+                                    {/* <div className="flex flex-col items-center">
                                         <div className="w-32 h-32 rounded-full border border-[#0f9e9e] overflow-hidden">
                                             <img
-                                                src={photoPreview || manimage}
+                                                // src={photoPreview || manimage}
                                                 alt="Profile"
                                                 className="w-full h-full object-cover"
                                             />
@@ -201,7 +203,7 @@ const AdminEditProfile = () => {
                                                 className="hidden"
                                             />
                                         </label>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 

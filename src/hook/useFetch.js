@@ -1,9 +1,9 @@
 import axios from "axios";
 
 const useFetch = () => {
-    const fetchData = async ({ method, url, data = null, headers = {} }) => {
+    const fetchData = async ({method, url, data = null, headers = {}}) => {
         try {
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
 
             const config = {
                 method,
