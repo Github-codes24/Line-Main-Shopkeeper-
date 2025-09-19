@@ -1,33 +1,113 @@
-import { useState } from "react";
-import axios from "axios";
+import {useState} from "react";
 import conf from "../config";
+import useFetch from "./useFetch";
+import {useRecoilState, useSetRecoilState} from "recoil";
+import {profileAtom, shopkeeperLoginAtom} from "../state/smallproduct/auth/authState";
+import {useNavigate} from "react-router-dom";
 
 const useAuth = () => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const setUserInfo = useSetRecoilState(shopkeeperLoginAtom);
+    const [fetchData] = useFetch();
+    const [loginResponse, setLoginResponse] = useState(null);
+    const [profile, setProfile] = useRecoilState(profileAtom);
+    // -------------------Login---------------------------
 
-    const generateOtp = async (payload) => {
+    const shopkeeperLogin = async (payload) => {
         setLoading(true);
         try {
-            const response = await axios.post(
-                `${conf.apiBaseUrl}/shopkeeper/auth/login-otp`,
-                payload
-            );
-
-            if (response.status === 200) {
-                console.log("OTP sent successfully");
-                return true;   // ✅ return boolean for clarity
+            const res = await fetchData({
+                method: "POST",
+                url: `${conf.apiBaseUrl}shopkeeper/auth/login-otp`,
+                data: payload,
+            });
+            if (res) {
+                navigate("/verify-otp");
+                setLoginResponse(res);
+                setUserInfo({
+                    isAuthenticated: true,
+                });
+                setLoading(false);
             }
-            return false;
         } catch (error) {
-            console.error("Error sending OTP:", error?.response?.data || error.message);
-            alert("Failed to send OTP.");
-            return false;
+            console.log("Error while Login Shopkeeper:", error);
+            setLoading(false);
         } finally {
             setLoading(false);
         }
     };
 
-    return { loading, generateOtp };
+    const verifyOTP = async (contact, finalOtp) => {
+        setLoading(true);
+        try {
+            const data = {
+                contact: contact,
+                otp: finalOtp,
+            };
+            const res = await fetchData({
+                method: "POST",
+                url: `${conf.apiBaseUrl}shopkeeper/auth/verify-otp`,
+                data: data,
+            });
+            if (res) {
+                sessionStorage.setItem("token", res?.token);
+                sessionStorage.setItem("shopId", res?.data?.shopId);
+                navigate("/profile");
+                setLoading(false);
+            }
+        } catch (error) {
+            console.log("Error while verify otp :", error);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchProfile = async () => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "GET",
+                url: `${conf.apiBaseUrl}shopkeeper/profile/me`,
+            });
+            if (res) {
+                setProfile(res?.data);
+                sessionStorage.setItem("ownerName", res?.data?.ownerName);
+                sessionStorage.setItem("isVerified", res?.data?.isVerified);
+                sessionStorage.setItem("isActive", res?.data?.isActive);
+                setLoading(false);
+            }
+        } catch (error) {
+            console.log("Error while fetch Profile :", error);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const updateProfile = async (payload) => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "PUT",
+                url: `${conf.apiBaseUrl}shopkeeper/profile/me`,
+                data: payload,
+            });
+            if (res) {
+                alert(res?.message);
+                navigate("/profile");
+                setLoading(false);
+            }
+        } catch (error) {
+            console.log("Error while fetch Profile :", error);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return {loading, shopkeeperLogin, loginResponse, verifyOTP, fetchProfile, profile, updateProfile};
 };
 
 export default useAuth;

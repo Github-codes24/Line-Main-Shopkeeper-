@@ -2,31 +2,34 @@ import React, {useEffect} from "react";
 import {Formik, Form} from "formik";
 import * as Yup from "yup";
 import {useNavigate} from "react-router-dom";
-import manimage from "../../assets/images/man-image.png";
-import useAuth from "../../hook/auth/useAuth";
+// import manimage from "../../assets/images/man-image.png";
+// import useAuth from "../../hook/auth/useAuth";
+import useAuth from "../../hook/useAuth";
 
 const AdminProfile = () => {
     const navigate = useNavigate();
-    const {loading, getProfile, adminProfile} = useAuth();
-    const userId = adminProfile?.id;
+    const {loading, fetchProfile, profile} = useAuth();
+    const userId = profile?.id;
     console.log("Id is:", userId);
 
     useEffect(() => {
-        getProfile();
+        fetchProfile();
     }, []);
     const initialValues = {
-        fullName: "John A.",
-        phoneNumber: "+91-9876543210",
-        email: "admin@lineman.com",
+        fullName: "",
+        contact: "",
+        // phoneNumber: "+91-9876543210",
+        // email: "admin@lineman.com",
     };
 
     const validationSchema = Yup.object({
         fullName: Yup.string().required("Required"),
-        phoneNumber: Yup.string().required("Required"),
-        email: Yup.string().email("Invalid email").required("Required"),
+        contact: Yup.string().required("Required"),
+        // phoneNumber: Yup.string().required("Required"),
+        // email: Yup.string().email("Invalid email").required("Required"),
     });
     const handleBack = () => {
-        navigate(-1); // Go to previous page
+        navigate("/dashboard"); // Go to previous page
     };
 
     return (
@@ -105,15 +108,15 @@ const AdminProfile = () => {
                                     {/* Left - Fields */}
                                     <div className="space-y-6 w-full md:w-2/3">
                                         {[
-                                            {label: "Full Name", key: "name"},
-                                            {label: "Phone Number", key: "mobile"},
-                                            {label: "Email ID", key: "email"},
+                                            {label: "Full Name", key: "ownerName"},
+                                            {label: "Contact", key: "contact"},
+                                            // {label: "Email ID", key: "email"},
                                         ].map((field) => (
                                             <div key={field.key} className="flex items-center mb-2">
                                                 <label className="w-40 font-medium text-gray-700">{field.label}:</label>
                                                 <input
                                                     type="text"
-                                                    value={adminProfile?.[field.key] || ""}
+                                                    value={profile?.[field.key] || ""}
                                                     readOnly
                                                     className="flex-1 border border-[#007E74] bg-[#E0E9E9] px-3 py-2 rounded-md outline-none"
                                                 />
@@ -122,13 +125,17 @@ const AdminProfile = () => {
                                     </div>
 
                                     {/* Right - Image */}
-                                    <div className="flex justify-center items-start w-full md:w-1/3">
-                                        <img
-                                            src={manimage}
-                                            alt="Admin"
-                                            className="w-36 h-36 md:w-40 md:h-40 object-cover rounded-full border border-teal-500"
-                                        />
-                                    </div>
+                                    {/* <div className="flex justify-center items-start w-full md:w-1/3">
+                                        {profile?.aadhaarImage ? (
+                                            <img
+                                                src={profile.aadhaarImage}
+                                                alt="Admin"
+                                                className="w-36 h-36 md:w-40 md:h-40 object-cover rounded-full border border-teal-500"
+                                            />
+                                        ) : (
+                                            <div className="w-36 h-36 md:w-40 md:h-40 rounded-full border border-teal-500 flex items-center justify-center text-gray-500"></div>
+                                        )}
+                                    </div> */}
                                 </div>
 
                                 {/* Bottom Section - Button */}
@@ -136,7 +143,7 @@ const AdminProfile = () => {
                                     <button
                                         type="button"
                                         className="bg-[#007E74] text-white px-6 py-2 rounded-md hover:bg-teal-700 transition duration-200"
-                                        onClick={() => navigate(`/admin/editadminprofile/${userId}`)}
+                                        onClick={() => navigate(`/editprofile/${userId}`)}
                                     >
                                         Edit Profile
                                     </button>
