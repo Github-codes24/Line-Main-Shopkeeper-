@@ -4,6 +4,7 @@ import useFetch from "./useFetch";
 import {useRecoilState, useSetRecoilState} from "recoil";
 import {profileAtom, shopkeeperLoginAtom} from "../state/smallproduct/auth/authState";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 
 const useAuth = () => {
     const navigate = useNavigate();
@@ -111,6 +112,12 @@ const useAuth = () => {
         setUserInfo({
             isAuthenticated: true,
         });
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("contact");
+        sessionStorage.removeItem("shopId");
+        sessionStorage.removeItem("ownerName");
+        sessionStorage.removeItem("isVerified");
+        sessionStorage.removeItem("isActive");
     };
 
     return {loading, shopkeeperLogin, loginResponse, verifyOTP, fetchProfile, profile, updateProfile, logoutAdmin};

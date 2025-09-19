@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import Card from "../components/cards/card";
 import OrderTable from "../components/cards/OrderTable";
 import TopSellingProduct from "../components/cards/Products";
 import TopWorker from "../components/cards/worker-card";
-
 import useFetch from "../../src/hook/useFetch";
 import conf from "../config";
 
@@ -15,11 +13,6 @@ const DashboardPage = () => {
 
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        getDashboardData();
-    }, []);
-
     const getDashboardData = async () => {
         try {
             setLoading(true);
@@ -40,6 +33,9 @@ const DashboardPage = () => {
             setLoading(false);
         }
     };
+    useEffect(() => {
+        getDashboardData();
+    }, []);
 
     if (loading) return <p className="p-6">Loading dashboard...</p>;
     if (!dashboardData) return <div className="text-red-600">No dashboard data available...</div>;

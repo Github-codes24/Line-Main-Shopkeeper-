@@ -11,7 +11,7 @@ function Navbar() {
     const navigate = useNavigate(); // get navigate function
 
     function handleLogout() {
-        sessionStorage.removeItem("token"); // clear session
+        // clear session
         // window.location.href = "/login"; // redirect to login
         logoutAdmin();
     }
