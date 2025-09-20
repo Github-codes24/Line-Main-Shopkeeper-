@@ -1,26 +1,34 @@
 import React, {useState, useRef, useEffect} from "react";
-// import './Navbar.css';
 import {ChevronDown} from "lucide-react";
 import {useNavigate} from "react-router-dom";
+import LogoutModal from "../../pages/auth/LogoutModal";
 import useAuth from "../../hook/useAuth";
 
 function Navbar() {
     const [open, setOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false); // modal state
     const dropdownRef = useRef(null);
-    const {logoutAdmin} = useAuth(); // get logout from custom hook
-    const navigate = useNavigate(); // get navigate function
+    const {logoutAdmin} = useAuth();
+    const navigate = useNavigate();
 
-    function handleLogout() {
-        // clear session
-        // window.location.href = "/login"; // redirect to login
-        logoutAdmin();
-    }
+    const handleLogoutClick = () => {
+        setShowModal(true); // open modal instead of direct logout
+    };
+
+    const confirmLogout = () => {
+        localStorage.removeItem("token");
+        logoutAdmin(); // if you also want custom logout logic
+        navigate("/login");
+    };
+
+    const handleClose = () => {
+        setShowModal(false);
+    };
 
     const hangleNavigate = () => {
         navigate("/profile");
     };
 
-    // Close dropdown on outside click
     useEffect(() => {
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -56,7 +64,7 @@ function Navbar() {
                                 </li>
                                 <button
                                     className="w-full text-left px-3 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
-                                    onClick={handleLogout}
+                                    onClick={handleLogoutClick} // open modal
                                 >
                                     Logout
                                 </button>
@@ -65,6 +73,9 @@ function Navbar() {
                     )}
                 </div>
             </div>
+
+            {/* Modal */}
+            {showModal && <LogoutModal onClose={handleClose} onConfirm={confirmLogout} />}
         </div>
     );
 }

@@ -66,10 +66,10 @@ const WorkerEdit = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="p-2">
             <ToastContainer />
             {/* Header */}
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-6 bg-white p-4 rounded-md shadow-md">
                 <button onClick={handleCancel} className="text-teal-700">
                     <FaArrowLeft size={20} />
                 </button>
@@ -77,7 +77,7 @@ const WorkerEdit = () => {
             </div>
 
             {/* Form Container */}
-            <div className="border-2 border-gray-300 rounded-md p-6 bg-white max-w-4xl mx-auto">
+            <div className="border-2 shadow-md rounded-md p-6 bg-white">
                 <h3 className="text-lg font-semibold text-gray-700 mb-6">Personal Details</h3>
 
                 <div className="space-y-5">
@@ -108,14 +108,14 @@ const WorkerEdit = () => {
                 <div className="flex justify-center gap-6">
                     <button
                         onClick={handleCancel}
-                        className="px-8 py-2 border border-teal-700 text-teal-700 rounded hover:bg-teal-50 transition"
+                        className="px-8 py-1 border border-teal-700 text-teal-700 rounded hover:bg-teal-50 transition"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="px-8 py-2 bg-teal-700 text-white rounded hover:bg-teal-800 transition disabled:opacity-50"
+                        className="px-8 py-1 bg-teal-700 text-white rounded hover:bg-teal-800 transition disabled:opacity-50"
                     >
                         {isSaving ? "Saving..." : "Save"}
                     </button>

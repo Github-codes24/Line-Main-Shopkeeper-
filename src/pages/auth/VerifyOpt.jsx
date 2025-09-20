@@ -5,7 +5,7 @@ import useAuth from "../../hook/useAuth";
 
 const OtpVerification = () => {
     const navigate = useNavigate();
-    const [otp, setOtp] = useState(new Array(4).fill(""));
+    const [otp, setOtp] = useState(new Array(4).fill("")); // Image shows 6 boxes
     const [error, setError] = useState("");
     const inputsRef = useRef([]);
     const contact = sessionStorage.getItem("contact");
@@ -40,21 +40,6 @@ const OtpVerification = () => {
 
     const handleVerify = async () => {
         const finalOtp = otp.join("");
-        // try {
-        //     const response = await axios.post(`${process.env.REACT_APP_API_URL}/shopkeeper/auth/verify-otp`, {
-        //         contact,
-        //         otp: finalOtp,
-        //     });
-
-        //     if (response.data.success) {
-        //         localStorage.setItem("token", response.data.token);
-        //         navigate("/dashboard");
-        //     } else {
-        //         setError("Invalid OTP");
-        //     }
-        // } catch (err) {
-        //     setError("Failed to verify OTP");
-        // }
         verifyOTP(contact, finalOtp);
     };
 
@@ -68,10 +53,11 @@ const OtpVerification = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-2xl shadow-md max-w-md w-full text-center">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Verify Code</h2>
-                <p className="text-sm text-gray-500 mb-6">Please enter the code we just sent to {contact}</p>
+        <div className="min-h-screen flex items-center justify-center bg-teal-600">
+            <div className="bg-white rounded-xl shadow-lg max-w-sm w-full p-6 text-center">
+                {/* Title */}
+                <h2 className="text-lg font-bold text-gray-800 mb-2">Verify Code</h2>
+                <p className="text-sm text-gray-500 mb-6">Please enter the code we just sent to mobile no./E-mail</p>
 
                 {/* OTP Boxes */}
                 <div className="flex justify-center gap-3 mb-4">
@@ -84,15 +70,15 @@ const OtpVerification = () => {
                             ref={(el) => (inputsRef.current[index] = el)}
                             onChange={(e) => handleChange(e, index)}
                             onKeyDown={(e) => handleKeyDown(e, index)}
-                            className="w-12 h-12 text-center text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            className="w-10 h-10 text-center text-lg font-medium border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-200"
                         />
                     ))}
                 </div>
 
-                {/* Error Message */}
+                {/* Error */}
                 {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
 
-                {/* Resend Link */}
+                {/* Resend */}
                 <p className="text-sm text-gray-600 mb-6">
                     Didn’t receive the code?
                     <button onClick={handleResend} className="text-red-500 font-semibold ml-1">
@@ -101,16 +87,16 @@ const OtpVerification = () => {
                 </p>
 
                 {/* Buttons */}
-                <div className="flex justify-between gap-4">
+                <div className="flex justify-between gap-3">
                     <button
                         onClick={() => navigate("/")}
-                        className="flex-1 py-2 rounded-md border border-teal-500 text-teal-700 hover:bg-teal-50 transition"
+                        className="flex-1 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleVerify}
-                        className="flex-1 py-2 rounded-md bg-teal-700 text-white hover:bg-teal-800 transition"
+                        className="flex-1 py-1 rounded-md bg-teal-700 text-white hover:bg-teal-800 transition"
                     >
                         Verify
                     </button>

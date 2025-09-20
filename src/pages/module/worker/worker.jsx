@@ -127,7 +127,7 @@ const Worker = () => {
     const paginatedWorkers = filteredWorkers.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
     return (
-        <div className="p-6 bg-[#E0E9E9] min-h-screen">
+        <div className="p-2 bg-gray-200 min-h-screen overflow-hidden">
             <ToastContainer />
 
             {/* Top Navigation Bar */}
@@ -153,7 +153,7 @@ const Worker = () => {
             </div>
 
             {/* Combined Filter and Table Container */}
-            <div className="bg-white p-4 rounded-md shadow space-y-4">
+            <div className="bg-white p-4 rounded-md shadow space-y-4 min-h-screen">
                 {/* Filter Section */}
                 <div className="flex items-center justify-between relative">
                     <div className="flex items-center gap-4 flex-wrap">
@@ -304,33 +304,59 @@ const Worker = () => {
                                     )}
                                 </tbody>
                             </table>
-
-                            {/* Pagination */}
-                            <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50 text-sm">
-                                <span className="text-gray-600">
-                                    Showing {paginatedWorkers.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0} to{" "}
-                                    {(currentPage - 1) * rowsPerPage + paginatedWorkers.length} of{" "}
-                                    {filteredWorkers.length} Entries
-                                </span>
-
-                                <div className="flex items-center gap-2">
-                                    {[...Array(totalPages)].map((_, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => setCurrentPage(i + 1)}
-                                            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                                                currentPage === i + 1
-                                                    ? "bg-[#06A77D] text-white"
-                                                    : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
-                                            }`}
-                                        >
-                                            {i + 1}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
                         </>
                     )}
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-between items-center px-4 py-2 mt-3 bg-gray-100 text-sm rounded-md">
+                    <span className="text-gray-600">
+                        Showing {paginatedWorkers.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0} to{" "}
+                        {(currentPage - 1) * rowsPerPage + paginatedWorkers.length} of {filteredWorkers.length} Entries
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                        {/* Previous Button */}
+                        <button
+                            onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className={`w-8 h-8 flex items-center justify-center rounded-md border ${
+                                currentPage === 1
+                                    ? "text-gray-600 border-gray-400 cursor-not-allowed"
+                                    : "text-gray-700 border-gray-300 hover:bg-gray-100"
+                            }`}
+                        >
+                            ‹
+                        </button>
+
+                        {/* Page Numbers */}
+                        {[...Array(totalPages)].map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrentPage(i + 1)}
+                                className={`w-8 h-8 flex items-center justify-center rounded-md ${
+                                    currentPage === i + 1
+                                        ? "bg-[#06A77D] text-white shadow"
+                                        : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                                }`}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+
+                        {/* Next Button */}
+                        <button
+                            onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className={`w-8 h-8 flex items-center justify-center rounded-md border ${
+                                currentPage === totalPages
+                                    ? "text-gray-600 border-gray-400 cursor-not-allowed"
+                                    : "text-gray-700 border-gray-300 hover:bg-gray-100"
+                            }`}
+                        >
+                            ›
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
