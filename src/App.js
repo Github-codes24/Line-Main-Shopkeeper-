@@ -39,11 +39,12 @@ import Payment from "./pages/module/payment/payment";
 import Login from "./pages/auth/login";
 import OtpVerification from "./pages/auth/VerifyOpt";
 import ProtectedRoute from "./route/protected";
-import PublicRoute from "./route/public";
+// import PublicRoute from "./route/public";
 
 import "./App.css";
 import AdminProfile from "./pages/auth/profile";
 import AdminEditProfile from "./pages/auth/profileEdit";
+import {ToastContainer} from "react-toastify";
 
 // ✅ Layout with Navbar + Sidebar for authenticated users
 function AppLayout() {
@@ -52,7 +53,7 @@ function AppLayout() {
             <Navbar />
             <div className="flex flex-1 overflow-hidden">
                 <Sidebar />
-                <main className="flex-1 overflow-y-auto p-4">
+                <main className="flex-1 overflow-y-auto">
                     <Outlet />
                 </main>
             </div>
@@ -62,59 +63,62 @@ function AppLayout() {
 
 function App() {
     return (
-        <Routes>
-            {/* Default route "/" → always go to login */}
-            {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
-            <Route path="/" element={<Login />} />
-            <Route path="/verify-otp" element={<OtpVerification />} />
-            <Route path="/profile" element={<AdminProfile />} />
-            <Route path="/editprofile/:id" element={<AdminEditProfile />} />
+        <>
+            <Routes>
+                {/* Default route "/" → always go to login */}
+                {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
+                <Route path="/" element={<Login />} />
+                <Route path="/verify-otp" element={<OtpVerification />} />
+                <Route path="/profile" element={<AdminProfile />} />
+                <Route path="/editprofile/:id" element={<AdminEditProfile />} />
 
-            {/* Public Routes (only for guests) */}
-            {/* <Route element={<PublicRoute />}>
+                {/* Public Routes (only for guests) */}
+                {/* <Route element={<PublicRoute />}>
                 <Route path="/verify-otp" element={<OtpVerification />} />
             </Route> */}
 
-            {/* Protected Routes (only for logged-in users) */}
-            <Route element={<ProtectedRoute />}>
-                <Route element={<AppLayout />}>
-                    <Route path="/dashboard" element={<Dashboard />} />
+                {/* Protected Routes (only for logged-in users) */}
+                <Route element={<ProtectedRoute />}>
+                    <Route element={<AppLayout />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
 
-                    {/* Worker */}
-                    <Route path="/worker" element={<Worker />} />
-                    <Route path="/worker/worker-view/:id" element={<WorkerView />} />
-                    <Route path="/worker/worker-edit/:id" element={<WorkerEdit />} />
+                        {/* Worker */}
+                        <Route path="/worker" element={<Worker />} />
+                        <Route path="/worker/worker-view/:id" element={<WorkerView />} />
+                        <Route path="/worker/worker-edit/:id" element={<WorkerEdit />} />
 
-                    {/* Small Product */}
-                    <Route path="/small-product" element={<SmallProduct />} />
-                    <Route path="/small-product/add" element={<SmallProductAdd />} />
-                    <Route path="/small-product/edit/:id" element={<SmallProductEdit />} />
-                    <Route path="/small-product/view/:id" element={<SmallProductView />} />
+                        {/* Small Product */}
+                        <Route path="/small-product" element={<SmallProduct />} />
+                        <Route path="/small-product/add" element={<SmallProductAdd />} />
+                        <Route path="/small-product/edit/:id" element={<SmallProductEdit />} />
+                        <Route path="/small-product/view/:id" element={<SmallProductView />} />
 
-                    {/* Big Product */}
-                    <Route path="/big-product" element={<BigProduct />} />
-                    <Route path="/big-product/add" element={<BigProductAdd />} />
-                    <Route path="/big-product/edit/:id" element={<BigProductEdit />} />
-                    <Route path="/big-product/view/:id" element={<BigProductView />} />
+                        {/* Big Product */}
+                        <Route path="/big-product" element={<BigProduct />} />
+                        <Route path="/big-product/add" element={<BigProductAdd />} />
+                        <Route path="/big-product/edit/:id" element={<BigProductEdit />} />
+                        <Route path="/big-product/view/:id" element={<BigProductView />} />
 
-                    {/* Orders */}
-                    <Route path="/orders" element={<OrderManagement />} />
-                    <Route path="/orders/pending" element={<OrderPending />} />
-                    <Route path="/orders/placed" element={<OrderPlaced />} />
-                    <Route path="/orders/processing" element={<OrderProcessing />} />
-                    <Route path="/orders/completed/:id" element={<OrderCompleted />} />
-                    <Route path="/orders/rejected/:id" element={<OrderRejected />} />
-                    <Route path="/orders/workinprogress/:id" element={<QuotationWaiting />} />
+                        {/* Orders */}
+                        <Route path="/orders" element={<OrderManagement />} />
+                        <Route path="/orders/pending" element={<OrderPending />} />
+                        <Route path="/orders/placed" element={<OrderPlaced />} />
+                        <Route path="/orders/processing" element={<OrderProcessing />} />
+                        <Route path="/orders/completed/:id" element={<OrderCompleted />} />
+                        <Route path="/orders/rejected/:id" element={<OrderRejected />} />
+                        <Route path="/orders/workinprogress/:id" element={<QuotationWaiting />} />
 
-                    {/* Payment */}
-                    <Route path="/payment" element={<Payment />} />
-                    <Route path="/payment/process/:id" element={<PaymentProcess />} />
+                        {/* Payment */}
+                        <Route path="/payment" element={<Payment />} />
+                        <Route path="/payment/process/:id" element={<PaymentProcess />} />
 
-                    {/* Catch-all → dashboard */}
-                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                        {/* Catch-all → dashboard */}
+                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    </Route>
                 </Route>
-            </Route>
-        </Routes>
+            </Routes>
+            <ToastContainer />
+        </>
     );
 }
 

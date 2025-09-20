@@ -3,18 +3,17 @@ import {Formik, Form} from "formik";
 import * as Yup from "yup";
 import {useNavigate} from "react-router-dom";
 // import manimage from "../../assets/images/man-image.png";
-// import useAuth from "../../hook/auth/useAuth";
 import useAuth from "../../hook/useAuth";
 
 const AdminProfile = () => {
     const navigate = useNavigate();
     const {loading, fetchProfile, profile} = useAuth();
     const userId = profile?.id;
-    console.log("Id is:", userId);
 
     useEffect(() => {
         fetchProfile();
     }, []);
+
     const initialValues = {
         fullName: "",
         contact: "",
