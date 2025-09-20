@@ -62,18 +62,18 @@ function App() {
   return (
     <Routes>
       {/* Default route "/" → always go to login */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
 
       {/* Public Routes (only for guests) */}
       <Route element={<PublicRoute />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/verify-otp" element={<OtpVerification />} />
+        {/* <Route path="/login" element={<Login />} /> */}
+        {/* <Route path="/verify-otp" element={<OtpVerification />} /> */}
       </Route>
 
       {/* Protected Routes (only for logged-in users) */}
-      <Route element={<ProtectedRoute />}>
+      <Route >
         <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard />} />
 
           {/* Worker */}
           <Route path="/worker" element={<Worker />} />
