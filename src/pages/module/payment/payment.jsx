@@ -133,7 +133,7 @@ const Payment = () => {
             </div>
 
             {/* Filter Bar + Table + Pagination - merged card */}
-            <div className="bg-white shadow rounded-md p-4 mt-6 shadow-[0_2px_4px_0_rgba(0,0,0,0.25)] min-h-screen">
+            <div className="bg-white  rounded-md p-4 mt-6 shadow-[0_2px_4px_0_rgba(0,0,0,0.25)] min-h-screen">
                 {/* Filter Bar */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 relative">
                     <div className="flex flex-wrap gap-3 relative" ref={filterRef}>

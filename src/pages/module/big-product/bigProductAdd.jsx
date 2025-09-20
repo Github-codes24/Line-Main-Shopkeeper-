@@ -51,7 +51,7 @@ const BigProductAdd = () => {
                         <div className="w-full">
                             <label
                                 htmlFor="upload-photo"
-                                className="flex flex-col items-center justify-center w-40 h-40 border-2 border border-[#007E74] rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                                className="flex flex-col items-center justify-center w-40 h-40 border-2  border-[#007E74] rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
                             >
                                 <svg
                                     className="w-10 h-10 text-[#007E74]"

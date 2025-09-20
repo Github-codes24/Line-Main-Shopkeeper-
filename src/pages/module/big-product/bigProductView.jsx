@@ -50,7 +50,7 @@ const BigProductView = () => {
                     <div className="flex items-start">
                         <p className="w-1/3 font-medium">Product Image</p>
                         <div className="w-full">
-                            <div className="flex items-center justify-center w-40 h-40 border-2 border border-[#007E74] rounded-lg bg-gray-50">
+                            <div className="flex items-center justify-center w-40 h-40 border-2 boder border-[#007E74] rounded-lg bg-gray-50">
                                 <img
                                     src="Image (1).png"
                                     alt="Product"
