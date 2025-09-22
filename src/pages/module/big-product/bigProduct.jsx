@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
 import { Eye, Pencil, Trash2, Filter, X, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useFetch from "../../../hook/useFetch"; // Your custom fetch hook
+import conf from "../../../config";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -52,21 +54,25 @@ const BigProduct = () => {
   const fetchProducts = async (search = "", category = "", pageNum = 1) => {
     setLoading(true);
     try {
-      let url = "https://linemen-be-1.onrender.com/shopkeeper/bigproduct/get-all-bigproduct";
-      const params = {};
-
+      let url =
+        "https://linemen-be-1.onrender.com/shopkeeper/bigproduct/get-all-bigproduct";
+      const params = { limit: 5 };
+  
       if (search) params.search = search;
       if (category) params.productCategory = category;
       if (pageNum) params.page = pageNum;
-
-      // Pagination API with limit=5
-      params.limit = 5;
-
+  
+      // ✅ If any subcategory filter is applied (Plumber, Painter, etc.)
+      if (selectedFilters.length > 0) {
+        params.productSubCategory = selectedFilters.join(","); 
+        // backend should support multiple values, otherwise loop 1-by-1
+      }
+  
       const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
-        params: params,
+        params,
       });
-
+  
       if (res.data.success) {
         setProducts(res.data.data);
       }
@@ -76,10 +82,11 @@ const BigProduct = () => {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchProducts(searchText, selectedCategory, page);
-  }, [page]);
+  }, [page, selectedFilters]);
 
   const handleAdd = () => {
     navigate("/big-product/add");

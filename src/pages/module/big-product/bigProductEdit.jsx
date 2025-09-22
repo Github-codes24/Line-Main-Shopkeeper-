@@ -1,11 +1,16 @@
 // BigProductEdit.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import useFetch from "../../../hook/useFetch"; // Your custom fetch hook
+import conf from "../../../config";
 
 const BigProductEdit = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // get product id from URL
+  const { id } = useParams();
+  const [fetchData] = useFetch();
+
   const [product, setProduct] = useState({
     productName: "",
     productCategory: "",
@@ -15,43 +20,37 @@ const BigProductEdit = () => {
     productImageUrl: "",
   });
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMzZmNiZTRiOGM1OWJmMjJmODkzMTQiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc1NzY3NDk5MiwiZXhwIjoxNzYwMjY2OTkyfQ.fjFQFWcOGtmErZ2nkhJo1CB5HHubgIcVHnmBjTEz730";
-
   // Fetch product details
   useEffect(() => {
-    const fetchProduct = async () => {
+    const getProduct = async () => {
       try {
-        const res = await axios.get(
-          `https://linemen-be-1.onrender.com/shopkeeper/bigproduct/get-single-bigproduct/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (res.data.success) {
-          setProduct(res.data.data);
+        const res = await fetchData({
+          method: "GET",
+          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/get-single-bigproduct/${id}`,
+        });
+
+        if (res.success) {
+          setProduct(res.data);
+        } else {
+          toast.error(res.message || "Failed to fetch product data");
         }
       } catch (err) {
         console.error("Error fetching product:", err);
+        toast.error("Something went wrong while fetching product");
       }
     };
-    fetchProduct();
-  }, [id]);
+    getProduct();
+  }, [id, fetchData]);
 
   const handleBack = () => {
     navigate("/big-product");
   };
 
-  // Handle form change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProduct((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle update API call (only price & description)
   const handleUpdate = async () => {
     try {
       const payload = {
@@ -59,31 +58,27 @@ const BigProductEdit = () => {
         productDescription: product.productDescription,
       };
 
-      console.log("Update Payload:", payload); // debug
+      const res = await fetchData({
+        method: "PUT",
+        url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/update-bigproduct/${id}`,
+        data: payload,
+      });
 
-      const res = await axios.put(
-        `https://linemen-be-1.onrender.com/shopkeeper/bigproduct/update-bigproduct/${id}`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (res.data.success) {
-        alert("Product updated successfully!");
-        navigate("/big-product");
+      if (res.success) {
+        toast.success("Product updated successfully!");
+        setTimeout(() => navigate("/big-product"), 1500);
+      } else {
+        toast.error(res.message || "Failed to update product");
       }
     } catch (err) {
-      console.error("Error updating product:", err.response?.data || err);
-      alert("Failed to update product.");
+      console.error("Error updating product:", err);
+      toast.error("Something went wrong while updating product");
     }
   };
 
   return (
     <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28]">
+      <ToastContainer />
       <div className="flex bg-white m-2 border rounded-lg shadow-lg p-2">
         <img
           onClick={handleBack}
@@ -98,7 +93,6 @@ const BigProductEdit = () => {
 
       <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
         <div className="items-center border border-black p-2 rounded-lg">
-          {/* Product Image */}
           <div className="flex items-start">
             <p className="w-1/3 font-medium">Product Image</p>
             <div className="w-full">
@@ -110,7 +104,6 @@ const BigProductEdit = () => {
             </div>
           </div>
 
-          {/* Form Fields */}
           <div className="space-y-4">
             <div className="flex items-center pt-3">
               <p className="w-1/3 block mb-1">Product Name:</p>
@@ -169,7 +162,6 @@ const BigProductEdit = () => {
           </div>
         </div>
 
-        {/* Buttons */}
         <div className="flex justify-center space-x-3">
           <button
             onClick={handleBack}
