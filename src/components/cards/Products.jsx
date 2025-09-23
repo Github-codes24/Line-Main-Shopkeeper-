@@ -2,7 +2,7 @@ import React from "react";
 
 const TopSellingProduct = ({products = []}) => {
     return (
-        <div className="bg-white p-4 rounded-xl shadow-md w-full border border-gray-500">
+        <div className="bg-white p-4 rounded-lg shadow-md w-full border border-gray-500">
             <div className="flex justify-between items-center mb-3">
                 <h4 className="font-semibold text-gray-800">Top Selling Product</h4>
                 <button className="text-sm text-teal-600 hover:underline">See All</button>

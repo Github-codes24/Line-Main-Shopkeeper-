@@ -45,17 +45,20 @@ import "./App.css";
 import AdminProfile from "./pages/auth/profile";
 import AdminEditProfile from "./pages/auth/profileEdit";
 import {ToastContainer} from "react-toastify";
+import AcceptOrderModals from "./pages/module/order/accept-order-models";
+import OtpModal from "./pages/module/order/otpModal";
+import {useMediaQuery, useTheme} from "@mui/material";
 
 // ✅ Layout with Navbar + Sidebar for authenticated users
 function AppLayout() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     return (
         <div className="h-screen flex flex-col">
             <Navbar />
             <div className="flex flex-1 overflow-hidden">
                 <Sidebar />
-                <main className="flex-1 overflow-y-auto">
-                    <Outlet />
-                </main>
+                <main className="flex-1 overflow-y-auto">{isMobile ? "" : <Outlet />}</main>
             </div>
         </div>
     );
@@ -69,8 +72,10 @@ function App() {
                 {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
                 <Route path="/" element={<Login />} />
                 <Route path="/verify-otp" element={<OtpVerification />} />
-                <Route path="/profile" element={<AdminProfile />} />
-                <Route path="/editprofile/:id" element={<AdminEditProfile />} />
+                <Route element={<AppLayout />}>
+                    <Route path="/profile" element={<AdminProfile />} />
+                    <Route path="/editprofile/:id" element={<AdminEditProfile />} />
+                </Route>
 
                 {/* Public Routes (only for guests) */}
                 {/* <Route element={<PublicRoute />}>
@@ -107,6 +112,8 @@ function App() {
                         <Route path="/orders/completed/:id" element={<OrderCompleted />} />
                         <Route path="/orders/rejected/:id" element={<OrderRejected />} />
                         <Route path="/orders/workinprogress/:id" element={<QuotationWaiting />} />
+                        <Route path="/orders/acceptorder/:id" element={<AcceptOrderModals />} />
+                        <Route path="/orders/verifyotp" element={<OtpModal />} />
 
                         {/* Payment */}
                         <Route path="/payment" element={<Payment />} />

@@ -2,7 +2,7 @@ import {Search} from "lucide-react"; // for the search icon
 
 export default function ProductListHeader() {
     return (
-        <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-3 bg-white p-3 rounded-lg shadow">
+        <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-3 bg-white p-3 rounded-md shadow">
             {/* Title */}
             <h4 className="font-semibold text-xl ">Product List</h4>
 

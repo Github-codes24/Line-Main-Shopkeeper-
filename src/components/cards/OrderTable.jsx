@@ -9,7 +9,7 @@ const statusColors = {
 };
 
 const OrderTable = ({orders = []}) => (
-    <div className="bg-white p-4 rounded-xl shadow-md w-full border border-gray-500">
+    <div className="bg-white p-4 rounded-lg shadow-md w-full border border-gray-500">
         <div className="flex justify-between items-center mb-2">
             <h4 className="font-semibold text-gray-800">Order Management</h4>
             <button className="text-sm text-teal-600 hover:underline">See All</button>

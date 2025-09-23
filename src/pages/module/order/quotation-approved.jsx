@@ -1,14 +1,14 @@
 import React from "react";
-import { IoArrowBackCircleOutline } from "react-icons/io5";
+import {IoArrowBackCircleOutline} from "react-icons/io5";
 import ServiceImg from "../../../assets/Frame 1261155363.jpg";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const products = [
-    { name: "PVC Wire", price: 400, qty: 1 },
-    { name: "LED Light", price: 80, qty: 5 },
-    { name: "Switches", price: 10, qty: 7 },
-    { name: "Connector", price: 400, qty: 1 },
-    { name: "LED light", price: 120, qty: 3 },
+    {name: "PVC Wire", price: 400, qty: 1},
+    {name: "LED Light", price: 80, qty: 5},
+    {name: "Switches", price: 10, qty: 7},
+    {name: "Connector", price: 400, qty: 1},
+    {name: "LED light", price: 120, qty: 3},
 ];
 
 const calculateAmount = (price, qty) => price * qty;
@@ -16,20 +16,19 @@ const total = products.reduce((sum, item) => sum + calculateAmount(item.price, i
 
 // OrderDeatils
 const QuotationApproved = () => {
-
     const navigate = useNavigate();
 
-    const orderId = 'ORD8468163287164';
+    const orderId = "ORD8468163287164";
     // const orderStatus = "Pending"
 
     return (
         <div className="min-h-screen bg-gray-100 p-3">
-            <div className=" bg-white shadow-sm rounded-lg px-3 py-2">
+            <div className=" bg-white shadow-sm rounded-lg px-3 py-3">
                 <div className="flex items-center space-x-4">
-               <IoArrowBackCircleOutline 
-                           className="text-4xl text-[#0D2E28] cursor-pointer hover:text-[#007E74]"
-                           onClick={() => navigate(-1)}  
-                         />
+                    <IoArrowBackCircleOutline
+                        className="text-4xl text-[#0D2E28] cursor-pointer hover:text-[#007E74]"
+                        onClick={() => navigate(-1)}
+                    />
                     <h2 className="text-2xl font-medium text-[#0D2E28] mt-1">Order Details</h2>
                 </div>
             </div>
@@ -59,7 +58,7 @@ const QuotationApproved = () => {
                                 <span className="font-medium px-2">:</span>
                                 <input
                                     className="border-1 border-[#007E74] bg-[#E0E9E9] text-[#FFCC00] px-3 py-1 rounded-lg w-80"
-                                    style={{ backgroundColor: '#E0E9E9', color: '#0088FF' }}
+                                    style={{backgroundColor: "#E0E9E9", color: "#0088FF"}}
                                     readOnly
                                     value="Work in progress"
                                 />
@@ -78,15 +77,11 @@ const QuotationApproved = () => {
                             <div className="flex items-start">
                                 <label className="font-medium w-36">Photos</label>
                                 <span className="font-medium pl-4 pr-2">:</span>
-                                <img
-                                    src={ServiceImg}
-                                    alt="service"
-                                    className="w-15 h-15 ml-2 object-cover border"
-                                />
+                                <img src={ServiceImg} alt="service" className="w-15 h-15 ml-2 object-cover border" />
                             </div>
                         </div>
                     </div>
-                    
+
                     <hr className="max-w-2xl text-black" />
 
                     {/* Work Details */}
@@ -109,9 +104,9 @@ const QuotationApproved = () => {
                         <div className="flex flex-col mt-4">
                             <div className="w-[550px] p-4 border-1 border-black">
                                 {/* <h2 className="text-base font-medium mb-4 ">Product List <span className="font-medium px-16">:</span></h2> */}
-                                <p className='text-lg font-medium'>Suresh Raina</p>
-                                <p className='text-sm -mt-3 text-black'>5165484623</p>
-                                <div className='flex justify-between -mt-3 -mb-1 font-medium text-sm'>
+                                <p className="text-lg font-medium">Suresh Raina</p>
+                                <p className="text-sm -mt-3 text-black">5165484623</p>
+                                <div className="flex justify-between -mt-3 -mb-1 font-medium text-sm">
                                     <p>Quatation No: 1</p>
                                     <p>Quatation Date: 10-07-2025</p>
                                 </div>
@@ -138,8 +133,12 @@ const QuotationApproved = () => {
                                     </tbody>
                                     <tfoot>
                                         <tr className="border-t font-semibold">
-                                            <td colSpan="3" className="p-2 text-left">Final Amount</td>
-                                            <td colSpan="4" className="p-2 text-center">{total.toLocaleString()}</td>
+                                            <td colSpan="3" className="p-2 text-left">
+                                                Final Amount
+                                            </td>
+                                            <td colSpan="4" className="p-2 text-center">
+                                                {total.toLocaleString()}
+                                            </td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -164,7 +163,9 @@ const QuotationApproved = () => {
                                 />
                             </div>
                             <div className="flex items-center space-x-2">
-                                <label className="font-bold text-lg w-30 pr-16">Customer <br /> Feedback</label>
+                                <label className="font-bold text-lg w-30 pr-16">
+                                    Customer <br /> Feedback
+                                </label>
                                 <span className="font-medium px-2">:</span>
                                 <input
                                     className="border-1 border-[#007E74] bg-[#E0E9E9] text-[#FFCC00] px-3 py-1 rounded-lg w-80"
@@ -185,13 +186,12 @@ const QuotationApproved = () => {
                         Verify OTP
                     </button>
                 </div>
-
             </div>
         </div>
     );
 };
 
-const LabelInput = ({ label, value }) => (
+const LabelInput = ({label, value}) => (
     <div className="flex items-center">
         <label className="font-medium w-40">{label}</label>
         <span className="font-medium">:</span>

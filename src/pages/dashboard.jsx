@@ -44,7 +44,7 @@ const DashboardPage = () => {
     const {stats, orderManagement, topSellingProduct, topWorker} = dashboardData;
 
     return (
-        <div className="space-y-6 bg-gray-200 p-2">
+        <div className="space-y-6 bg-gray-200 p-2 min-h-screen">
             <ToastContainer />
             <Searchbar />
 

@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import {useNavigate} from "react-router-dom";
 // import manimage from "../../assets/images/man-image.png";
 import useAuth from "../../hook/useAuth";
+import Sidebar from "../../components/layout/sidebar";
 
 const AdminProfile = () => {
     const navigate = useNavigate();
@@ -28,11 +29,11 @@ const AdminProfile = () => {
         // email: Yup.string().email("Invalid email").required("Required"),
     });
     const handleBack = () => {
-        navigate("/dashboard"); // Go to previous page
+        navigate(-1);
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#E0E9E9] p-4 md:p-6">
+        <div className="flex flex-col min-h-screen bg-[#E0E9E9] p-3">
             {/* Header Box */}
             <div className="bg-[#FFFFFF] rounded-lg p-2 mb-2 shadow-md flex items-center space-x-2">
                 <svg

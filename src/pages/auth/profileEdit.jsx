@@ -62,7 +62,7 @@ const AdminEditProfile = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#E0E9E9] p-4 md:p-6">
+        <div className="flex flex-col min-h-screen bg-[#E0E9E9] p-3">
             <div className="bg-[#FFFFFF] rounded-lg p-2 mb-2 shadow-md flex items-center space-x-2">
                 <svg
                     width="30"
