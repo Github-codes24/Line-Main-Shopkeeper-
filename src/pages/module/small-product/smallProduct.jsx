@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {Eye, Pencil, Trash2, Filter, X} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import {Search} from "lucide-react";
+import {IconButton} from "@mui/material";
 
 const SmallProduct = () => {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ const SmallProduct = () => {
             category: "Electrician",
             price: "₹499",
             status: "Pending",
+            description: "High-quality red PVC wire cable suitable for home and industrial electrical usage.",
         },
         {
             id: 2,
@@ -21,6 +23,7 @@ const SmallProduct = () => {
             category: "Electrician",
             price: "₹399",
             status: "Add By Admin",
+            description: "Energy-efficient 9W LED bulb with bright white light and long lifespan.",
         },
         {
             id: 3,
@@ -28,6 +31,7 @@ const SmallProduct = () => {
             category: "Plumber",
             price: "₹499",
             status: "Approved",
+            description: "Durable UPVC plumbing pipe ideal for water supply and drainage systems.",
         },
         {
             id: 4,
@@ -35,6 +39,7 @@ const SmallProduct = () => {
             category: "Painter",
             price: "₹499",
             status: "Rejected",
+            description: "Premium exterior wall paint with advanced weatherproofing technology.",
         },
         {
             id: 5,
@@ -42,6 +47,7 @@ const SmallProduct = () => {
             category: "Painter",
             price: "₹499",
             status: "Add By Admin",
+            description: "Soft plush sleeve roller cover for smooth and even wall painting.",
         },
     ]);
 
@@ -196,15 +202,20 @@ const SmallProduct = () => {
                                         <td className="p-2">{product.name}</td>
                                         <td className="p-2">{product.category}</td>
                                         <td className="p-2">{product.price}</td>
-                                        <td className="p-2 flex gap-2 text-gray-700">
+                                        <td className="p-2 flex items-center  gap-3 text-gray-700">
                                             <Eye
-                                                onClick={() => handleView(product.id)}
-                                                className="w-4 h-4 cursor-pointer text-[#007E74]"
+                                                className="w-5 h-5 text-[#007E74] cursor-pointer"
+                                                onClick={() =>
+                                                    navigate(`/small-product/view/${product.id}`, {state: product})
+                                                }
                                             />
                                             <Pencil
-                                                onClick={() => handleEdit(product.id)}
+                                                onClick={() =>
+                                                    navigate(`/small-product/edit/${product.id}`, {state: product})
+                                                }
                                                 className="w-4 h-4 cursor-pointer text-[#007E74]"
                                             />
+
                                             <Trash2
                                                 onClick={() => handleDelete(product.id)}
                                                 className="w-4 h-4 cursor-pointer text-[#007E74]"

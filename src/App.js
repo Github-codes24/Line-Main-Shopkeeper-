@@ -53,12 +53,20 @@ import {useMediaQuery, useTheme} from "@mui/material";
 function AppLayout() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+    const [mobile, setMobile] = React.useState(false);
+
     return (
         <div className="h-screen flex flex-col">
             <Navbar />
             <div className="flex flex-1 overflow-hidden">
-                <Sidebar />
-                <main className="flex-1 overflow-y-auto">{isMobile ? "" : <Outlet />}</main>
+                <Sidebar mobile={mobile} setMobile={setMobile} />
+
+                {/* Hide Outlet when sidebar is open on mobile */}
+                {!mobile && (
+                    <main className="flex-1 overflow-y-auto">
+                        <Outlet />
+                    </main>
+                )}
             </div>
         </div>
     );

@@ -42,7 +42,8 @@ function PaymentProcess() {
     return (
         <div className="min-h-screen bg-gray-100 p-3">
             {/* Header Section */}
-            <div className="bg-white rounded-lg p-3 shadow-md flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+            <div className="bg-white rounded-lg p-3 shadow-md flex flex-col sm:flex-row items-center sm:justify-start gap-4 mb-6">
+                {/* Left Section */}
                 <div className="flex items-center">
                     <button onClick={() => navigate(-1)} className="text-xl text-black hover:text-gray-600">
                         <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,8 +72,9 @@ function PaymentProcess() {
                     </button>
                     <h1 className="ml-4 text-xl font-medium">Wallet</h1>
                 </div>
-                {/* Search Bar */}
-                <div className="relative w-full sm:w-96">
+
+                {/* Center Search Bar */}
+                <div className="relative w-full sm:w-96 sm:mx-auto">
                     <img
                         src={search}
                         alt="Search"
@@ -100,8 +102,8 @@ function PaymentProcess() {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Details</h3>
                 <div className="space-y-4">
                     {/* Name */}
-                    <div className="flex items-center gap-3">
-                        <span className="w-40 text-right font-medium text-gray-700">Customer Name :</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span className="sm:w-40 font-medium text-gray-700 text-left">Customer Name :</span>
                         <input
                             type="text"
                             value={data.customerName}
@@ -111,8 +113,8 @@ function PaymentProcess() {
                     </div>
 
                     {/* Phone */}
-                    <div className="flex items-center gap-3">
-                        <span className="w-40 text-right font-medium text-gray-700">Phone Number :</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span className="sm:w-40 font-medium text-gray-700 text-left">Phone Number :</span>
                         <input
                             type="text"
                             value={data.phoneNumber}
@@ -122,8 +124,8 @@ function PaymentProcess() {
                     </div>
 
                     {/* Address */}
-                    <div className="flex items-start gap-3">
-                        <span className="w-40 text-right font-medium text-gray-700">Address :</span>
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
+                        <span className="sm:w-40 font-medium text-gray-700 text-left">Address :</span>
                         <textarea
                             value={data.address}
                             disabled
@@ -132,8 +134,8 @@ function PaymentProcess() {
                     </div>
 
                     {/* Email */}
-                    <div className="flex items-center gap-3">
-                        <span className="w-40 text-right font-medium text-gray-700">Email Id :</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span className="sm:w-40 font-medium text-gray-700 text-left">Email Id :</span>
                         <input
                             type="text"
                             value={data.email}
@@ -143,8 +145,8 @@ function PaymentProcess() {
                     </div>
 
                     {/* Order Status */}
-                    <div className="flex items-center gap-3">
-                        <span className="w-40 text-right font-medium text-gray-700">Order Status :</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span className="sm:w-40 font-medium text-gray-700 text-left">Order Status :</span>
                         <span className="px-4 py-1 rounded-md font-medium bg-yellow-100 text-yellow-700 border border-yellow-400">
                             {data.orderStatus}
                         </span>
@@ -157,8 +159,8 @@ function PaymentProcess() {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Service Details</h3>
                 <div className="space-y-4">
                     {/* Service */}
-                    <div className="flex items-center gap-3">
-                        <span className="w-40 text-right font-medium text-gray-700">Service Required :</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span className="sm:w-40 font-medium text-gray-700 text-left">Service Required :</span>
                         <input
                             type="text"
                             value={data.service}
@@ -168,8 +170,8 @@ function PaymentProcess() {
                     </div>
 
                     {/* Date */}
-                    <div className="flex items-center gap-3">
-                        <span className="w-40 text-right font-medium text-gray-700">Date :</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span className="sm:w-40 font-medium text-gray-700 text-left">Date :</span>
                         <input
                             type="text"
                             value={data.date}
@@ -179,9 +181,9 @@ function PaymentProcess() {
                     </div>
 
                     {/* Photos */}
-                    <div className="flex items-start gap-3">
-                        <span className="w-40 text-right font-medium text-gray-700">Photos :</span>
-                        <div className="flex gap-2 items-center">
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
+                        <span className="sm:w-40 font-medium text-gray-700 text-left">Photos :</span>
+                        <div className="flex gap-2 items-center flex-wrap">
                             {data.images.map((img, index) => (
                                 <img
                                     key={index}
