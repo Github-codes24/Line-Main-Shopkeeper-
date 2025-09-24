@@ -80,7 +80,7 @@ const useAuth = () => {
             });
             if (res) {
                 setProfile(res?.data);
-                toast.success(res?.message);
+                // toast.success(res?.message);
                 sessionStorage.setItem("ownerName", res?.data?.ownerName);
                 sessionStorage.setItem("isVerified", res?.data?.isVerified);
                 sessionStorage.setItem("isActive", res?.data?.isActive);

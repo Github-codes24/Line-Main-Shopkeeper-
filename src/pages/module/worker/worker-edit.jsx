@@ -66,18 +66,42 @@ const WorkerEdit = () => {
     }
 
     return (
-        <div className="p-2">
+        <div className="p-3 bg-gray-200">
             <ToastContainer />
             {/* Header */}
             <div className="flex items-center gap-3 mb-6 bg-white p-4 rounded-md shadow-md">
-                <button onClick={handleCancel} className="text-teal-700">
-                    <FaArrowLeft size={20} />
-                </button>
-                <h2 className="text-xl font-semibold text-gray-800">Edit Worker Details</h2>
+                <div className="flex items-center">
+                    <button onClick={() => navigate(-1)} className="text-xl text-black hover:text-gray-600">
+                        <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z"
+                                stroke="#0D2E28"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            ></path>
+                            <path
+                                d="M19.9997 13.334L13.333 20.0007L19.9997 26.6673"
+                                stroke="#0D2E28"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            ></path>
+                            <path
+                                d="M26.6663 20H13.333"
+                                stroke="#0D2E28"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            ></path>
+                        </svg>
+                    </button>
+                    <h1 className="ml-4 text-xl font-medium">Edit Worker Details</h1>
+                </div>
             </div>
 
             {/* Form Container */}
-            <div className="border-2 shadow-md rounded-md p-6 bg-white">
+            <div className="border-2 shadow-md rounded-md p-6 bg-white min-h-screen">
                 <h3 className="text-lg font-semibold text-gray-700 mb-6">Personal Details</h3>
 
                 <div className="space-y-5">

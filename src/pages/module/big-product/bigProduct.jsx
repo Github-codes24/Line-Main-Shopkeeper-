@@ -12,6 +12,7 @@ const products = [
         category: "Electrician",
         price: "₹499",
         status: "Pending",
+        description: "High quality PVC wire cable for home and industrial use.",
     },
     {
         id: 2,
@@ -19,6 +20,7 @@ const products = [
         category: "Electrician",
         price: "₹399",
         status: "Add By Admin",
+        description: "High quality PVC wire cable for home and industrial use.",
     },
     {
         id: 3,
@@ -26,6 +28,7 @@ const products = [
         category: "Plumber",
         price: "₹499",
         status: "Approved",
+        description: "High quality PVC wire cable for home and industrial use.",
     },
     {
         id: 4,
@@ -33,6 +36,7 @@ const products = [
         category: "Painter",
         price: "₹499",
         status: "Rejected",
+        description: "High quality PVC wire cable for home and industrial use.",
     },
     {
         id: 5,
@@ -40,6 +44,7 @@ const products = [
         category: "Painter",
         price: "₹499",
         status: "Add By Admin",
+        description: "High quality PVC wire cable for home and industrial use.",
     },
 ];
 
@@ -98,18 +103,24 @@ const BigProduct = () => {
         <div className="flex bg-[#E0E9E9] font-medium ">
             {/* Main Content */}
             <main className="flex-1 p-3  gap-2">
-                <div className="flex justify-between items-center mb-4 shadow-xl  bg-white h-16 border  rounded-md p-2">
-                    <h1 className="text-xl font-semibold ml-2">Big Product List</h1>
+                <div className="flex flex-col md:flex-row justify-between items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-3">
+                    <h1 className="text-lg md:text-xl font-semibold">Big Product List</h1>
+
                     {/* Search bar */}
-                    <div className="flex border-[#16b1a2] border-2 rounded-full w-full md:w-72 max-w-md items-center ">
-                        <Search className="w-5 h-5 text-[#16b1a2] ml-2 " />
+                    <div className="flex border-[#16b1a2] border-2 rounded-full w-full md:w-72 max-w-md items-center">
+                        <Search className="w-5 h-5 text-[#16b1a2] ml-2" />
                         <input
                             type="text"
                             placeholder=" Search by Product Name..."
                             className="w-full placeholder:text-black rounded-full px-2 py-1 focus:outline-none"
                         />
                     </div>
-                    <button onClick={handleAdd} className="bg-[#007E74] text-white px-4 rounded-lg h-10 mr-2 ">
+
+                    {/* Add Product button */}
+                    <button
+                        onClick={handleAdd}
+                        className="bg-[#007E74] text-white px-4 py-2 rounded-lg w-full md:w-auto"
+                    >
                         + Add New Product
                     </button>
                 </div>
@@ -205,13 +216,16 @@ const BigProduct = () => {
                                         </td>
                                         <td className="p-2 flex gap-2 text-gray-700">
                                             <Eye
-                                                onClick={() => handleView(product.id)}
+                                                onClick={() =>
+                                                    navigate(`/big-product/view/${product.id}`, {state: product})
+                                                }
                                                 className="w-4 h-4 cursor-pointer text-green-600"
                                             />
                                             <Pencil
-                                                onClick={() => handleEdit(product.id)}
+                                                onClick={() => handleEdit(product)} // pass the product object here
                                                 className="w-4 h-4 cursor-pointer text-green-600"
                                             />
+
                                             <Trash2 className="w-4 h-4 cursor-pointer text-green-600" />
                                         </td>
                                     </tr>
@@ -240,8 +254,15 @@ const BigProduct = () => {
                                     </div>
                                 </div>
                                 <div className="flex justify-end gap-3 text-[#007E74]">
-                                    <Eye onClick={() => handleView(product.id)} className="w-4 h-4 cursor-pointer" />
-                                    <Pencil onClick={() => handleEdit(product.id)} className="w-4 h-4 cursor-pointer" />
+                                    <Eye
+                                        onClick={() => navigate(`/big-product/view/${product.id}`, {state: product})}
+                                        className="w-4 h-4 cursor-pointer text-green-600"
+                                    />
+                                    <Pencil
+                                        onClick={() => handleEdit(product)}
+                                        className="w-4 h-4 cursor-pointer text-green-600"
+                                    />
+
                                     <Trash2 className="w-4 h-4 cursor-pointer" />
                                 </div>
                             </div>

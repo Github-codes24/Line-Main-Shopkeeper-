@@ -1,13 +1,14 @@
 // AddBigProduct.jsx
 import React from "react";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 const BigProductView = () => {
     const navigate = useNavigate();
-
+    const location = useLocation();
+    const product = location.state;
     const handleBack = () => navigate("/big-product");
 
-    const handleEdit = (id) => {
-        navigate(`/big-product/edit/${id}`);
+    const handleEdit = (product) => {
+        navigate(`/big-product/edit/${product.id}`, {state: product});
     };
 
     return (
@@ -50,10 +51,10 @@ const BigProductView = () => {
                     <div className="flex items-start">
                         <p className="w-1/3 font-medium">Product Image</p>
                         <div className="w-full">
-                            <div className="flex items-center justify-center w-40 h-40 border-2 boder border-[#007E74] rounded-lg bg-gray-50">
+                            <div className="flex items-center justify-center w-40 h-40 border border-[#007E74] rounded-lg bg-gray-50">
                                 <img
-                                    src="Image (1).png"
-                                    alt="Product"
+                                    src={product.image}
+                                    alt={product.name}
                                     className="max-h-full max-w-full object-contain rounded"
                                 />
                             </div>
