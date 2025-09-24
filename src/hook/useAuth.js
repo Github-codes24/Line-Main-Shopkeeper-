@@ -4,6 +4,7 @@ import useFetch from "./useFetch";
 import {useRecoilState, useSetRecoilState} from "recoil";
 import {profileAtom, shopkeeperLoginAtom} from "../state/smallproduct/auth/authState";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 
 const useAuth = () => {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ const useAuth = () => {
     const [fetchData] = useFetch();
     const [loginResponse, setLoginResponse] = useState(null);
     const [profile, setProfile] = useRecoilState(profileAtom);
+
     // -------------------Login---------------------------
 
     const shopkeeperLogin = async (payload) => {
@@ -38,6 +40,8 @@ const useAuth = () => {
         }
     };
 
+    // -------------------verify OTP---------------------------
+
     const verifyOTP = async (contact, finalOtp) => {
         setLoading(true);
         try {
@@ -53,7 +57,8 @@ const useAuth = () => {
             if (res) {
                 sessionStorage.setItem("token", res?.token);
                 sessionStorage.setItem("shopId", res?.data?.shopId);
-                navigate("/profile");
+                toast.success(res?.message);
+                navigate("/dashboard");
                 setLoading(false);
             }
         } catch (error) {
@@ -64,6 +69,8 @@ const useAuth = () => {
         }
     };
 
+    // -------------------Profile---------------------------
+
     const fetchProfile = async () => {
         setLoading(true);
         try {
@@ -73,6 +80,7 @@ const useAuth = () => {
             });
             if (res) {
                 setProfile(res?.data);
+                toast.success(res?.message);
                 sessionStorage.setItem("ownerName", res?.data?.ownerName);
                 sessionStorage.setItem("isVerified", res?.data?.isVerified);
                 sessionStorage.setItem("isActive", res?.data?.isActive);
@@ -86,6 +94,8 @@ const useAuth = () => {
         }
     };
 
+    // -------------------Update Profile---------------------------
+
     const updateProfile = async (payload) => {
         setLoading(true);
         try {
@@ -95,7 +105,7 @@ const useAuth = () => {
                 data: payload,
             });
             if (res) {
-                alert(res?.message);
+                toast.success(res?.message);
                 navigate("/profile");
                 setLoading(false);
             }
@@ -107,7 +117,22 @@ const useAuth = () => {
         }
     };
 
-    return {loading, shopkeeperLogin, loginResponse, verifyOTP, fetchProfile, profile, updateProfile};
+    // -------------------logout Admin---------------------------
+
+    const logoutAdmin = () => {
+        toast.success("Logout Successfully");
+        setUserInfo({
+            isAuthenticated: false,
+        });
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("contact");
+        sessionStorage.removeItem("shopId");
+        sessionStorage.removeItem("ownerName");
+        sessionStorage.removeItem("isVerified");
+        sessionStorage.removeItem("isActive");
+    };
+
+    return {loading, shopkeeperLogin, loginResponse, verifyOTP, fetchProfile, profile, updateProfile, logoutAdmin};
 };
 
 export default useAuth;

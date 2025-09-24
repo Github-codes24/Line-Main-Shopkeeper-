@@ -1,27 +1,29 @@
 import React, { useEffect, useState } from "react"; 
-import { Eye, Pencil, Trash2, Filter, X, Search } from "lucide-react";
+import { Eye,Trash2, Filter, X, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FiEdit } from "react-icons/fi";
+
 import useFetch from "../../../hook/useFetch"; // Your custom fetch hook
 import conf from "../../../config";
 
 const getStatusColor = (status) => {
-  switch (status) {
-    case "Pending":
-      return "text-yellow-500";
-    case "Approved":
-      return "text-green-500";
-    case "Rejected":
-      return "text-red-500";
-    case "Add By Admin":
-      return "text-green-500";
-    default:
-      return "text-gray-500";
-  }
+    switch (status) {
+        case "Pending":
+            return "text-yellow-500";
+        case "Approved":
+            return "text-green-500";
+        case "Rejected":
+            return "text-red-500";
+        case "Add By Admin":
+            return "text-green-500";
+        default:
+            return "text-gray-500";
+    }
 };
 
 const BigProduct = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,18 +35,21 @@ const BigProduct = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([
     "Electrician",
-    "Plumber",
-    "Tiler",
     "Painter",
-    "AC & Refrigerator Mechanic",
+    "Carpenter",
+    "AC Repair",
+    "Tile Fitting",
+    "Plumber",
   ]);
 
+  // ✅ Updated expertise options in the requested order
   const expertiseOptions = [
     "Electrician",
-    "Plumber",
-    "Tiler",
     "Painter",
-    "AC & Refrigerator Mechanic",
+    "Carpenter",
+    "AC Repair",
+    "Tile Fitting",
+    "Plumber",
   ];
 
   const token =
@@ -62,10 +67,9 @@ const BigProduct = () => {
       if (category) params.productCategory = category;
       if (pageNum) params.page = pageNum;
   
-      // ✅ If any subcategory filter is applied (Plumber, Painter, etc.)
+      // ✅ If any subcategory filter is applied
       if (selectedFilters.length > 0) {
         params.productSubCategory = selectedFilters.join(","); 
-        // backend should support multiple values, otherwise loop 1-by-1
       }
   
       const res = await axios.get(url, {
@@ -249,6 +253,7 @@ const BigProduct = () => {
                       <th className="p-2">Product Image</th>
                       <th className="p-2">Product Name</th>
                       <th className="p-2">Product Category</th>
+                      <th className="p-2">Product Sub-Category</th>
                       <th className="p-2">Product Price</th>
                       <th className="p-2">Approval Status</th>
                       <th className="p-2">Action</th>
@@ -266,8 +271,13 @@ const BigProduct = () => {
                           />
                         </td>
                         <td className="p-2">{product.productName}</td>
+                       
+
+                      <td className="p-2">
+                        {product.productCategory?.tabName}
+                      </td>
                         <td className="p-2">
-                          {product.productSubCategory || product.productCategory?.tabName}
+                          {product.productSubCategory}
                         </td>
                         <td className="p-2">₹{product.productPrice}</td>
                         <td className={`p-2 font-semibold ${getStatusColor(product.approvalStatus)}`}>
@@ -276,15 +286,15 @@ const BigProduct = () => {
                         <td className="p-2 flex gap-2 text-gray-700">
                           <Eye
                             onClick={() => handleView(product._id)}
-                            className="w-4 h-4 cursor-pointer text-green-600"
+                            className="w-4 h-4 cursor-pointer text-red-600"
                           />
-                          <Pencil
+                          <FiEdit
                             onClick={() => handleEdit(product._id)}
-                            className="w-4 h-4 cursor-pointer text-green-600"
+                            className="w-4 h-4 cursor-pointer text-red-600"
                           />
                           <Trash2
                             onClick={() => handleDelete(product._id)}
-                            className="w-4 h-4 cursor-pointer text-green-600"
+                            className="w-4 h-4 cursor-pointer text-red-600"
                           />
                         </td>
                       </tr>
@@ -319,7 +329,7 @@ const BigProduct = () => {
                         onClick={() => handleView(product._id)}
                         className="w-4 h-4 cursor-pointer"
                       />
-                      <Pencil
+                      <FiEdit
                         onClick={() => handleEdit(product._id)}
                         className="w-4 h-4 cursor-pointer"
                       />

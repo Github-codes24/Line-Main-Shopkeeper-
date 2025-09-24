@@ -3,13 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useFetch from "../../../hook/useFetch"; // Your custom fetch hook
-import conf from "../../../config";
+import axios from "axios";
 
 const BigProductEdit = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [fetchData] = useFetch();
 
   const [product, setProduct] = useState({
     productName: "",
@@ -24,15 +22,19 @@ const BigProductEdit = () => {
   useEffect(() => {
     const getProduct = async () => {
       try {
-        const res = await fetchData({
-          method: "GET",
-          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/get-single-bigproduct/${id}`,
-        });
-
-        if (res.success) {
-          setProduct(res.data);
+        const res = await axios.get(
+          `https://linemen-be-1.onrender.com/shopkeeper/bigproduct/get-single-bigproduct/${id}`,
+          {
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMzZmNiZTRiOGM1OWJmMjJmODkzMTQiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc1NzY3NDk5MiwiZXhwIjoxNzYwMjY2OTkyfQ.fjFQFWcOGtmErZ2nkhJo1CB5HHubgIcVHnmBjTEz730",
+            },
+          }
+        );
+        if (res.data.success) {
+          setProduct(res.data.data);
         } else {
-          toast.error(res.message || "Failed to fetch product data");
+          toast.error(res.data.message || "Failed to fetch product data");
         }
       } catch (err) {
         console.error("Error fetching product:", err);
@@ -40,7 +42,7 @@ const BigProductEdit = () => {
       }
     };
     getProduct();
-  }, [id, fetchData]);
+  }, [id]);
 
   const handleBack = () => {
     navigate("/big-product");
@@ -58,17 +60,23 @@ const BigProductEdit = () => {
         productDescription: product.productDescription,
       };
 
-      const res = await fetchData({
-        method: "PUT",
-        url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/update-bigproduct/${id}`,
-        data: payload,
-      });
+      const res = await axios.put(
+        `https://linemen-be-1.onrender.com/shopkeeper/bigproduct/update-bigproduct/${id}`,
+        payload,
+        {
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMzZmNiZTRiOGM1OWJmMjJmODkzMTQiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc1NzY3NDk5MiwiZXhwIjoxNzYwMjY2OTkyfQ.fjFQFWcOGtmErZ2nkhJo1CB5HHubgIcVHnmBjTEz730",
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      if (res.success) {
+      if (res.data.success) {
         toast.success("Product updated successfully!");
         setTimeout(() => navigate("/big-product"), 1500);
       } else {
-        toast.error(res.message || "Failed to update product");
+        toast.error(res.data.message || "Failed to update product");
       }
     } catch (err) {
       console.error("Error updating product:", err);
@@ -80,12 +88,13 @@ const BigProductEdit = () => {
     <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28]">
       <ToastContainer />
       <div className="flex bg-white m-2 border rounded-lg shadow-lg p-2">
-        <img
-          onClick={handleBack}
-          className="w-8 h-8 mt-2 cursor-pointer"
-          src="back Button.png"
-          alt="back"
-        />
+      <button onClick={() => navigate(-1)} className="text-xl text-black hover:opacity-75">
+          <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M19.9997 13.334L13.333 20.0007L19.9997 26.6673" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M26.6663 20H13.333" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
         <h2 className="text-xl font-semibold text-gray-800 p-2 rounded-lg">
           Edit Big Product
         </h2>
