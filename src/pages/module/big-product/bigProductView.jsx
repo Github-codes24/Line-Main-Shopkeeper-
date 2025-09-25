@@ -45,7 +45,7 @@ const BigProductView = () => {
             </div>
 
             <div className="flex flex-col border  rounded-md p-6 space-y-5 shadow-lg m-2 bg-white min-h-screen">
-                <div className=" items-center border border-black p-2 rounded-lg">
+                <div className=" items-center border border-black p-2 rounded-lg min-h-screen">
                     {/* Upload Image Section */}
 
                     <div className="flex items-start">
@@ -65,26 +65,33 @@ const BigProductView = () => {
                     <div className="space-y-4">
                         <div className="flex items-center pt-3">
                             <p className="w-1/3 block mb-1">Product Name:</p>
-                            <div className="w-full border-1 border-[#007E74]  bg-[#E0E9E9] rounded-lg p-2.5">
+                            <div className="w-full border border-[#007E74]  bg-[#E0E9E9] rounded-lg p-2.5">
                                 PVC Wire Cable (Red Colour)
                             </div>
                         </div>
 
                         <div className="flex items-center">
                             <label className="w-1/3 block  mb-1">Product Category:</label>
-                            <div className="w-full border-1 border-[#007E74]  bg-[#E0E9E9] rounded-lg p-2.5">
+                            <div className="w-full border border-[#007E74]  bg-[#E0E9E9] rounded-lg p-2.5">
+                                Electrician
+                            </div>
+                        </div>
+
+                        <div className="flex items-center">
+                            <label className="w-1/3 block  mb-1">Product Sub-Category:</label>
+                            <div className="w-full border border-[#007E74]  bg-[#E0E9E9] rounded-lg p-2.5">
                                 Electrician
                             </div>
                         </div>
 
                         <div className="flex items-center">
                             <label className="w-1/3 block  mb-1">Product Price:</label>
-                            <div className="w-full border-1 border-[#007E74]  bg-[#E0E9E9] rounded-lg p-2.5">₹499</div>
+                            <div className="w-full border border-[#007E74]  bg-[#E0E9E9] rounded-lg p-2.5">₹499</div>
                         </div>
 
                         <div className="flex items-center">
                             <label className="w-1/3 block  mb-1">Product Description:</label>
-                            <div className="w-full border-1 border-[#007E74]  bg-[#E0E9E9] rounded-lg px-4">
+                            <div className="w-full border border-[#007E74]  bg-[#E0E9E9] rounded-lg px-4">
                                 Lorem ipsum dolor, sit amet consectetur adipisicing elit. Unde debitis eum quibusdam ab
                                 similique officiis vel veniam quis fugit sint quasi laborum, ex numquam perferendis
                                 voluptatem. Pariatur possimus deserunt sed.
@@ -96,8 +103,8 @@ const BigProductView = () => {
                 </div>
                 <div className="flex justify-center space-x-3 ">
                     <button
-                        onClick={handleEdit}
-                        className="bg-teal-700 text-white px-12 py-1 rounded hover:bg-teal-800"
+                        onClick={() => handleEdit(product)}
+                        className="bg-teal-700 text-white px-14 py-2 rounded-lg hover:bg-teal-800"
                     >
                         Edit
                     </button>

@@ -10,6 +10,7 @@ const SmallProductEdit = () => {
         id,
         name: "",
         category: "",
+        subcategory: "",
         price: "",
         description: "",
         image: "",
@@ -17,6 +18,7 @@ const SmallProductEdit = () => {
 
     const [name, setName] = useState(product.name);
     const [category, setCategory] = useState(product.category);
+    const [subcategory, setSubcategory] = useState(product.subcategory);
     const [price, setPrice] = useState(product.price);
     const [description, setDescription] = useState(product.description);
 
@@ -63,13 +65,13 @@ const SmallProductEdit = () => {
 
             {/* Form */}
             <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
-                <div className="space-y-4 border border-black p-4 rounded-lg">
+                <div className="space-y-4 border border-black p-4 rounded-lg min-h-screen">
                     {/* Image */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
                         <label className="w-full sm:w-1/3 font-medium">Product Image</label>
                         <span className="hidden sm:inline font-medium">:</span>
-                        <div className="flex-1 flex items-center justify-center">
-                            <div className="flex items-center justify-center w-32 h-32 border border-[#007E74] rounded-lg bg-gray-50">
+                        <div className="flex-1 flex items-center ">
+                            <div className="flex items-center w-32 h-32 border border-[#007E74] rounded-lg bg-gray-50">
                                 <img
                                     src={product.image || "placeholder.png"}
                                     alt={product.name}
@@ -90,6 +92,11 @@ const SmallProductEdit = () => {
                         <option>Groceries</option>
                     </FormField>
 
+                    {/* Product Sub-Category */}
+                    <FormField label="Product Sub-Category" value={subcategory} setValue={setSubcategory} type="select">
+                        <option>Select Product Category</option>
+                    </FormField>
+
                     {/* Product Price */}
                     <FormField label="Product Price" value={price} setValue={setPrice} placeholder="Enter Price" />
 
@@ -107,13 +114,13 @@ const SmallProductEdit = () => {
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
                     <button
                         onClick={handleBack}
-                        className="bg-teal-100 border border-[#007E74] text-[#007E74] px-5 py-2 rounded w-full sm:w-auto"
+                        className="bg-teal-100 border border-[#007E74] text-[#007E74] px-14 py-2 rounded-lg w-full sm:w-auto"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleUpdate}
-                        className="bg-teal-700 text-white px-5 py-2 rounded hover:bg-teal-800 w-full sm:w-auto"
+                        className="bg-teal-700 text-white px-12 py-2 rounded-lg hover:bg-teal-800 w-full sm:w-auto"
                     >
                         Update
                     </button>

@@ -1,9 +1,12 @@
 import React from "react";
-import {Eye, Pencil, Trash2} from "lucide-react";
+import {Eye, Trash2} from "lucide-react";
 import {Filter, X} from "lucide-react";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Search} from "lucide-react";
+import {FiEdit} from "react-icons/fi";
+import {IconButton} from "@mui/material";
+import {FaPlus} from "react-icons/fa6";
 
 const products = [
     {
@@ -119,9 +122,9 @@ const BigProduct = () => {
                     {/* Add Product button */}
                     <button
                         onClick={handleAdd}
-                        className="bg-[#007E74] text-white px-4 py-2 rounded-lg w-full md:w-auto"
+                        className="flex gap-2 items-center bg-[#007E74] text-white px-4 py-2 rounded-lg w-full md:w-auto"
                     >
-                        + Add New Product
+                        <FaPlus /> Add New Product
                     </button>
                 </div>
 
@@ -214,19 +217,24 @@ const BigProduct = () => {
                                         <td className={`p-2 font-semibold ${getStatusColor(product.status)}`}>
                                             {product.status}
                                         </td>
-                                        <td className="p-2 flex gap-2 text-gray-700">
-                                            <Eye
-                                                onClick={() =>
-                                                    navigate(`/big-product/view/${product.id}`, {state: product})
-                                                }
-                                                className="w-4 h-4 cursor-pointer text-green-600"
-                                            />
-                                            <Pencil
-                                                onClick={() => handleEdit(product)} // pass the product object here
-                                                className="w-4 h-4 cursor-pointer text-green-600"
-                                            />
-
-                                            <Trash2 className="w-4 h-4 cursor-pointer text-green-600" />
+                                        <td className="p-2 flex gap-1 text-gray-700">
+                                            <IconButton>
+                                                <Eye
+                                                    style={{width: 20, color: "red"}}
+                                                    onClick={() =>
+                                                        navigate(`/big-product/view/${product.id}`, {state: product})
+                                                    }
+                                                />
+                                            </IconButton>
+                                            <IconButton>
+                                                <FiEdit
+                                                    style={{width: 20, color: "red"}}
+                                                    onClick={() => handleEdit(product)} // pass the product object here
+                                                />
+                                            </IconButton>
+                                            <IconButton>
+                                                <Trash2 style={{width: 20, color: "red"}} />
+                                            </IconButton>
                                         </td>
                                     </tr>
                                 ))}
@@ -258,7 +266,7 @@ const BigProduct = () => {
                                         onClick={() => navigate(`/big-product/view/${product.id}`, {state: product})}
                                         className="w-4 h-4 cursor-pointer text-green-600"
                                     />
-                                    <Pencil
+                                    <FiEdit
                                         onClick={() => handleEdit(product)}
                                         className="w-4 h-4 cursor-pointer text-green-600"
                                     />

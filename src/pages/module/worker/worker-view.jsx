@@ -67,7 +67,7 @@ const WorkerView = () => {
             </div>
 
             {/* Card */}
-            <div className="bg-white border rounded-md p-6 shadow-md min-h-screen">
+            <div className="bg-white border rounded-md p-6 shadow-md min-h-screen flex flex-col">
                 {/* Section Title */}
                 <h3 className="text-lg font-semibold text-gray-700 mb-4">Personal Details</h3>
 
@@ -83,11 +83,11 @@ const WorkerView = () => {
                 {/* Divider */}
                 <hr className="my-6 border-gray-300" />
 
-                {/* Edit Button */}
-                <div className="flex justify-center">
+                {/* Edit Button at bottom */}
+                <div className="flex justify-center mt-auto">
                     <button
                         onClick={() => navigate(`/worker/worker-edit/${id}`, {state: worker})}
-                        className="px-8 py-2 bg-teal-700 text-white rounded hover:bg-teal-800 transition"
+                        className="px-16 py-2 bg-teal-700 text-white rounded hover:bg-teal-800 transition"
                     >
                         Edit
                     </button>

@@ -32,8 +32,8 @@ const QuotationApproved = () => {
             </div>
 
             {/* Main Content */}
-            <div className="bg-white shadow-sm rounded-lg p-3 mt-3 flex flex-col h-[100vh]">
-                <div className="border border-[#999999] rounded-md px-4 py-6 space-y-6 overflow-y-auto flex-1 scrollbar-hide">
+            <div className="flex flex-col bg-white shadow-sm rounded-lg p-3 mt-3 h-[calc(100vh-1rem)]">
+                <div className="border border-[#999999] rounded-md px-4 py-6 space-y-6  flex-1 scrollbar-hide">
                     {/* Order Info */}
                     <div className="flex flex-col sm:flex-row sm:items-center w-full mb-2">
                         <span className="font-extrabold text-lg">Order Number</span>
@@ -147,7 +147,7 @@ const QuotationApproved = () => {
                 </div>
 
                 {/* Action Button */}
-                <div className="flex justify-center space-x-5 mt-6">
+                <div className="flex justify-center space-x-5 mt-4">
                     <button className="px-10 py-2 bg-[#007E74] text-white font-medium rounded-md">Verify OTP</button>
                 </div>
             </div>

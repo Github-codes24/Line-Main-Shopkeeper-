@@ -66,7 +66,7 @@ const WorkerEdit = () => {
     }
 
     return (
-        <div className="p-3 bg-gray-200">
+        <div className="flex flex-col min-h-screen p-3 bg-gray-200">
             <ToastContainer />
             {/* Header */}
             <div className="flex items-center gap-3 mb-6 bg-white p-4 rounded-md shadow-md">
@@ -100,8 +100,8 @@ const WorkerEdit = () => {
                 </div>
             </div>
 
-            {/* Form Container */}
-            <div className="border-2 shadow-md rounded-md p-6 bg-white min-h-screen">
+            {/* Form */}
+            <div className="flex-1 border-2 shadow-md rounded-md p-6 bg-white">
                 <h3 className="text-lg font-semibold text-gray-700 mb-6">Personal Details</h3>
 
                 <div className="space-y-5">
@@ -126,24 +126,23 @@ const WorkerEdit = () => {
                     />
                     <DetailInput label="Email Id" name="email" value={formData.email || ""} onChange={handleChange} />
                 </div>
+            </div>
 
-                <hr className="my-6 border-gray-300" />
-
-                <div className="flex justify-center gap-6">
-                    <button
-                        onClick={handleCancel}
-                        className="px-8 py-1 border border-teal-700 text-teal-700 rounded hover:bg-teal-50 transition"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className="px-8 py-1 bg-teal-700 text-white rounded hover:bg-teal-800 transition disabled:opacity-50"
-                    >
-                        {isSaving ? "Saving..." : "Save"}
-                    </button>
-                </div>
+            {/* Bottom Buttons */}
+            <div className="flex justify-center gap-6 mt-6">
+                <button
+                    onClick={handleCancel}
+                    className="px-16 py-2 border border-teal-700 text-teal-700 rounded hover:bg-teal-50 transition"
+                >
+                    Cancel
+                </button>
+                <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="px-16 py-2 bg-teal-700 text-white rounded hover:bg-teal-800 transition disabled:opacity-50"
+                >
+                    {isSaving ? "Saving..." : "Save"}
+                </button>
             </div>
         </div>
     );

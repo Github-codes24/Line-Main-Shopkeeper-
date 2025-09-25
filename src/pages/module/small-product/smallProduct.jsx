@@ -1,8 +1,10 @@
 import React, {useState} from "react";
-import {Eye, Pencil, Trash2, Filter, X} from "lucide-react";
+import {Eye, Trash2, Filter, X} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import {Search} from "lucide-react";
+import {FiEdit} from "react-icons/fi";
 import {IconButton} from "@mui/material";
+import {FaPlus} from "react-icons/fa6";
 
 const SmallProduct = () => {
     const navigate = useNavigate();
@@ -110,9 +112,9 @@ const SmallProduct = () => {
                     {/* Add Product button */}
                     <button
                         onClick={handleAdd}
-                        className="bg-[#007E74] text-white px-4 py-2 rounded-lg w-full md:w-auto"
+                        className="flex bg-[#007E74] gap-2 text-white px-4 py-2 rounded-lg w-full md:w-auto items-center"
                     >
-                        + Add New Product
+                        <FaPlus /> Add New Product
                     </button>
                 </div>
 
@@ -202,24 +204,31 @@ const SmallProduct = () => {
                                         <td className="p-2">{product.name}</td>
                                         <td className="p-2">{product.category}</td>
                                         <td className="p-2">{product.price}</td>
-                                        <td className="p-2 flex items-center  gap-3 text-gray-700">
-                                            <Eye
-                                                className="w-5 h-5 text-[#007E74] cursor-pointer"
-                                                onClick={() =>
-                                                    navigate(`/small-product/view/${product.id}`, {state: product})
-                                                }
-                                            />
-                                            <Pencil
-                                                onClick={() =>
-                                                    navigate(`/small-product/edit/${product.id}`, {state: product})
-                                                }
-                                                className="w-4 h-4 cursor-pointer text-[#007E74]"
-                                            />
+                                        <td className="p-2 flex items-center  gap-1 text-gray-700">
+                                            <IconButton>
+                                                <Eye
+                                                    style={{width: 20, color: "red"}}
+                                                    onClick={() =>
+                                                        navigate(`/small-product/view/${product.id}`, {state: product})
+                                                    }
+                                                />
+                                            </IconButton>
 
-                                            <Trash2
-                                                onClick={() => handleDelete(product.id)}
-                                                className="w-4 h-4 cursor-pointer text-[#007E74]"
-                                            />
+                                            <IconButton>
+                                                <FiEdit
+                                                    style={{width: 20, color: "red"}}
+                                                    onClick={() =>
+                                                        navigate(`/small-product/edit/${product.id}`, {state: product})
+                                                    }
+                                                />
+                                            </IconButton>
+
+                                            <IconButton>
+                                                <Trash2
+                                                    style={{width: 20, color: "red"}}
+                                                    onClick={() => handleDelete(product.id)}
+                                                />
+                                            </IconButton>
                                         </td>
                                     </tr>
                                 ))}
@@ -243,12 +252,12 @@ const SmallProduct = () => {
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="font-semibold">{product.price}</span>
-                                        <div className="flex gap-3 text-[#007E74]">
+                                        <div className="flex gap-3 text-red-600">
                                             <Eye
                                                 onClick={() => handleView(product.id)}
                                                 className="w-4 h-4 cursor-pointer"
                                             />
-                                            <Pencil
+                                            <FiEdit
                                                 onClick={() => handleEdit(product.id)}
                                                 className="w-4 h-4 cursor-pointer"
                                             />
