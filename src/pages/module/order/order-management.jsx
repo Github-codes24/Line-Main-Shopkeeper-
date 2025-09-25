@@ -93,7 +93,7 @@ const OrderManagement = () => {
 
     return (
         <div className="p-3 bg-gray-200 min-h-screen">
-            <div className="bg-white p-3 rounded-md shadow-sm flex flex-col sm:flex-row sm:items-center gap-20 mb-3">
+            <div className="bg-white p-3 rounded-md shadow-xl flex flex-col sm:flex-row sm:items-center gap-20 mb-3">
                 <h1 className="text-2xl font-medium text-black">Order List</h1>
                 <div className="flex-1 sm:flex sm:justify-start">
                     <div className="relative w-full sm:w-[420px]">
@@ -115,7 +115,7 @@ const OrderManagement = () => {
                 </div>
             </div>
 
-            <div className="relative bg-white p-3 rounded-md shadow-sm">
+            <div className="relative bg-white p-3 rounded-md shadow-xl">
                 <div className="flex flex-wrap gap-2 mb-3 text-medium items-center">
                     <button
                         onClick={() => setShowFilter((prev) => !prev)}

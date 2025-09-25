@@ -41,7 +41,7 @@ const SmallProductAdd = () => {
 
             {/* Form */}
             <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
-                <div className="space-y-4 border border-black p-4 rounded-lg">
+                <div className="space-y-4 border border-black p-4 rounded-lg min-h-screen">
                     {/* Image Upload */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
                         <label className="w-full sm:w-1/3 font-medium">Product Image</label>
@@ -71,14 +71,19 @@ const SmallProductAdd = () => {
                     </div>
 
                     {/* Product Name */}
-                    <FormField label="Product Name:" placeholder="Enter Product Name" />
+                    <FormField label="Product Name" placeholder="Enter Product Name" />
 
                     {/* Product Category */}
-                    <FormField label="Product Category:" placeholder="Select Category" type="select">
+                    <FormField label="Product Category" placeholder="Select Category" type="select">
                         <option>Select Product Category</option>
                         <option>Electronics</option>
                         <option>Fashion</option>
                         <option>Groceries</option>
+                    </FormField>
+
+                    {/* Product Subcategory */}
+                    <FormField label="Product Sub-Category" placeholder="Select Category" type="select">
+                        <option>Select Product Category</option>
                     </FormField>
 
                     {/* Product Price */}
@@ -92,11 +97,11 @@ const SmallProductAdd = () => {
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
                     <button
                         onClick={handleBack}
-                        className="bg-teal-100 border border-[#007E74] text-[#007E74] px-5 py-2 rounded-lg w-full sm:w-auto"
+                        className="bg-teal-100 border border-[#007E74] text-[#007E74] px-14 py-2 rounded-lg w-full sm:w-auto"
                     >
                         Cancel
                     </button>
-                    <button className="bg-[#007E74] text-white px-5 py-2 rounded hover:bg-teal-800 w-full sm:w-auto">
+                    <button className="bg-[#007E74] text-white px-8 py-2 rounded-lg hover:bg-teal-800 w-full sm:w-auto">
                         Add Product
                     </button>
                 </div>

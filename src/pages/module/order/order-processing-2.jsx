@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import OrderDetails from './order-pending';
-import OtpModal from './otpModal';
+import React, {useState} from "react";
+import OrderDetails from "./order-pending";
+import OtpModal from "./otpModal";
 
 const OrderProcessing = () => {
     const [showOtpModal, setShowOtpModal] = useState(false);
@@ -40,7 +40,9 @@ const OrderProcessing = () => {
             {/* <h3 className="font-bold text-lg">Customer Feedback</h3> */}
             <div className="mt-2 space-y-4">
                 <div className="flex items-center space-x-2">
-                    <label className="font-bold text-lg w-30 pr-16">Customer <br /> Feedback</label>
+                    <label className="font-bold text-lg w-30 pr-16">
+                        Customer <br /> Feedback
+                    </label>
                     <span className="font-medium px-2">:</span>
                     <input
                         className="border-1 border-[#007E74] bg-[#E0E9E9] text-[#FFCC00] px-3 py-1 rounded-lg w-80"
@@ -68,19 +70,13 @@ const OrderProcessing = () => {
                         Verify OTP
                     </button>
                 }
-
             />
-            <OtpModal
-                show={showOtpModal}
-                setShow={setShowOtpModal}
-                onClose={handleOtpClose}
-            />
+            <OtpModal show={showOtpModal} setShow={setShowOtpModal} onClose={handleOtpClose} />
         </div>
     );
 };
 
-
-const LabelInput = ({ label, value }) => (
+const LabelInput = ({label, value}) => (
     <div className="flex items-center">
         <label className="font-medium w-40">{label}</label>
         <span className="font-medium">:</span>
@@ -94,5 +90,3 @@ const LabelInput = ({ label, value }) => (
 );
 
 export default OrderProcessing;
-
-

@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 const BigProductEdit = () => {
     const navigate = useNavigate();
 
-    const handleBack = () => navigate("/big-product");
+    const handleBack = () => navigate(-1);
 
     return (
         <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28] min-h-screen">
@@ -42,7 +42,7 @@ const BigProductEdit = () => {
 
             {/* Form */}
             <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
-                <div className="space-y-4 border border-black p-4 rounded-lg">
+                <div className="space-y-4 border border-black p-4 rounded-lg min-h-screen">
                     {/* Image Upload */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
                         <label className="w-full sm:w-1/3 font-medium">Product Image:</label>
@@ -67,6 +67,11 @@ const BigProductEdit = () => {
                         <option>Groceries</option>
                     </FormField>
 
+                    {/* Product Sub-Category */}
+                    <FormField label="Product Sub-Category:" placeholder="Select Category" type="select">
+                        <option>Select Product Category</option>
+                    </FormField>
+
                     {/* Product Price */}
                     <FormField label="Product Price:" placeholder="₹499" />
 
@@ -82,11 +87,11 @@ const BigProductEdit = () => {
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
                     <button
                         onClick={handleBack}
-                        className="bg-teal-100 text-[#007E74] border border-[#007E74] px-5 py-2 rounded-lg w-full sm:w-auto"
+                        className="bg-teal-100 text-[#007E74] border border-[#007E74] px-14 py-2 rounded-lg w-full sm:w-auto"
                     >
                         Cancel
                     </button>
-                    <button className="bg-teal-700 text-white px-5 py-2 rounded hover:bg-teal-800 w-full sm:w-auto">
+                    <button className="bg-teal-700 text-white px-14 py-2 rounded-lg hover:bg-teal-800 w-full sm:w-auto">
                         Update
                     </button>
                 </div>

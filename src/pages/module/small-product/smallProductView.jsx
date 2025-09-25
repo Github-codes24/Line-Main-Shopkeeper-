@@ -63,7 +63,7 @@ const SmallProductView = () => {
 
             {/* Product Details */}
             <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
-                <div className="space-y-4 border border-black p-4 rounded-lg">
+                <div className="space-y-4 border border-black p-4 rounded-lg min-h-screen">
                     {/* Image Field */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
                         <label className="w-full sm:w-1/3 font-medium">Product Image</label>
@@ -85,6 +85,9 @@ const SmallProductView = () => {
                     {/* Category */}
                     <DisplayField label="Product Category" value={product.category} />
 
+                    {/* Sub-Category */}
+                    <DisplayField label="Product Sub-Category" value={product.subcategory} />
+
                     {/* Price */}
                     <DisplayField label="Product Price" value={product.price} />
 
@@ -96,7 +99,7 @@ const SmallProductView = () => {
                 <div className="flex justify-center space-x-3">
                     <button
                         onClick={handleEdit}
-                        className="bg-teal-700 text-white px-12 py-1 rounded hover:bg-teal-800"
+                        className="bg-teal-700 text-white px-14 py-2 rounded-lg hover:bg-teal-800"
                     >
                         Edit
                     </button>
