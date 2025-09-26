@@ -57,9 +57,17 @@ function AppLayout() {
 
     return (
         <div className="h-screen flex flex-col">
-            <Navbar />
+            {isMobile ? (
+                <div className="flex overflow-hidden">
+                    <Sidebar mobile={mobile} setMobile={setMobile} />
+                    <Navbar />
+                </div>
+            ) : (
+                <Navbar />
+            )}
+            {/* <Navbar /> */}
             <div className="flex flex-1 overflow-hidden">
-                <Sidebar mobile={mobile} setMobile={setMobile} />
+                {!isMobile && <Sidebar mobile={mobile} setMobile={setMobile} />}
 
                 {/* Hide Outlet when sidebar is open on mobile */}
                 {!mobile && (

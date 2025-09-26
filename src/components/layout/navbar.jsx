@@ -40,7 +40,7 @@ function Navbar() {
     }, []);
 
     return (
-        <div className="navbar border p-2 flex justify-between items-center">
+        <div className="min-w-full navbar border p-2 flex justify-between items-center">
             {/* Left: Logo */}
             <h2 className="text-[#007E74] font-poppins font-bold">LineMan Logo</h2>
 
