@@ -16,7 +16,7 @@ const Sidebar = ({mobile, setMobile}) => {
         <>
             {/* 📱 Mobile menu button (top-right) */}
             {isMobile && !mobile && (
-                <Box sx={{display: "flex", flexDirection: "column", justifyContent: "start"}}>
+                <Box sx={{display: "flex", flexDirection: isMobile ? "row" : "column", justifyContent: "start"}}>
                     <IconButton onClick={() => setMobile(true)}>
                         <MdMenu />
                     </IconButton>
