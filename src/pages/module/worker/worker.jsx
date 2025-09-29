@@ -240,7 +240,7 @@ const Worker = () => {
                         </div>
                     ) : (
                         <>
-                            <table className="min-w-full text-sm text-left border-collapse">
+                            <table className="min-w-full text-sm text-left border-collapse table-fixed">
                                 <thead className="bg-[#f1f8f8] text-gray-700 font-semibold">
                                     <tr>
                                         <th className="px-5 py-3 border-b border-gray-200">Sr.No.</th>
@@ -267,7 +267,10 @@ const Worker = () => {
                                                 <td className="px-5 py-3">{worker.name}</td>
                                                 <td className="px-5 py-3">{worker.expertise}</td>
                                                 <td className="px-5 py-3">{worker.phone}</td>
-                                                <td className="px-5 py-3">{worker.address}</td>
+                                                <td className="px-5 py-3 whitespace-normal break-words max-w-[200px]">
+                                                    {worker.address}
+                                                </td>
+
                                                 <td className="px-5 py-3 text-center">
                                                     <div className="flex justify-center gap-4 text-[15px]">
                                                         <button
