@@ -1,11 +1,13 @@
-import React, {useState, useEffect} from "react";
-import {ToastContainer, toast} from "react-toastify";
+import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {Eye, Search, Trash2, Filter, Edit} from "lucide-react";
-import {useNavigate} from "react-router-dom";
-
-import useFetch from "../../../hook/useFetch";
+import { Eye, Edit, Trash2, Search, Filter } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import conf from "../../../config";
+import SearchBar from "../../../components/layout/Searchbar";
+// import Delete from "../../../components/layout/Delete"; // remove if unused
+// import Button from '../../../components/ui/button'; // remove if unused
+import useFetch from '../../../hook/useFetch';
 
 const Worker = () => {
     const navigate = useNavigate();

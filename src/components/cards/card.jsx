@@ -2,8 +2,9 @@
 import React from "react";
 import {TrendingUp, TrendingDown, Users, ShoppingCart, Briefcase, Target} from "lucide-react";
 
-const Card = ({title, value, change}) => {
-    const isPositive = change.includes("+");
+const Card = ({ title, value, change }) => {
+  const isPositive = (change || "").includes("+");
+
 
     // Softer pastel gradient config
     const config = {
