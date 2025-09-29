@@ -1,6 +1,37 @@
-import React from "react";
+import React, {useEffect} from "react";
+import useDashboard from "../../hook/dashboard/useDashboard";
 
-const TopSellingProduct = ({products = []}) => {
+const TopSellingProduct = () => {
+    const {loading, fetchTopSellingProducts, topsellingProduct, searchProduct} = useDashboard();
+
+    const productsToDisplay = searchProduct.length > 0 ? searchProduct : topsellingProduct;
+
+    const data =
+        productsToDisplay.length > 0 ? (
+            productsToDisplay.map((item, index) => (
+                <tr key={index}>
+                    <td className="p-3 border-b">
+                        <img
+                            src={item.productImageUrl || item.productImage}
+                            alt={item.productName}
+                            className="w-10 h-10 object-contain rounded"
+                        />
+                    </td>
+                    <td className="p-3 border-b">{item.productName}</td>
+                    <td className="p-3 border-b">{item.productCategory}</td>
+                </tr>
+            ))
+        ) : (
+            <tr>
+                <td colSpan={3} className="p-4 text-center text-gray-500">
+                    Data not found...
+                </td>
+            </tr>
+        );
+    useEffect(() => {
+        fetchTopSellingProducts();
+    }, []);
+
     return (
         <div className="bg-white p-4 rounded-lg shadow-md w-full border border-gray-500">
             <div className="flex justify-between items-center mb-3">
@@ -18,29 +49,7 @@ const TopSellingProduct = ({products = []}) => {
                                 <th className="p-3 font-medium text-gray-900 border-b">Product Category</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {products.length > 0 ? (
-                                products.map((p, i) => (
-                                    <tr key={i} className="hover:bg-gray-50 transition">
-                                        <td className="p-3 border-b">
-                                            <img
-                                                src={p.productImage}
-                                                alt={p.productName}
-                                                className="w-10 h-10 object-contain rounded"
-                                            />
-                                        </td>
-                                        <td className="p-3 border-b">{p.productName}</td>
-                                        <td className="p-3 border-b">{p.productcategory}</td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={2} className="p-4 text-center text-gray-500">
-                                        No products found
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
+                        <tbody>{data}</tbody>
                     </table>
                 </div>
             </div>

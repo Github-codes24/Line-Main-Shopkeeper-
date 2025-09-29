@@ -2,7 +2,7 @@ import {useState} from "react";
 import conf from "../config";
 import useFetch from "./useFetch";
 import {useRecoilState, useSetRecoilState} from "recoil";
-import {profileAtom, shopkeeperLoginAtom} from "../state/smallproduct/auth/authState";
+import {profileAtom, shopkeeperLoginAtom} from "../state/auth/authState";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 

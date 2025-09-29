@@ -1,6 +1,6 @@
 import {Navigate, Outlet} from "react-router-dom";
 import {useRecoilValue} from "recoil";
-import {shopkeeperLoginAtom} from "../state/smallproduct/auth/authState";
+import {shopkeeperLoginAtom} from "../state/auth/authState";
 
 function ProtectedRoute() {
     const {isAuthenticated} = useRecoilValue(shopkeeperLoginAtom);

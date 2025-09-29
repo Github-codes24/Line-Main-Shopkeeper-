@@ -127,13 +127,13 @@ const Worker = () => {
     const paginatedWorkers = filteredWorkers.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
     return (
-        <div className="p-2 bg-gray-200 min-h-screen overflow-hidden">
+        <div className="p-3 bg-gray-200 min-h-screen overflow-hidden">
             <ToastContainer />
 
             {/* Top Navigation Bar */}
-            <div className="bg-white px-6 py-3 shadow-sm border border-teal-200 rounded-md flex items-center justify-between mb-4">
+            <div className="bg-white px-6 py-3 shadow-md border rounded-md flex items-center justify-between mb-4">
                 <div className="flex-1">
-                    <h1 className="text-lg font-semibold text-gray-800">Worker List</h1>
+                    <h1 className="text-xl font-semibold text-gray-800">Worker List</h1>
                 </div>
                 <div className="flex-1 flex justify-center">
                     <div className="relative w-full max-w-md">
@@ -153,7 +153,7 @@ const Worker = () => {
             </div>
 
             {/* Combined Filter and Table Container */}
-            <div className="bg-white p-4 rounded-md shadow space-y-4 min-h-screen">
+            <div className="bg-white p-4 rounded-md shadow-md space-y-4 min-h-screen">
                 {/* Filter Section */}
                 <div className="flex items-center justify-between relative">
                     <div className="flex items-center gap-4 flex-wrap">

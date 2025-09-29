@@ -1,45 +1,26 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Card from "../components/cards/card";
 import OrderTable from "../components/cards/OrderTable";
 import TopSellingProduct from "../components/cards/Products";
 import TopWorker from "../components/cards/worker-card";
-import useFetch from "../../src/hook/useFetch";
-import conf from "../config";
 import Searchbar from "../components/layout/Searchbar";
+import useDashboard from "../hook/dashboard/useDashboard";
+import {searchProductAtom} from "../state/dashboard/dashboardState";
+import {useRecoilValue} from "recoil";
 
 const DashboardPage = () => {
-    const [fetchData] = useFetch();
+    const {fetchProductDetails, dashboardData, loading} = useDashboard();
 
-    const [dashboardData, setDashboardData] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const getDashboardData = async () => {
-        try {
-            setLoading(true);
-            const result = await fetchData({
-                method: "GET",
-                url: `${conf.apiBaseUrl}shopkeeper/dashboard`,
-            });
-
-            if (result) {
-                setDashboardData(result);
-            } else {
-                toast.error(result?.message || "Failed to load dashboard");
-            }
-        } catch (err) {
-            console.error(err);
-            toast.error("Error fetching dashboard");
-        } finally {
-            setLoading(false);
-        }
-    };
     useEffect(() => {
-        getDashboardData();
+        fetchProductDetails();
     }, []);
 
     if (loading) return <p className="p-6">Loading dashboard...</p>;
-    if (!dashboardData) return <div className="text-red-600">No dashboard data available...</div>;
+    if (!dashboardData || !dashboardData.stats) {
+        return <div className="text-red-600">No dashboard data available...</div>;
+    }
 
     const {stats, orderManagement, topSellingProduct, topWorker} = dashboardData;
 

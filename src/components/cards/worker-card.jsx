@@ -10,27 +10,29 @@ const TopWorker = ({workers = []}) => {
                 <div className="bg-white shadow-md rounded-lg overflow-hidden  border border-gray-500">
                     <table className="w-full font-semibold border-collapse">
                         <thead>
-                            <tr className="border-b bg-teal-600 text-white ">
-                                <th className="p-2">Sr.No.</th>
-                                <th className="p-2">Name</th>
-                                <th className="p-2">Expertise</th>
-                                <th className="p-2">Phone</th>
-                                <th className="p-2">Orders Completed</th>
+                            <tr className="border-b bg-teal-600 text-white">
+                                <th className="p-2 text-center">Sr.No.</th>
+                                <th className="p-2 text-center">Name</th>
+                                <th className="p-2 text-center">Expertise</th>
+                                <th className="p-2 text-center">Phone</th>
+                                <th className="p-2 text-center">Orders Completed</th>
                             </tr>
                         </thead>
                         <tbody>
                             {workers.length > 0 ? (
                                 workers.map((w, i) => (
                                     <tr key={i} className="border-b hover:bg-gray-50">
-                                        <td className="p-2">{w.workerName}</td>
-                                        <td className="p-2">{w.expertise}</td>
-                                        <td className="p-2">{w.phone}</td>
-                                        <td className="p-2">{w.ordersCompleted}</td>
+                                        {/* Sr. No */}
+                                        <td className="p-2 text-center">{i + 1}</td>
+                                        <td className="p-2 text-center">{w.workerName}</td>
+                                        <td className="p-2 text-center">{w.expertise}</td>
+                                        <td className="p-2 text-center">{w.phone}</td>
+                                        <td className="p-2 text-center">{w.ordersCompleted}</td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={4} className="p-4 text-center text-gray-500">
+                                    <td colSpan={5} className="p-4 text-center text-gray-500">
                                         No workers found
                                     </td>
                                 </tr>
