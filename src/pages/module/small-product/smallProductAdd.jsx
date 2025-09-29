@@ -137,4 +137,31 @@ const FormField = ({label, placeholder, type, children}) => {
     );
 };
 
+// Reusable Form Field
+const FormField = ({label, placeholder, type, children}) => {
+    return (
+        <div className="flex flex-col sm:flex-row sm:items-center w-full gap-2">
+            <label className="w-full sm:w-1/3 font-medium">{label}</label>
+            <span className="hidden sm:inline font-medium">:</span>
+            {type === "textarea" ? (
+                <textarea
+                    placeholder={placeholder}
+                    rows={3}
+                    className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2 focus:outline-none focus:border-teal-500 placeholder:text-[#0D2E28]"
+                />
+            ) : type === "select" ? (
+                <select className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2 focus:outline-none focus:border-teal-500 text-[#0D2E28]">
+                    {children}
+                </select>
+            ) : (
+                <input
+                    type="text"
+                    placeholder={placeholder}
+                    className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2 focus:outline-none focus:border-teal-500 placeholder:text-[#0D2E28]"
+                />
+            )}
+        </div>
+    );
+};
+
 export default SmallProductAdd;
