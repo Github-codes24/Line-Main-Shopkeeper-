@@ -1,8 +1,6 @@
-// BigProductAdd.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 const BigProductAdd = () => {
   const navigate = useNavigate();
@@ -19,9 +17,8 @@ const BigProductAdd = () => {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMzZmNiZTRiOGM1OWJmMjJmODkzMTQiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc1NzY3NDk5MiwiZXhwIjoxNzYwMjY2OTkyfQ.fjFQFWcOGtmErZ2nkhJo1CB5HHubgIcVHnmBjTEz730";
-
+  // Replace with your actual token and shopkeeper ID logic (e.g., from context or auth)
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMzZmNiZTRiOGM1OWJmMjJmODkzMTQiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc1NzY3NDk5MiwiZXhwIjoxNzYwMjY2OTkyfQ.fjFQFWcOGtmErZ2nkhJo1CB5HHubgIcVHnmBjTEz730";
   const shopkeeperId = "68c2ccf2eaa35f894cb1df52";
 
   const handleBack = () => navigate("/big-product");
@@ -42,10 +39,13 @@ const BigProductAdd = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [token]); // Added token to dependencies
 
   // Fetch subcategories when category changes
   useEffect(() => {
+    // Clear sub-category whenever the category changes
+    setProductSubCategory(""); 
+    
     if (!productCategory) {
       setSubCategories([]);
       return;
@@ -66,10 +66,17 @@ const BigProductAdd = () => {
     };
 
     fetchSubCategories();
-  }, [productCategory]);
+  }, [productCategory, token]); // Added token to dependencies
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Basic form validation
+    if (!productName || !productCategory || !productSubCategory || !productPrice || !productDescription || !productImage) {
+      alert("Please fill in all the required fields and select an image.");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("productName", productName);
@@ -95,25 +102,26 @@ const BigProductAdd = () => {
         alert(response.data.message || "Product added successfully!");
         navigate("/big-product");
       } else {
-        alert("Failed to add product.");
+        alert(response.data.message || "Failed to add product.");
       }
     } catch (error) {
       console.error("Error adding product:", error);
-      alert("Error adding product. Check console for details.");
+      // Check for specific error message from the backend
+      const errorMessage = error.response?.data?.message || "Error adding product. Please try again.";
+      alert(errorMessage);
     }
   };
 
   return (
     <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28]">
       <div className="flex bg-white m-2 border rounded-lg shadow-lg p-2">
-      <button onClick={() => navigate(-1)} className="text-xl text-black hover:opacity-75">
+        <button onClick={handleBack} className="text-xl text-black hover:opacity-75">
           <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M19.9997 13.334L13.333 20.0007L19.9997 26.6673" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M26.6663 20H13.333" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M19.9997 13.334L13.333 20.0007L19.9997 26.6673" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M26.6663 20H13.333" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-
         <h2 className="text-xl font-semibold text-[#0D2E28] p-2 rounded-lg">
           Add New Big Product
         </h2>
@@ -133,6 +141,7 @@ const BigProductAdd = () => {
                 accept="image/*"
                 onChange={(e) => setProductImage(e.target.files[0])}
                 className="w-full border border-[#007E74] rounded px-3 py-2"
+                required
               />
             </div>
           </div>
@@ -147,6 +156,7 @@ const BigProductAdd = () => {
                 onChange={(e) => setProductName(e.target.value)}
                 placeholder="Enter Product Name"
                 className="w-full border border-[#007E74] rounded-lg px-3 py-2"
+                required
               />
             </div>
 
@@ -156,6 +166,7 @@ const BigProductAdd = () => {
                 value={productCategory}
                 onChange={(e) => setProductCategory(e.target.value)}
                 className="w-full border border-[#007E74] rounded px-3 py-2"
+                required
               >
                 <option value="">Select Category</option>
                 {categories.map((cat) => (
@@ -169,17 +180,19 @@ const BigProductAdd = () => {
             <div className="flex items-center">
               <label className="w-1/3">Product Sub Category:</label>
               <select
-                  value={productSubCategory}
-                  onChange={(e) => setProductSubCategory(e.target.value)}
-                  className="w-full border border-[#007E74] rounded px-3 py-2"
-                >
-                  <option value="">Select Sub Category</option>
-                  {subCategories.map((sub) => (
-                    <option key={sub._id} value={sub._id}>
-                      {sub.name} {/* <-- This is the corrected line */}
-                    </option>
-                  ))}
-                </select>
+                value={productSubCategory}
+                onChange={(e) => setProductSubCategory(e.target.value)}
+                className="w-full border border-[#007E74] rounded px-3 py-2"
+                required
+                disabled={!productCategory} // Disable if no category is selected
+              >
+                <option value="">Select Sub Category</option>
+                {subCategories.map((sub) => (
+                  <option key={sub._id} value={sub._id}>
+                    {sub.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="flex items-center">
@@ -190,6 +203,7 @@ const BigProductAdd = () => {
                 onChange={(e) => setProductPrice(e.target.value)}
                 placeholder="Enter Price"
                 className="w-full border border-[#007E74] rounded px-3 py-2"
+                required
               />
             </div>
 
@@ -201,6 +215,7 @@ const BigProductAdd = () => {
                 onChange={(e) => setProductDescription(e.target.value)}
                 placeholder="Enter Product Description"
                 className="w-full border border-[#007E74] rounded px-3 py-2"
+                required
               />
             </div>
           </div>
