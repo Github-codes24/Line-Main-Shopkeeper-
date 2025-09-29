@@ -18,7 +18,7 @@ const TopSellingProduct = () => {
                         />
                     </td>
                     <td className="p-3 border-b">{item.productName}</td>
-                    <td className="p-3 border-b">{item.productCategory}</td>
+                    <td className="p-3 border-b">{item.productSubCategory}</td>
                 </tr>
             ))
         ) : (
