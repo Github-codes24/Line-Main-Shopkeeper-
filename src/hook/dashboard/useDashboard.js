@@ -22,7 +22,7 @@ const useDashboard = () => {
         try {
             const res = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}shopkeeper/dashboard`,
+                url: `${conf.apiBaseUrl}/shopkeeper/dashboard`,
             });
             if (res) {
                 setDashboardData(res);
@@ -44,7 +44,7 @@ const useDashboard = () => {
         try {
             const res = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}shopkeeper/dashboard/search-products?name=${encodeURIComponent(productName)}`,
+                url: `${conf.apiBaseUrl}/shopkeeper/dashboard/search-products?name=${encodeURIComponent(productName)}`,
             });
             if (res?.data) {
                 setSearchProduct(res?.data);
@@ -61,7 +61,7 @@ const useDashboard = () => {
         try {
             const res = await fetchData({
                 method: "PATCH",
-                url: `${conf.apiBaseUrl}shopkeeper/dashboard/update-availability`,
+                url: `${conf.apiBaseUrl}/shopkeeper/dashboard/update-availability`,
                 data: status,
             });
             if (res) {
@@ -79,7 +79,7 @@ const useDashboard = () => {
         try {
             const res = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}shopkeeper/dashboard`,
+                url: `${conf.apiBaseUrl}/shopkeeper/dashboard`,
             });
             if (res) {
                 setTopSellingProduct(res?.topSellingProduct);

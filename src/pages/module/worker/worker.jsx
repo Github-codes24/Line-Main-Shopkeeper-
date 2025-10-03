@@ -41,7 +41,7 @@ const Worker = () => {
 
             const result = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}shopkeeper/worker/get-all-worker`,
+                url: `${conf.apiBaseUrl}/shopkeeper/worker/get-all-worker`,
             });
 
             if (result.success) {
