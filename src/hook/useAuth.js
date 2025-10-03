@@ -21,7 +21,7 @@ const useAuth = () => {
         try {
             const res = await fetchData({
                 method: "POST",
-                url: `${conf.apiBaseUrl}shopkeeper/auth/login-otp`,
+                url: `${conf.apiBaseUrl}/shopkeeper/auth/login-otp`,
                 data: payload,
             });
             if (res) {
@@ -51,7 +51,7 @@ const useAuth = () => {
             };
             const res = await fetchData({
                 method: "POST",
-                url: `${conf.apiBaseUrl}shopkeeper/auth/verify-otp`,
+                url: `${conf.apiBaseUrl}/shopkeeper/auth/verify-otp`,
                 data: data,
             });
             if (res) {
@@ -76,7 +76,7 @@ const useAuth = () => {
         try {
             const res = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}shopkeeper/profile/me`,
+                url: `${conf.apiBaseUrl}/shopkeeper/profile/me`,
             });
             if (res) {
                 setProfile(res?.data);
@@ -101,7 +101,7 @@ const useAuth = () => {
         try {
             const res = await fetchData({
                 method: "PUT",
-                url: `${conf.apiBaseUrl}shopkeeper/profile/me`,
+                url: `${conf.apiBaseUrl}/shopkeeper/profile/me`,
                 data: payload,
             });
             if (res) {
