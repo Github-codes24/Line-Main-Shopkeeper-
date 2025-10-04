@@ -1,211 +1,216 @@
-import React, {useEffect, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import search from "../../../assets/search.png";
 import image1 from "../../../assets/image1.png";
 import image2 from "../../../assets/image2.png";
 import image3 from "../../../assets/image3.png";
 
+// --- API Helper Functions ---
+async function fetchPaymentById(paymentId, shopkeeperId) {
+    const apiUrl = `https://linemen-be-1.onrender.com/shopkeeper/payments/${paymentId}?shopkeeperId=${shopkeeperId}`;
+    const response = await fetch(apiUrl, { method: 'GET' });
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    return response.json();
+}
+
+async function settlePayment(paymentId, shopkeeperId) {
+    const apiUrl = 'https://linemen-be-1.onrender.com/shopkeeper/payments/settle-payment';
+    const payload = { shopkeeperId, paymentId };
+    const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    return response.json();
+}
+
 function PaymentProcess() {
+    const { id } = useParams();
     const navigate = useNavigate();
-    const {id} = useParams();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const SHOPKEEPER_ID = "68c3c3d0357c37bfad321962"; // This should come from an auth context or global state
 
     useEffect(() => {
-        // Simulate API call with dummy data
         const fetchPaymentDetails = async () => {
-            const dummyResponse = {
-                orderNumber: "ORD8468163287164",
-                customerName: "Suresh Raina",
-                phoneNumber: "+91-9876543210",
-                address: "1901 Thornridge Cir. Shiloh, Hawaii 81063",
-                email: "NirajkumarK23@gmail.com",
-                orderStatus: "In Progress",
-                service: "Electrician",
-                date: "16/07/2024",
-                images: [image1, image2, image3],
-            };
-
-            setTimeout(() => {
-                setData(dummyResponse);
+            try {
+                const response = await fetchPaymentById(id, SHOPKEEPER_ID);
+                if (response && response.success) {
+                    const paymentData = response.data;
+                    // --- UPDATED MAPPING LOGIC BASED ON NEW JSON ---
+                    const formattedData = {
+                        orderNumber: paymentData.orderId || 'N/A',
+                        customerName: paymentData.worker?.name || 'N/A', // Handles null worker
+                        phoneNumber: paymentData.worker?.contact || 'N/A', // Handles null worker
+                        address: "Address not available in API",
+                        email: paymentData.shopKeeper?.contact || 'N/A', // Uses shopKeeper key
+                        orderStatus: paymentData.status === 'created' ? 'In Progress' : 'Settled',
+                        service: paymentData.worker?.experties || 'N/A', // Handles null worker
+                        date: new Date(paymentData.updatedAt || Date.now()).toLocaleDateString("en-IN"),
+                        images: [image1, image2, image3], 
+                    };
+                    setData(formattedData);
+                } else {
+                    throw new Error("API request failed to get payment details");
+                }
+            } catch (error) {
+                console.error("Failed to fetch payment details:", error);
+                setData(null);
+            } finally {
                 setLoading(false);
-            }, 500);
+            }
         };
 
-        fetchPaymentDetails();
+        if (id) {
+            fetchPaymentDetails();
+        }
     }, [id]);
+
+    const handleSettlePayment = async () => {
+        try {
+            const result = await settlePayment(id, SHOPKEEPER_ID);
+            if (result.success) {
+                alert(result.message);
+                navigate('/payment');
+            } else {
+                alert("Failed to settle payment.");
+            }
+        } catch (error) {
+            console.error("Error settling payment:", error);
+            alert("An error occurred while settling the payment.");
+        }
+    };
 
     if (loading) {
         return <div className="p-6 text-gray-600">Loading payment details...</div>;
     }
 
-    return (
-        <div className="min-h-screen bg-gray-100 p-3">
-            {/* Header Section */}
-            <div className="bg-white rounded-lg p-3 shadow-md flex flex-col sm:flex-row items-center sm:justify-start gap-4 mb-6">
-                {/* Left Section */}
-                <div className="flex items-center">
-                    <button onClick={() => navigate(-1)} className="text-xl text-black hover:text-gray-600">
-                        <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z"
-                                stroke="#0D2E28"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            ></path>
-                            <path
-                                d="M19.9997 13.334L13.333 20.0007L19.9997 26.6673"
-                                stroke="#0D2E28"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            ></path>
-                            <path
-                                d="M26.6663 20H13.333"
-                                stroke="#0D2E28"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            ></path>
-                        </svg>
-                    </button>
-                    <h1 className="ml-4 text-xl font-medium">Wallet</h1>
-                </div>
+    if (!data) {
+        return <div className="p-6 text-red-500">Failed to load payment details. Please try again.</div>;
+    }
 
-                {/* Center Search Bar */}
-                <div className="relative w-full sm:w-96 sm:mx-auto">
-                    <img
-                        src={search}
-                        alt="Search"
-                        className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Search worker name here..."
-                        className="pl-12 pr-4 py-2 w-full rounded-md border border-teal-600 bg-white outline-none"
-                    />
-                </div>
-            </div>
+    return (
+        // --- UI REMAINS UNCHANGED ---
+        <div className="min-h-screen bg-gray-100 p-6">
+           {/* Header Section */}
+<div className=" h-[73px] bg-white rounded-[8px] p-4 shadow-md flex flex-col sm:flex-row justify-between items-center gap-[101px] mb-6">
+  <h2 className="text-2xl font-semibold text-gray-800">Wallet</h2>
+  
+ <div className="relative w-full sm:w-80">
+  <img
+    src={search}
+    alt="Search"
+    className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+  />
+  <input
+    type="text"
+    placeholder="Search worker name..."
+    className="pl-9 pr-3 py-2 w-full rounded-md border border-teal-600 bg-white outline-none text-sm"
+  />
+</div>
+
+</div>
 
             {/* Main Card */}
-            <div className="bg-white rounded-lg shadow-md p-4 min-h-screen">
-                {/* Order Number */}
-                <div className="flex items-center gap-3 mb-6">
-                    <span className="font-medium text-gray-800 text-lg">Order Number :</span>
-                    <span className="px-4 py-1 bg-gray-100 border border-teal-600 rounded-md font-bold text-gray-900">
-                        {data.orderNumber}
-                    </span>
-                </div>
+<div className="bg-white rounded-lg shadow-md p-6  mx-auto">
+    {/* Order Number */}
+    <div className="flex items-center gap-3 mb-6">
+        <span className="font-bold text-[#0D2E28] text-lg">Order Number :</span>
+        <span className="px-4 py-1 bg-gray-100 border border-teal-600 rounded-md font-bold text-gray-900">
+            {data.orderNumber}
+        </span>
+    </div>
 
-                {/* Customer Details */}
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Details</h3>
-                <div className="space-y-4">
-                    {/* Name */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <span className="sm:w-40 font-medium text-gray-700 text-left">Customer Name :</span>
-                        <input
-                            type="text"
-                            value={data.customerName}
-                            disabled
-                            className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                        />
-                    </div>
+    {/* Customer Details */}
+    <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Details</h3>
+   <div className="space-y-4">
+  <div className="flex items-center gap-3">
+    <span className="w-40 text-left font-medium text-gray-700">Customer Name :</span>
+    <input
+      type="text"
+      value={data.customerName}
+      disabled
+      className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+    />
+  </div>
 
-                    {/* Phone */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <span className="sm:w-40 font-medium text-gray-700 text-left">Phone Number :</span>
-                        <input
-                            type="text"
-                            value={data.phoneNumber}
-                            disabled
-                            className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                        />
-                    </div>
+  <div className="flex items-center gap-3">
+    <span className="w-40 text-left font-medium text-gray-700">Phone Number :</span>
+    <input
+      type="text"
+      value={data.phoneNumber}
+      disabled
+      className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+    />
+  </div>
 
-                    {/* Address */}
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
-                        <span className="sm:w-40 font-medium text-gray-700 text-left">Address :</span>
-                        <textarea
-                            value={data.address}
-                            disabled
-                            className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium resize-none"
-                        />
-                    </div>
+  <div className="flex items-start gap-3">
+    <span className="w-40 text-left font-medium text-gray-700">Address :</span>
+    <textarea
+      value={data.address}
+      disabled
+      className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium resize-none"
+    />
+  </div>
 
-                    {/* Email */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <span className="sm:w-40 font-medium text-gray-700 text-left">Email Id :</span>
-                        <input
-                            type="text"
-                            value={data.email}
-                            disabled
-                            className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                        />
-                    </div>
+  <div className="flex items-center gap-3">
+    <span className="w-40 text-left font-medium text-gray-700">Email Id :</span>
+    <input
+      type="text"
+      value={data.email}
+      disabled
+      className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+    />
+  </div>
 
-                    {/* Order Status */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <span className="sm:w-40 font-medium text-gray-700 text-left">Order Status :</span>
-                        <span className="px-4 py-1 rounded-md font-medium bg-yellow-100 text-yellow-700 border border-yellow-400">
-                            {data.orderStatus}
-                        </span>
-                    </div>
-                </div>
+  <div className="flex items-center gap-3">
+    <span className="w-40 text-left font-medium text-gray-700">Order Status :</span>
+    <input
+      type="text"
+ value={data.orderStatus}
+      disabled
+      className="flex-1 px-4 py-1 border text-[#FFCC00] border-teal-600 rounded-md bg-gray-100 font-medium"
+    />
+  </div>
 
-                <hr className="my-6 border-gray-300" />
+  
+</div>
 
-                {/* Service Details */}
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Service Details</h3>
-                <div className="space-y-4">
-                    {/* Service */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <span className="sm:w-40 font-medium text-gray-700 text-left">Service Required :</span>
-                        <input
-                            type="text"
-                            value={data.service}
-                            disabled
-                            className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                        />
-                    </div>
+    <hr className="my-6 border-gray-300" />
 
-                    {/* Date */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <span className="sm:w-40 font-medium text-gray-700 text-left">Date :</span>
-                        <input
-                            type="text"
-                            value={data.date}
-                            disabled
-                            className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                        />
-                    </div>
-
-                    {/* Photos */}
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
-                        <span className="sm:w-40 font-medium text-gray-700 text-left">Photos :</span>
-                        <div className="flex gap-2 items-center flex-wrap">
-                            {data.images.map((img, index) => (
-                                <img
-                                    key={index}
-                                    src={img}
-                                    alt={`img-${index}`}
-                                    className="w-20 h-16 rounded-md border border-gray-300 object-cover"
-                                />
-                            ))}
-                            <a href="#" className="text-teal-600 text-sm font-medium underline">
-                                View all
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Button */}
-                <div className="flex justify-center mt-8">
-                    <button className="px-6 py-2 bg-teal-700 text-white rounded-md hover:bg-teal-800 transition">
-                        Settle Payment
-                    </button>
-                </div>
+    {/* Service Details */}
+    <h3 className="text-lg font-semibold text-gray-800 mb-4">Service Details</h3>
+    <div className="space-y-4">
+        <div className="flex items-center gap-3">
+            {/* Changed text-right to text-left */}
+            <span className="w-40 text-left font-medium text-gray-700">Service Required :</span>
+            <input type="text" value={data.service} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
+        </div>
+        <div className="flex items-center gap-3">
+            {/* Changed text-right to text-left */}
+            <span className="w-40 text-left font-medium text-gray-700">Date :</span>
+            <input type="text" value={data.date} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
+        </div>
+        <div className="flex items-start gap-3">
+            {/* Changed text-right to text-left */}
+            <span className="w-40 text-left font-medium text-gray-700">Photos :</span>
+            <div className="flex gap-2 items-center">
+                {data.images.map((img, index) => (
+                    <img key={index} src={img} alt={`img-${index}`} className="w-20 h-16 rounded-md border border-gray-300 object-cover" />
+                ))}
+                <a href="#" className="text-teal-600 text-sm font-medium underline">View all</a>
             </div>
+        </div>
+    </div>
+
+    {/* Button */}
+    <div className="flex justify-center mt-8">
+        <button onClick={handleSettlePayment} className="px-6 py-2 bg-teal-700 text-white rounded-md hover:bg-teal-800 transition">
+            Settle Payment
+        </button>
+    </div>
+</div>
         </div>
     );
 }

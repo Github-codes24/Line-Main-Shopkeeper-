@@ -1,113 +1,278 @@
-import React from "react";
-import {useNavigate} from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { Upload as UploadIcon } from "lucide-react";
+
+const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMzZmNiZTRiOGM1OWJmMjJmODkzMTQiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc1NzY3NDk5MiwiZXhwIjoxNzYwMjY2OTkyfQ.fjFQFWcOGtmErZ2nkhJo1CB5HHubgIcVHnmBjTEz730"; // Replace with your actual token
 
 const SmallProductAdd = () => {
-    const navigate = useNavigate();
-    const handleBack = () => navigate(-1);
+  const navigate = useNavigate();
 
-    return (
-        <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28] min-h-screen">
-            {/* Header */}
-            <div className="flex bg-white m-2 border rounded-md shadow-lg p-3">
-                <div className="flex items-center">
-                    <button onClick={() => navigate(-1)} className="text-xl text-black hover:text-gray-600">
-                        <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z"
-                                stroke="#0D2E28"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                            <path
-                                d="M19.9997 13.334L13.333 20.0007L19.9997 26.6673"
-                                stroke="#0D2E28"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                            <path
-                                d="M26.6663 20H13.333"
-                                stroke="#0D2E28"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
-                    </button>
-                    <h1 className="ml-4 text-xl font-medium">Add New Small Product</h1>
-                </div>
-            </div>
+  const [productName, setProductName] = useState("");
+  const [productCategory, setProductCategory] = useState("");
+  const [productSubCategory, setProductSubCategory] = useState("");
+  const [productPrice, setProductPrice] = useState("");
+  const [productDescription, setProductDescription] = useState("");
+  const [productImage, setProductImage] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-            {/* Form */}
-            <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
-                <div className="space-y-4 border border-black p-4 rounded-lg min-h-screen">
-                    {/* Image Upload */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
-                        <label className="w-full sm:w-1/3 font-medium">Product Image</label>
-                        <span className="hidden sm:inline font-medium">:</span>
-                        <div className="flex-1 flex items-center">
-                            <label
-                                htmlFor="upload-photo"
-                                className="flex flex-col items-center justify-center w-32 h-32 border-2 border-[#007E74] rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                            >
-                                <svg
-                                    className="w-10 h-10 text-[#007E74]"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4-4m0 0l-4 4m4-4v12"
-                                    />
-                                </svg>
-                                <span className="text-sm text-white bg-teal-600 px-8 rounded-md ">Upload Photo</span>
-                                <input id="upload-photo" type="file" className="hidden" />
-                            </label>
-                        </div>
-                    </div>
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
 
-                    {/* Product Name */}
-                    <FormField label="Product Name" placeholder="Enter Product Name" />
+  const api = axios.create({
+    baseURL: "https://linemen-be-1.onrender.com",
+    headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
+  });
 
-                    {/* Product Category */}
-                    <FormField label="Product Category" placeholder="Select Category" type="select">
-                        <option>Select Product Category</option>
-                        <option>Electronics</option>
-                        <option>Fashion</option>
-                        <option>Groceries</option>
-                    </FormField>
+  // Fetch categories (tabs)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await api.get("/shopkeeper/bigproduct/experties");
+        if (res.data.success) {
+          setCategories(res.data.data);
+        }
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
-                    {/* Product Subcategory */}
-                    <FormField label="Product Sub-Category" placeholder="Select Category" type="select">
-                        <option>Select Product Category</option>
-                    </FormField>
+  // Fetch sub-categories whenever a category is selected
+  useEffect(() => {
+    if (!productCategory) {
+      setSubCategories([]);
+      setProductSubCategory("");
+      return;
+    }
 
-                    {/* Product Price */}
-                    <FormField label="Product Price" placeholder="Enter Price" />
+    const fetchSubCategories = async () => {
+      try {
+        const res = await api.get(
+          `/shopkeeper/bigproduct/${productCategory}/subtabs`
+        );
+        if (res.data.success) {
+          setSubCategories(res.data.data);
+        }
+      } catch (err) {
+        console.error("Error fetching sub-categories:", err);
+      }
+    };
+    fetchSubCategories();
+  }, [productCategory]);
 
-                    {/* Product Description */}
-                    <FormField label="Product Description" placeholder="Enter Product Description" type="textarea" />
-                </div>
+  const handleBack = () => navigate(-1);
 
-                {/* Buttons */}
-                <div className="flex flex-col sm:flex-row justify-center gap-3">
-                    <button
-                        onClick={handleBack}
-                        className="bg-teal-100 border border-[#007E74] text-[#007E74] px-14 py-2 rounded-lg w-full sm:w-auto"
-                    >
-                        Cancel
-                    </button>
-                    <button className="bg-[#007E74] text-white px-8 py-2 rounded-lg hover:bg-teal-800 w-full sm:w-auto">
-                        Add Product
-                    </button>
-                </div>
-            </div>
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProductImage(file);
+      setImagePreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (
+      !productName ||
+      !productCategory ||
+      !productPrice ||
+      !productDescription ||
+      !productImage
+    ) {
+      alert("Please fill all fields and select an image");
+      return;
+    }
+
+    if (productDescription.length < 10) {
+      alert("Product description must be at least 10 characters");
+      return;
+    }
+
+    if (subCategories.length > 0 && !productSubCategory) {
+      alert("Please select a valid product sub-category for this category.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("productName", productName);
+    formData.append("productCategory", productCategory);
+    formData.append("productPrice", productPrice);
+    formData.append("productDescription", productDescription);
+    formData.append("productImage", productImage);
+    formData.append("shopkeeperId", "68c3fcbe4b8c59bf22f89314");
+
+    if (productSubCategory) formData.append("productSubCategory", productSubCategory);
+
+    try {
+      setLoading(true);
+      const res = await api.post("/shopkeeper/small-products", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Product Added Successfully ✅");
+      navigate(-1);
+    } catch (error) {
+      console.error("Error adding product:", error.response?.data || error);
+      alert(
+        `Failed to add product ❌: ${
+          error.response?.data?.message || error
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-[#F0F7F7] p-4 font-sans text-[#0D2E28]">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center gap-4 p-3 border border-gray-300 bg-white rounded">
+          <button
+            onClick={handleBack}
+            className="p-1 rounded-full text-3xl hover:bg-gray-200"
+          >
+            <IoArrowBackCircleOutline />
+          </button>
+          <h1 className="text-2xl font-semibold">Add New Small Product</h1>
         </div>
-    );
+
+        {/* Form Card */}
+        <div className="bg-white p-6 mt-2 rounded-lg border border-[#616666] shadow-sm">
+          <div className="space-y-5">
+            {/* Product Image */}
+            <div className="flex items-start">
+              <label className="w-1/3 pt-2 font-medium">Product Image</label>
+              <div className="w-2/3">
+                <label
+                  htmlFor="photo-upload"
+                  className="w-48 h-48 flex items-center justify-center border-2 border-solid border-[#B2D8D5] rounded-lg cursor-pointer bg-white hover:bg-gray-50"
+                >
+                  {imagePreviewUrl ? (
+                    <img
+                      src={imagePreviewUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center bg-[#007E74] bg-opacity-10 text-[#007E74] px-4 py-2 rounded-md font-semibold text-sm">
+                      <UploadIcon />
+                      <span>Upload Photo</span>
+                    </div>
+                  )}
+                </label>
+                <input
+                  id="photo-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
+            {/* Product Name */}
+            <div className="flex items-center">
+              <label className="w-1/3 font-medium">Product Name:</label>
+              <input
+                type="text"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                placeholder="Enter Product Name"
+                className="w-2/3 border bg-[#F5FFFF] border-[#B2D8D5] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#007E74] placeholder:text-[#0D2E28] placeholder:font-medium"
+              />
+            </div>
+
+            {/* Product Category */}
+            <div className="flex items-center">
+              <label className="w-1/3 font-medium">Product Category:</label>
+              <select
+                value={productCategory}
+                onChange={(e) => {
+                  setProductCategory(e.target.value);
+                  setProductSubCategory("");
+                }}
+                className="w-2/3 border border-[#B2D8D5] bg-[#F5FFFF] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#007E74] text-[#0D2E28] font-medium"
+              >
+                <option value="">Select Product Category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.tabName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Product Sub-Category */}
+            {subCategories.length > 0 && (
+              <div className="flex items-center">
+                <label className="w-1/3 font-medium">
+                  Product Sub-Category:
+                </label>
+                <select
+                  value={productSubCategory}
+                  onChange={(e) => setProductSubCategory(e.target.value)}
+                  className="w-2/3 border border-[#B2D8D5] rounded-md px-3 py-2 bg-[#F5FFFF] focus:outline-none focus:ring-1 focus:ring-[#007E74] text-[#0D2E28]"
+                >
+                  <option value="">Select Product Sub-Category</option>
+                  {subCategories.map((subCat) => (
+                    <option key={subCat._id} value={subCat.name}>
+                      {subCat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Product Price */}
+            <div className="flex items-center">
+              <label className="w-1/3 font-medium">Product Price:</label>
+              <input
+                type="number"
+                value={productPrice}
+                onChange={(e) => setProductPrice(e.target.value)}
+                placeholder="Enter Price"
+                className="w-2/3 border border-[#B2D8D5] rounded-md px-3 py-2 bg-[#F5FFFF] focus:outline-none focus:ring-1 focus:ring-[#007E74] placeholder:text-[#0D2E28] placeholder:font-medium"
+              />
+            </div>
+
+            {/* Product Description */}
+            <div className="flex items-start">
+              <label className="w-1/3 pt-2 font-medium">
+                Product Description:
+              </label>
+              <textarea
+                rows="4"
+                value={productDescription}
+                onChange={(e) => setProductDescription(e.target.value)}
+                placeholder="Enter Product Description"
+                className="w-2/3 border border-[#B2D8D5] rounded-md px-3 py-2 bg-[#F5FFFF] focus:outline-none focus:ring-1 focus:ring-[#007E74] placeholder:text-[#0D2E28] placeholder:font-medium"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-center space-x-4 mt-8">
+              <button
+                onClick={handleBack}
+                className="w-[200px] h-[40px] rounded-[8px] border border-[#007E74] text-[#007E74] font-semibold bg-[#E6F2F1] hover:bg-[#d1e5e4] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-[200px] h-[40px] rounded-[8px] bg-[#007E74] text-white font-semibold hover:bg-[#006a62] transition-colors disabled:bg-gray-400"
+              >
+                {loading ? "Adding..." : "Add Product"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 // Reusable Form Field
