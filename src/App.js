@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import {Routes, Route, Navigate, Outlet} from "react-router-dom";
 
 import Sidebar from "./components/layout/sidebar";
 import Navbar from "./components/layout/navbar";
@@ -39,7 +39,6 @@ import Payment from "./pages/module/payment/payment";
 import Login from "./pages/auth/login";
 import OtpVerification from "./pages/auth/VerifyOpt";
 import ProtectedRoute from "./route/protected";
-// import PublicRoute from "./route/public";
 
 import "./App.css";
 import AdminProfile from "./pages/auth/profile";
@@ -48,8 +47,8 @@ import {ToastContainer} from "react-toastify";
 import AcceptOrderModals from "./pages/module/order/accept-order-models";
 import OtpModal from "./pages/module/order/otpModal";
 import {useMediaQuery, useTheme} from "@mui/material";
+import UploadBill from "./pages/module/order/upload-bill";
 
-// ✅ Layout with Navbar + Sidebar for authenticated users
 function AppLayout() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -84,7 +83,6 @@ function App() {
     return (
         <>
             <Routes>
-                {/* Default route "/" → always go to login */}
                 {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
                 <Route path="/" element={<Login />} />
                 <Route path="/verify-otp" element={<OtpVerification />} />
@@ -92,11 +90,6 @@ function App() {
                     <Route path="/profile" element={<AdminProfile />} />
                     <Route path="/editprofile/:id" element={<AdminEditProfile />} />
                 </Route>
-
-                {/* Public Routes (only for guests) */}
-                {/* <Route element={<PublicRoute />}>
-                <Route path="/verify-otp" element={<OtpVerification />} />
-            </Route> */}
 
                 {/* Protected Routes (only for logged-in users) */}
                 <Route element={<ProtectedRoute />}>
@@ -122,14 +115,15 @@ function App() {
 
                         {/* Orders */}
                         <Route path="/orders" element={<OrderManagement />} />
-                        <Route path="/orders/pending" element={<OrderPending />} />
+                        <Route path="/orders/orderdetails/:id" element={<OrderPending />} />
                         <Route path="/orders/placed" element={<OrderPlaced />} />
-                        <Route path="/orders/processing" element={<OrderProcessing />} />
+                        {/* <Route path="/orders/processing" element={<OrderProcessing />} /> */}
                         <Route path="/orders/completed/:id" element={<OrderCompleted />} />
                         <Route path="/orders/rejected/:id" element={<OrderRejected />} />
                         <Route path="/orders/workinprogress/:id" element={<QuotationWaiting />} />
                         <Route path="/orders/acceptorder/:id" element={<AcceptOrderModals />} />
-                        <Route path="/orders/verifyotp" element={<OtpModal />} />
+                        <Route path="/orders/verifyotp/" element={<OtpModal />} />
+                        <Route path="/orders/uploadbill/" element={<UploadBill />} />
 
                         {/* Payment */}
                         <Route path="/payment" element={<Payment />} />

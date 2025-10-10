@@ -1,282 +1,279 @@
-import React, { useState, useEffect } from "react";
-import { TbSearch, TbFilter } from "react-icons/tb";
-import { RxCross2 } from "react-icons/rx";
-import { HiOutlineEye } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, {useState, useEffect} from "react";
+import {TbSearch, TbFilter} from "react-icons/tb";
+import {RxCross2} from "react-icons/rx";
+import {HiOutlineEye} from "react-icons/hi";
+import {useNavigate} from "react-router-dom";
+import {IconButton} from "@mui/material";
+import UseOrder from "../../../hook/order/UseOrder";
 
 const statusColor = {
-  Pending: "text-[#FFCC00]",
-  "Work in Progress": "text-[#0088FF]",
-  Completed: "text-[#34C759]",
-  Rejected: "text-[#EC2D01]",
+    Pending: "text-[#FFCC00]",
+    WorkInProgress: "text-[#0088FF]",
+    "Work in Progress": "text-[#0088FF]",
+    Completed: "text-[#34C759]",
+    Rejected: "text-[#EC2D01]",
+    PendingCustomerConfirmation: "text-[#FF8800]",
 };
 
-// Token from backend auth (replace with dynamic from localStorage later)
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGMzZmNiZTRiOGM1OWJmMjJmODkzMTQiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc1NzY3NDk5MiwiZXhwIjoxNzYwMjY2OTkyfQ.fjFQFWcOGtmErZ2nkhJo1CB5HHubgIcVHnmBjTEz730";
-
 const OrderManagement = () => {
-  const [orders, setOrders] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showFilter, setShowFilter] = useState(false);
-  const [selectedExpertise, setSelectedExpertise] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const shopId = sessionStorage.getItem("shopId");
+    const {loading, getOrders, fetchAllOrders} = UseOrder();
 
-  const navigate = useNavigate();
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(5);
+    const [search, setSearch] = useState("");
+    const [showFilter, setShowFilter] = useState(false);
+    const [expertise, setSelectedExpertise] = useState([]);
+    const [selectedStatus, setSelectedStatus] = useState([]);
+    const [filteredOrders, setFilteredOrders] = useState([]);
 
-  // Fetch orders from API
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
+    const expertiseOptions = ["Electrician", "Painter", "Carpenter", "AC Repair", "Tile Fitting", "Plumber"];
+    const statusOptions = ["All", "Work in Progress", "Pending", "Completed", "Rejected"];
 
-        const payload = {
-          shopkeeperId: "68c3fcbe4b8c59bf22f89314", // required field
-          search: searchQuery || "",
-          page: currentPage,
-          limit: 10,
-        };
+    useEffect(() => {
+        fetchAllOrders(shopId, page, limit, search, expertise);
+    }, [page, limit, search, expertise]);
 
-        const res = await axios.post(
-          "https://linemen-be-1.onrender.com/shopkeeper/orders",
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+    // Apply filtering whenever orders or filters change
+    useEffect(() => {
+        if (getOrders?.orders?.length > 0) {
+            let orders = [...getOrders.orders];
 
-        setOrders(res.data?.orders || []);
-      } catch (err) {
-        console.error("Error fetching orders:", err.response?.data || err.message);
-        setError("Failed to load orders");
-      } finally {
-        setLoading(false);
-      }
+            // Filter by Expertise
+            if (expertise.length > 0) {
+                orders = orders.filter((order) => expertise.includes(order.specificServiceName));
+            }
+
+            // Filter by Status
+            if (selectedStatus.length > 0 && !selectedStatus.includes("All")) {
+                orders = orders.filter((order) => selectedStatus.includes(order.orderStatus));
+            }
+
+            setFilteredOrders(orders);
+        } else {
+            setFilteredOrders([]);
+        }
+    }, [getOrders, expertise, selectedStatus]);
+
+    const toggleFilter = (type, value) => {
+        const updater = type === "expertise" ? setSelectedExpertise : setSelectedStatus;
+        const current = type === "expertise" ? expertise : selectedStatus;
+
+        if (current.includes(value)) {
+            updater(current.filter((item) => item !== value));
+        } else {
+            updater([...current, value]);
+        }
     };
 
-    fetchOrders();
-  }, [currentPage, searchQuery]);
+    const removeFilterTag = (type, value) => {
+        if (type === "expertise") {
+            setSelectedExpertise(expertise.filter((item) => item !== value));
+        } else {
+            setSelectedStatus(selectedStatus.filter((item) => item !== value));
+        }
+    };
 
-  const toggleFilter = (type, value) => {
-    const updater = type === "expertise" ? setSelectedExpertise : setSelectedStatus;
-    const current = type === "expertise" ? selectedExpertise : selectedStatus;
+    const handleReset = () => {
+        setSelectedExpertise([]);
+        setSelectedStatus([]);
+    };
 
-    if (current.includes(value)) {
-      updater(current.filter((item) => item !== value));
-    } else {
-      updater([...current, value]);
-    }
-  };
+    // const handleView = (order) => {
+    //     switch (order.orderStatus) {
+    //         case "Pending":
+    //             navigate(`/orders/pending/${order._id}`);
+    //             break;
+    //         case "WorkInProgress":
+    //             navigate(`/orders/workinprogress/${order._id}`);
+    //             break;
+    //         case "Completed":
+    //             navigate(`/orders/completed/${order._id}`);
+    //             break;
+    //         case "Accepted":
+    //             navigate(`/orders/completed/${order._id}`);
+    //             break;
+    //         case "Rejected":
+    //             navigate(`/orders/rejected/${order._id}`);
+    //             break;
+    //         default:
+    //             navigate(`/orders/${order._id}`);
+    //     }
+    // };
 
-  const handleReset = () => {
-    setSearchQuery("");
-    setSelectedExpertise([]);
-    setSelectedStatus([]);
-    setCurrentPage(1);
-  };
-
-  const handleView = (order) => {
-    switch (order.orderStatus) {
-      case "Pending":
-        navigate(`/orders/pending/${order._id}`);
-        break;
-      case "Work in Progress":
-        navigate(`/orders/workinprogress/${order._id}`);
-        break;
-      case "Completed":
-        navigate(`/orders/completed/${order._id}`);
-        break;
-      case "Rejected":
-        navigate(`/orders/rejected/${order._id}`);
-        break;
-      default:
-        navigate(`/orders/${order._id}`);
-    }
-  };
-
-  const ordersPerPage = 5;
-
-  // Filters with correct response fields
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch = order.orderId
-      ?.toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesExpertise =
-      selectedExpertise.length === 0 ||
-      selectedExpertise.includes(order.specificServiceName);
-    const matchesStatus =
-      selectedStatus.length === 0 || selectedStatus.includes(order.orderStatus);
-
-    return matchesSearch && matchesExpertise && matchesStatus;
-  });
-
-  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-  const indexOfLastOrder = currentPage * ordersPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
-
-  const removeFilterTag = (type, value) => {
-    if (type === "expertise") {
-      setSelectedExpertise(selectedExpertise.filter((item) => item !== value));
-    } else {
-      setSelectedStatus(selectedStatus.filter((item) => item !== value));
-    }
-  };
-
-  return (
-    <div className="p-3 bg-gray-200 min-h-screen">
-      {/* Header */}
-      <div className="bg-white p-3 rounded-md shadow-sm flex flex-col sm:flex-row sm:items-center gap-20 mb-3">
-        <h1 className="text-2xl font-medium text-black">Order List</h1>
-        <div className="flex-1 sm:flex sm:justify-start">
-          <div className="relative w-full sm:w-[420px]">
-            <input
-              type="text"
-              placeholder="Search by order number"
-              className="w-full border-1 border-teal-600 bg-[#F5FFFF] text-[#0D2E28] px-12 py-2 rounded-full placeholder-[#0D2E28] placeholder:font-medium focus:outline-none"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-            />
-            <TbSearch
-              className="absolute left-5 top-1/2 -translate-y-1/2 transform text-[#0D2E28]"
-              size={18}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Table & Filters */}
-      <div className="relative bg-white p-3 rounded-md shadow-sm">
-        {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-3 text-medium items-center">
-          <button
-            onClick={() => setShowFilter((prev) => !prev)}
-            className="text-gray-600 hover:text-black focus:outline-none"
-          >
-            <TbFilter className="w-8 h-8 px-1 py-1 border-[#007E74] text-[#0D2E28] bg-[#E0E9E9] rounded-lg" />
-          </button>
-
-          {[...selectedExpertise.map((s) => ({ type: "expertise", value: s })), 
-            ...selectedStatus.map((s) => ({ type: "status", value: s }))].map(
-            (tag, idx) => (
-              <span
-                key={idx}
-                className="bg-[#E0E9E9] px-3 py-1 text-center rounded-full text-sm text-[#0D2E28] flex flex-row items-center gap-2"
-              >
-                {tag.value}
-                <RxCross2
-                  className="cursor-pointer"
-                  onClick={() => removeFilterTag(tag.type, tag.value)}
-                />
-              </span>
-            )
-          )}
-
-          <button
-            onClick={handleReset}
-            className="ml-auto px-10 py-1 bg-[#D9F1EB] border-2 border-[#007E74] text-[#007E74] rounded"
-          >
-            Reset Filter
-          </button>
-        </div>
-
-        {/* Orders Table */}
-        <div className="bg-white rounded-lg border-2 border-[#E0E9E9] flex-1">
-          {loading ? (
-            <p className="p-4 text-center">Loading orders...</p>
-          ) : error ? (
-            <p className="p-4 text-center text-red-500">{error}</p>
-          ) : (
-            <div className="overflow-x-auto mb-[200px]">
-              <table className="min-w-full bg-white rounded shadow">
-                <thead className="bg-[#E0E9E9] text-[#333333]">
-                  <tr className="text-center">
-                    <th className="py-2 px-4">Sr. No.</th>
-                    <th className="py-2 px-4">Order No.</th>
-                    <th className="py-2 px-4">Customer Name</th>
-                    <th className="py-2 px-4">Service required</th>
-                    <th className="py-2 px-4">Status</th>
-                    <th className="py-2 px-4">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentOrders.map((order, index) => (
-                    <tr key={order._id} className="text-[#333333] text-center">
-                      <td className="py-3 px-4">{indexOfFirstOrder + index + 1}.</td>
-                      <td className="py-2 px-4">{order.orderId}</td>
-                      <td className="py-2 px-4">{order.customer?.name}</td>
-                      <td className="py-2 px-4">{order.specificServiceName}</td>
-                      <td
-                        className={`py-2 px-4 ${
-                          statusColor[order.orderStatus] || "text-black"
-                        }`}
-                      >
-                        {order.orderStatus}
-                      </td>
-                      <td className="py-2 px-4 flex justify-center">
-                        <HiOutlineEye
-                          className="text-[#007E74] text-lg cursor-pointer"
-                          onClick={() => handleView(order)}
+    return (
+        <div className="p-3 bg-gray-200 min-h-screen">
+            <div className="bg-white p-3 rounded-md shadow-sm flex flex-col sm:flex-row sm:items-center gap-20 mb-3">
+                <h1 className="text-2xl font-medium text-black">Order List</h1>
+                <div className="flex-1 sm:flex sm:justify-start">
+                    <div className="relative w-full sm:w-[420px]">
+                        <input
+                            type="text"
+                            placeholder="Search by order number"
+                            className="w-full border-1 border-teal-600 bg-[#F5FFFF] text-[#0D2E28] px-12 py-2 rounded-full placeholder-[#0D2E28] placeholder:font-medium focus:outline-none"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                         />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        <TbSearch
+                            className="absolute left-5 top-1/2 -translate-y-1/2 transform text-[#0D2E28]"
+                            size={18}
+                        />
+                    </div>
+                </div>
             </div>
-          )}
-        </div>
 
-        {/* Pagination */}
-        {!loading && !error && (
-          <div className="mt-4 px-4 py-1 flex bg-[#F5F5F5] justify-between items-center rounded-lg">
-            <span className="text-sm text-[#0D2E28] font-semibold">
-              Showing {indexOfFirstOrder + 1} to{" "}
-              {Math.min(indexOfLastOrder, filteredOrders.length)} of{" "}
-              {filteredOrders.length} Entries
-            </span>
-            <div className="flex items-center gap-2 p-1">
-              <button
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                &lt;
-              </button>
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-2 py-1 rounded-md text-sm font-medium ${
-                    currentPage === i + 1
-                      ? "bg-[#007E74] text-white"
-                      : "bg-[#D9F1EB] text-[#007E74]"
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-              <button
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                &gt;
-              </button>
+            <div className="relative bg-white p-3 rounded-md shadow-sm">
+                <div className="flex flex-wrap gap-2 mb-3 text-medium items-center relative">
+                    <button
+                        className="text-gray-600 hover:text-black focus:outline-none"
+                        onClick={() => setShowFilter((prev) => !prev)}
+                    >
+                        <TbFilter className="w-8 h-8 px-1 py-1 border-[#007E74] text-[#0D2E28] bg-[#E0E9E9] rounded-lg" />
+                    </button>
+
+                    {[
+                        ...expertise.map((s) => ({type: "expertise", value: s})),
+                        ...selectedStatus.map((s) => ({type: "status", value: s})),
+                    ].map((tag, idx) => (
+                        <span
+                            key={idx}
+                            className="bg-[#E0E9E9] px-3 py-1 text-center rounded-full text-sm text-[#0D2E28] flex flex-row items-center gap-2"
+                        >
+                            {tag.value}
+                            <RxCross2 className="cursor-pointer" onClick={() => removeFilterTag(tag.type, tag.value)} />
+                        </span>
+                    ))}
+
+                    <button
+                        className="ml-auto px-10 py-1 bg-[#D9F1EB] border-2 border-[#007E74] text-[#007E74] rounded"
+                        onClick={handleReset}
+                    >
+                        Reset Filter
+                    </button>
+
+                    {showFilter && (
+                        <div className="absolute top-10 left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 w-[280px]">
+                            <h3 className="font-semibold text-[#007E74] mb-2">Filter by Service</h3>
+                            <div className="flex flex-col gap-1 mb-3">
+                                {expertiseOptions.map((option) => (
+                                    <label key={option} className="flex items-center gap-2 text-sm text-gray-700">
+                                        <input
+                                            type="checkbox"
+                                            checked={expertise.includes(option)}
+                                            onChange={() => toggleFilter("expertise", option)}
+                                        />
+                                        {option}
+                                    </label>
+                                ))}
+                            </div>
+
+                            <h3 className="font-semibold text-[#007E74] mb-2">Filter by Status</h3>
+                            <div className="flex flex-col gap-1">
+                                {statusOptions.map((option) => (
+                                    <label key={option} className="flex items-center gap-2 text-sm text-gray-700">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedStatus.includes(option)}
+                                            onChange={() => toggleFilter("status", option)}
+                                        />
+                                        {option}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="bg-white rounded-lg border-2 border-[#E0E9E9] flex-1">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white rounded shadow">
+                            <thead className="bg-[#E0E9E9] text-[#333333]">
+                                <tr className="text-center">
+                                    <th className="py-2 px-4">Sr. No.</th>
+                                    <th className="py-2 px-4">Order No.</th>
+                                    <th className="py-2 px-4">Customer Name</th>
+                                    <th className="py-2 px-4">Service required</th>
+                                    <th className="py-2 px-4">Status</th>
+                                    <th className="py-2 px-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredOrders?.length > 0 ? (
+                                    filteredOrders.map((order, index) => (
+                                        <tr key={order._id} className="text-[#333333] text-center">
+                                            <td className="py-3 px-4">{(page - 1) * limit + (index + 1)}</td>
+                                            <td className="py-2 px-4">{order.orderId || "NA"}</td>
+                                            <td className="py-2 px-4">{order.customer?.name || "NA"}</td>
+                                            <td className="py-2 px-4">{order.specificServiceName || "NA"}</td>
+                                            <td
+                                                className={`py-2 px-4 ${
+                                                    statusColor[order.orderStatus] || "text-black"
+                                                }`}
+                                            >
+                                                {order.orderStatus || "NA"}
+                                            </td>
+                                            <td className="py-2 px-4 flex justify-center">
+                                                <IconButton
+                                                    onClick={() => navigate(`/orders/orderdetails/${order._id}`)}
+                                                >
+                                                    <HiOutlineEye className="text-[#007E74] text-lg cursor-pointer" />
+                                                </IconButton>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className="text-center py-10 text-gray-500 font-medium">
+                                            Order data not found
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div className="mt-4 px-4 py-1 flex bg-[#F5F5F5] justify-between items-center rounded-lg">
+                    {getOrders?.totalOrders > 0 ? (
+                        <>
+                            <span className="text-sm text-[#0D2E28] font-semibold">
+                                Showing {(page - 1) * limit + 1} to{" "}
+                                {Math.min(page * limit, getOrders?.totalOrders || 0)} of {getOrders?.totalOrders || 0}{" "}
+                                Entries
+                            </span>
+
+                            <div className="flex items-center gap-2 p-1">
+                                <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+                                    &lt;
+                                </button>
+
+                                {[...Array(getOrders?.totalPages || 0)].map((_, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setPage(i + 1)}
+                                        className={`px-2 py-1 rounded-md text-sm font-medium ${
+                                            page === i + 1 ? "bg-[#007E74] text-white" : "bg-[#D9F1EB] text-[#007E74]"
+                                        }`}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                ))}
+
+                                <button onClick={() => setPage(page + 1)} disabled={page === getOrders?.totalPages}>
+                                    &gt;
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <span className="w-full text-center text-sm text-gray-500 font-medium py-2">
+                            No entries available
+                        </span>
+                    )}
+                </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default OrderManagement;
