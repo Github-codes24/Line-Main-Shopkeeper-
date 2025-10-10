@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {IoArrowBackCircleOutline} from "react-icons/io5";
 import ServiceImg from "../../../assets/Frame 1261155363.jpg";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import UseOrder from "../../../hook/order/UseOrder";
 
 const products = [
     {name: "PVC Wire", price: 400, qty: 1},
@@ -14,16 +15,25 @@ const products = [
 const calculateAmount = (price, qty) => price * qty;
 const total = products.reduce((sum, item) => sum + calculateAmount(item.price, item.qty), 0);
 
-// OrderDeatils
 const QuotationWaiting = () => {
     const navigate = useNavigate();
-
     const orderId = "ORD8468163287164";
-    // const orderStatus = "Pending"
+
+    //-------------------------my changes------------------------------------------------------
+    const {id} = useParams();
+    const {getOrderById, fetchOrderById} = UseOrder();
+    const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        fetchOrderById(id);
+    }, [id]);
+
+    //----------------------------------------------------------------------------------------
 
     return (
         <div className="min-h-screen bg-gray-100 p-3">
-            <div className=" bg-white shadow-sm rounded-lg px-3 py-2">
+            {/* Header */}
+            <div className="bg-white shadow-sm rounded-lg px-3 py-2">
                 <div className="flex items-center space-x-4">
                     <IoArrowBackCircleOutline
                         className="text-4xl text-[#0D2E28] cursor-pointer hover:text-[#007E74]"
@@ -33,135 +43,156 @@ const QuotationWaiting = () => {
                 </div>
             </div>
 
+            {/* Main Content */}
             <div className="bg-white shadow-sm rounded-lg p-3 mt-3 flex flex-col h-[100vh]">
-                <div className="border-1 border-[#999999] rounded-md px-14 py-6 space-y-6 overflow-y-auto flex-1 scrollbar-hide">
-                    <div>
-                        <span className="font-extrabold text-lg">Order Number</span>
-                        <span className="font-medium pl-8 pr-3">:</span>
+                <div className="border border-gray-300 rounded-md px-10 py-6 space-y-6 overflow-y-auto flex-1 scrollbar-hide">
+                    {/* Order ID */}
+                    <div className="flex items-center">
+                        <span className="font-extrabold text-lg w-44">Order Number</span>
+                        <span className="font-medium pr-3">:</span>
                         <input
-                            className="w-80 border-1 font-extrabold border-[#007E74] bg-[#E0E9E9] px-3 py-1 rounded-lg ml-2"
+                            className="w-80 border border-[#007E74] bg-[#E0E9E9] px-3 py-1 rounded-md font-semibold"
                             readOnly
-                            value={orderId}
+                            value={getOrderById?.orderId}
                         />
                     </div>
 
-                    {/* {Otp && (
-            <div className="mt-6">
-              {Otp}
-            </div>
-          )} */}
-
                     {/* Customer Details */}
-                    <div>
-                        <h3 className="font-bold text-lg">Customer Details</h3>
-                        <div className="mt-2 space-y-4">
-                            <LabelInput label="Customer Name" value="Suresh Raina" />
-                            <LabelInput label="Phone Number" value="+91-9876543210" />
-                            <LabelInput label="Address" value="1901 Thornridge Cir. Shiloh, Hawaii 81063" />
-                            <LabelInput label="Email Id" value="Nirajkumark23@gmail.com" />
-                            <div className="flex items-center space-x-2">
-                                <label className="font-medium w-30 pr-14">Order Status</label>
-                                <span className="font-medium px-2">:</span>
-                                <input
-                                    className="border-1 border-[#007E74] bg-[#E0E9E9] text-[#0088FF] px-3 py-1 rounded-lg w-80"
-                                    // style={{ backgroundColor: '#E0E9E9', color: statusColor }}
-                                    readOnly
-                                    value="Work in Progress"
-                                />
-                            </div>
+                    <section>
+                        <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1">Customer Details</h3>
+                        <div className="space-y-4">
+                            <LabelInput label="Customer Name" value={getOrderById?.customer?.name} />
+                            {getOrderById?.customer?.contact ? (
+                                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(getOrderById.customer.contact) ? (
+                                    <LabelInput label="Email Id" value={getOrderById.customer.contact} />
+                                ) : /^\+?\d{10,15}$/.test(getOrderById.customer.contact) ? (
+                                    <LabelInput label="Phone Number" value={getOrderById.customer.contact} />
+                                ) : (
+                                    <LabelInput label="Contact" value={getOrderById.customer.contact} />
+                                )
+                            ) : (
+                                <LabelInput label="Contact" value="N/A" />
+                            )}
+                            <LabelInput label="Address" value={getOrderById?.deliveryAddress?.fullAddress} />
+                            <LabelInput
+                                label="Order Status"
+                                value={getOrderById?.orderStatus}
+                                textColor="text-[#0088FF]"
+                            />
                         </div>
-                    </div>
-
-                    <hr className="max-w-2xl text-black" />
+                    </section>
 
                     {/* Service Details */}
-                    <div>
-                        <h3 className="font-bold text-lg">Service Details</h3>
-                        <div className="mt-2 space-y-4">
-                            <LabelInput label="Service Required" value="Electrician" />
-                            <LabelInput label="Date" value="16/07/2024" />
+                    <section>
+                        <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1">Service Details</h3>
+                        <div className="space-y-4">
+                            <LabelInput label="Service Required" value={getOrderById?.specificServiceName} />
+                            <LabelInput label="Date" value={getOrderById?.serviceDate} />
                             <div className="flex items-start">
-                                <label className="font-medium w-36">Photos</label>
-                                <span className="font-medium pl-4 pr-2">:</span>
-                                <img src={ServiceImg} alt="service" className="w-15 h-15 ml-2 object-cover border" />
-                            </div>
-                        </div>
-                    </div>
-                    <hr className="max-w-2xl text-black" />
-
-                    <div>
-                        <h3 className="font-bold text-lg">Work Details</h3>
-                        <div className="mt-2 space-y-4">
-                            <LabelInput label="Worker Assigned" value="Niranjankumar Kalantri" />
-                            <LabelInput label="Last Updated" value="16/07/2024" />
-                            <div className="flex items-center space-x-2">
-                                <label className="font-medium w-30 pr-6">Quotation Status</label>
-                                <span className="font-medium px-2">:</span>
-                                <input
-                                    className="border-1 border-[#007E74] bg-[#E0E9E9] text-[#FFCC00] px-3 py-1 rounded-lg w-80"
-                                    readOnly
-                                    value="Pending For user Approval"
+                                <label className="font-medium w-40">Photos</label>
+                                <span className="font-medium pr-2">:</span>
+                                <img
+                                    src={getOrderById?.initialRequestImages}
+                                    alt="service"
+                                    className="w-20 h-20 ml-2 object-cover border border-[#007E74] rounded-md"
                                 />
                             </div>
                         </div>
+                    </section>
+
+                    {/* Work Details */}
+                    <section>
+                        <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1">Work Details</h3>
+                        <div className="space-y-4">
+                            <LabelInput label="Worker Assigned" value={getOrderById?.worker?.name} />
+                            <LabelInput label="Last Updated" value={getOrderById?.updatedAt} />
+                            <LabelInput
+                                label="Quotation Status"
+                                value="Pending For user Approval"
+                                textColor="text-[#FFCC00]"
+                            />
+                        </div>
+
                         {/* Product Table */}
-                        <div className="flex flex-col mt-4">
-                            <div className="w-[550px] p-4 border-1 border-black">
-                                {/* <h2 className="text-base font-medium mb-4 ">Product List <span className="font-medium px-16">:</span></h2> */}
-                                <p className="text-lg font-medium">Suresh Raina</p>
-                                <p className="text-sm -mt-3 text-black">5165484623</p>
-                                <div className="flex justify-between -mt-3 -mb-1 font-medium text-sm">
-                                    <p>Quatation No: 1</p>
-                                    <p>Quatation Date: 10-07-2025</p>
+                        <div className="flex flex-col mt-6">
+                            <div className="border border-black rounded-md p-4 w-fit bg-[#FAFAFA]">
+                                <div className="mb-2">
+                                    <p className="text-lg font-semibold text-gray-800">
+                                        {getOrderById?.customer?.name}
+                                    </p>
+                                    <p className="text-sm text-gray-600 -mt-1">
+                                        {getOrderById?.deliveryAddress?.phone}
+                                    </p>
+                                    <div className="flex justify-between text-sm mt-1 font-medium text-gray-700">
+                                        <p>Quotation No: 1</p>
+                                        <p>{getOrderById?.createdAt}</p>
+                                    </div>
                                 </div>
-                                <table className="w-[500px] table-auto border-1 border-black text-sm text-left">
-                                    <thead>
-                                        <tr className="border-b font-semibold">
-                                            <th className="p-2 font-semibold">#</th>
-                                            <th className="p-2 font-semibold">Products</th>
-                                            <th className="p-2 font-semibold">Price</th>
-                                            <th className="p-2 font-semibold">Qty</th>
-                                            <th className="p-2 font-semibold">Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {products.map((item, index) => (
-                                            <tr key={index} className="font-medium">
-                                                <td className="px-2 py-1">{index + 1}</td>
-                                                <td className="px-2 py-1">{item.name}</td>
-                                                <td className="px-2 py-1">{item.price}</td>
-                                                <td className="px-2 py-1">{item.qty}</td>
-                                                <td className="px-2 py-1">{calculateAmount(item.price, item.qty)}</td>
+
+                                {/* Horizontal Scroll Wrapper */}
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-[600px] border border-black text-sm text-left mt-2">
+                                        <thead className="bg-[#E0E9E9] border-b border-black">
+                                            <tr>
+                                                <th className="p-2 border-r border-black">#</th>
+                                                <th className="p-2 border-r border-black">Products</th>
+                                                <th className="p-2 border-r border-black">Price</th>
+                                                <th className="p-2 border-r border-black">Qty</th>
+                                                <th className="p-2">Amount</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                    <tfoot>
-                                        <tr className="border-t font-semibold">
-                                            <td colSpan="3" className="p-2 text-left">
-                                                Final Amount
-                                            </td>
-                                            <td colSpan="4" className="p-2 text-center">
-                                                {total.toLocaleString()}
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {getOrderById?.products.map((item, index) => (
+                                                <tr key={index} className="border-t border-black hover:bg-gray-50">
+                                                    <td className="p-2 border-r border-black">{index + 1}</td>
+                                                    <td className="p-2 border-r border-black">{item.productName}</td>
+                                                    <td className="p-2 border-r border-black">
+                                                        {item.priceAtPurchase}
+                                                    </td>
+                                                    <td className="p-2 border-r border-black">{item.quantity}</td>
+                                                    <td className="p-2">
+                                                        {calculateAmount(item.priceAtPurchase, item.quantity)}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                        <tfoot className="bg-[#F4F4F4] border-t border-black font-semibold">
+                                            <tr>
+                                                <td colSpan="4" className="p-2 text-right border-r border-black">
+                                                    Final Amount
+                                                </td>
+                                                <td className="p-2">
+                                                    {getOrderById?.totalProductCost.toLocaleString()}
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
+                </div>
+                {/* ✅ Verify OTP Button - OUTSIDE BORDER */}
+                <div className="flex justify-center mt-6 pb-6">
+                    <button
+                        className="bg-[#007E74] hover:bg-[#005f56] text-white font-semibold px-8 py-2 rounded-lg shadow-md transition-all duration-300"
+                        onClick={() => navigate("/orders/verifyotp/")}
+                    >
+                        Verify OTP
+                    </button>
                 </div>
             </div>
         </div>
     );
 };
 
-const LabelInput = ({label, value}) => (
+const LabelInput = ({label, value, textColor}) => (
     <div className="flex items-center">
         <label className="font-medium w-40">{label}</label>
         <span className="font-medium">:</span>
         <input
             type="text"
-            className="border-1 ml-4 border-[#007E74] bg-[#E0E9E9] px-3 py-1 rounded-lg w-80"
+            className={`border border-[#007E74] ml-4 bg-[#E0E9E9] px-3 py-1 rounded-md w-80 font-semibold ${textColor}`}
             readOnly
             value={value}
         />

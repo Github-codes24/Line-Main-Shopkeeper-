@@ -1,10 +1,8 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
 
-const OtpModal = ({show, onClose, setShow}) => {
+const OtpModal = () => {
     const navigate = useNavigate();
-
-    if (!show) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF] bg-opacity-10">
@@ -29,17 +27,13 @@ const OtpModal = ({show, onClose, setShow}) => {
                 {/* Buttons */}
                 <div className="flex justify-between items-center gap-4">
                     <button
-                        onClick={() => {
-                            setShow(false);
-                            onClose?.(); // optional chaining
-                        }}
+                        onClick={() => navigate(-1)}
                         className="w-full py-2.5 rounded-lg border-1 border-[#007E74] bg-[#D9F1EB] text-[#007E74] font-medium"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={() => {
-                            setShow(false);
                             navigate("/order-processing");
                         }}
                         className="w-full py-2.5 rounded-lg bg-[#007E74] text-white font-medium"

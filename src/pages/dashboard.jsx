@@ -3,7 +3,7 @@ import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Card from "../components/cards/card";
 import OrderTable from "../components/cards/OrderTable";
-import TopSellingProduct from "../components/cards/Products";
+import TopSellinśgProduct from "../components/cards/Products";
 import TopWorker from "../components/cards/worker-card";
 import Searchbar from "../components/layout/Searchbar";
 import useDashboard from "../hook/dashboard/useDashboard";
@@ -45,7 +45,7 @@ const DashboardPage = () => {
             {/* Order Table & Products */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <OrderTable orders={orderManagement} />
-                <TopSellingProduct products={topSellingProduct} />
+                <TopSellinśgProduct products={topSellingProduct} />
             </div>
 
             {/* Workers */}

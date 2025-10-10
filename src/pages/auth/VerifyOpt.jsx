@@ -4,12 +4,12 @@ import axios from "axios";
 import useAuth from "../../hook/useAuth";
 
 const OtpVerification = () => {
-  const navigate = useNavigate();
-  const [otp, setOtp] = useState(new Array(6).fill("")); // ✅ Now 6 boxes instead of 4
-  const [error, setError] = useState("");
-  const inputsRef = useRef([]);
-  const contact = sessionStorage.getItem("contact");
-  const { verifyOTP } = useAuth();
+    const navigate = useNavigate();
+    const [otp, setOtp] = useState(new Array(6).fill("")); // Image shows 6 boxes
+    const [error, setError] = useState("");
+    const inputsRef = useRef([]);
+    const contact = sessionStorage.getItem("contact");
+    const {verifyOTP} = useAuth();
 
   useEffect(() => {
     if (!contact) navigate("/");
