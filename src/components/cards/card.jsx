@@ -1,6 +1,8 @@
 // src/components/Card.jsx
-import React from "react";
-import {TrendingUp, TrendingDown, Users, ShoppingCart, Briefcase, Target} from "lucide-react";
+import { TbWallet } from "react-icons/tb";
+import {TrendingUp, TrendingDown, Users, Target } from "lucide-react";
+import { Pickaxe } from "lucide-react";
+
 
 const Card = ({title, value, change}) => {
     const isPositive = (change || "").includes("+");
@@ -8,12 +10,12 @@ const Card = ({title, value, change}) => {
     // Softer pastel gradient config
     const config = {
         "Total Sales": {
-            color: "from-blue-400 to-blue-300", // soft blue
-            icon: <ShoppingCart size={22} />,
+            color: "from-[#5B9FD8] to-[#7CB5E8]", // soft blue
+            icon: <TbWallet  size={22} />,
         },
         "Total Worker": {
             color: "from-orange-400 to-orange-300", // soft orange
-            icon: <Briefcase size={22} />,
+            icon: <Pickaxe size={22} />,
         },
         "Total Customer": {
             color: "from-green-400 to-green-300", // soft green
