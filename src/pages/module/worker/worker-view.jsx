@@ -77,7 +77,7 @@ const WorkerView = () => {
                     <DetailRow label="Expertise" value={worker.expertise} />
                     <DetailRow label="Phone Number" value={worker.phone} />
                     <DetailRow label="Address" value={worker.address} />
-                    <DetailRow label="Email Id" value={worker.email} />
+                    {/* <DetailRow label="Email Id" value={worker.email} /> */}
                 </div>
 
                 {/* Divider */}

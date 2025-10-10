@@ -5,7 +5,7 @@ import useAuth from "../../hook/useAuth";
 
 const OtpVerification = () => {
     const navigate = useNavigate();
-    const [otp, setOtp] = useState(new Array(4).fill("")); // Image shows 6 boxes
+    const [otp, setOtp] = useState(new Array(6).fill("")); // Image shows 6 boxes
     const [error, setError] = useState("");
     const inputsRef = useRef([]);
     const contact = sessionStorage.getItem("contact");

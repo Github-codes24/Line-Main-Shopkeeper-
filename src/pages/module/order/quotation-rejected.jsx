@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {IoArrowBackCircleOutline} from "react-icons/io5";
 import ServiceImg from "../../../assets/Frame 1261155363.jpg";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import UseOrder from "../../../hook/order/UseOrder";
 
 const products = [
     {name: "PVC Wire", price: 400, qty: 1},
@@ -18,106 +19,131 @@ const QuotationRejected = () => {
     const navigate = useNavigate();
     const orderId = "ORD8468163287164";
 
+    //-------------------------my changes------------------------------------------------------
+    const {id} = useParams();
+    const {getOrderById, fetchOrderById} = UseOrder();
+    const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        fetchOrderById(id);
+    }, [id]);
+
+    //----------------------------------------------------------------------------------------
+
     return (
-        <div className="min-h-screen bg-gray-100 p-3">
+        <div className="min-h-screen bg-gray-100 p-4">
             {/* Header */}
-            <div className="bg-white shadow-sm rounded-lg px-3 py-3">
-                <div className="flex items-center space-x-4">
-                    <IoArrowBackCircleOutline
-                        className="text-4xl text-[#0D2E28] cursor-pointer hover:text-[#007E74]"
-                        onClick={() => navigate(-1)}
-                    />
-                    <h2 className="text-2xl font-medium text-[#0D2E28] mt-1">Order Details</h2>
-                </div>
+            <div className="bg-white shadow rounded-lg px-4 py-3 flex items-center space-x-4">
+                <IoArrowBackCircleOutline
+                    className="text-4xl text-[#0D2E28] cursor-pointer hover:text-[#007E74] transition"
+                    onClick={() => navigate(-1)}
+                />
+                <h2 className="text-2xl font-medium text-[#0D2E28]">Order Details</h2>
             </div>
 
             {/* Main Content */}
-            <div className="flex flex-col bg-white shadow-sm rounded-lg p-3 mt-3 h-[calc(100vh-4rem)]">
-                <div className="border border-[#999999] rounded-md px-4 py-6 space-y-6 overflow-y-auto flex-1 scrollbar-hide">
+            <div className="mt-4 flex flex-col bg-white shadow rounded-lg p-4 h-[calc(100vh-5rem)]">
+                <div className="flex-1 overflow-y-auto space-y-6">
                     {/* Order Info */}
-                    <LabelInput label="Order Number" value={orderId} />
+                    <LabelInput label="Order Number" value={getOrderById?.orderId} />
 
                     {/* Customer Details */}
                     <div>
-                        <h3 className="font-bold text-lg">Customer Details</h3>
-                        <div className="mt-2 space-y-4">
-                            <LabelInput label="Customer Name" value="Suresh Raina" />
-                            <LabelInput label="Phone Number" value="+91-9876543210" />
-                            <LabelInput label="Address" value="1901 Thornridge Cir. Shiloh, Hawaii 81063" />
-                            <LabelInput label="Email Id" value="Nirajkumark23@gmail.com" />
-                            <LabelInput label="Order Status" value="Work in Progress" color="#0088FF" />
+                        <h3 className="font-bold text-lg mb-2">Customer Details</h3>
+                        <div className="space-y-3">
+                            <LabelInput label="Customer Name" value={getOrderById?.customer?.name} />
+                            {getOrderById?.customer?.contact ? (
+                                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(getOrderById.customer.contact) ? (
+                                    <LabelInput label="Email Id" value={getOrderById.customer.contact} />
+                                ) : /^\+?\d{10,15}$/.test(getOrderById.customer.contact) ? (
+                                    <LabelInput label="Phone Number" value={getOrderById.customer.contact} />
+                                ) : (
+                                    <LabelInput label="Contact" value={getOrderById.customer.contact} />
+                                )
+                            ) : (
+                                <LabelInput label="Contact" value="N/A" />
+                            )}
+                            <LabelInput label="Address" value={getOrderById?.deliveryAddress?.fullAddress} />
+                            <LabelInput label="Order Status" value={getOrderById?.orderStatus} color="#EC2D01" />
                         </div>
                     </div>
 
-                    <hr className="max-w-2xl text-black" />
+                    <hr className="border-gray-300" />
 
                     {/* Service Details */}
                     <div>
-                        <h3 className="font-bold text-lg">Service Details</h3>
-                        <div className="mt-2 space-y-4">
-                            <LabelInput label="Service Required" value="Electrician" />
-                            <LabelInput label="Date" value="16/07/2024" />
+                        <h3 className="font-bold text-lg mb-2">Service Details</h3>
+                        <div className="space-y-3">
+                            <LabelInput label="Service Required" value={getOrderById?.specificServiceName} />
+                            <LabelInput label="Date" value={getOrderById?.serviceDate} />
                             <div className="flex flex-col sm:flex-row sm:items-center">
                                 <label className="font-medium sm:w-36">Photos</label>
                                 <span className="font-medium sm:mx-2">:</span>
                                 <img
-                                    src={ServiceImg}
+                                    src={getOrderById?.initialRequestImages}
                                     alt="service"
-                                    className="w-36 h-36 mt-2 sm:mt-0 object-cover border"
+                                    className="w-36 h-36 mt-2 sm:mt-0 object-cover border rounded"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <hr className="max-w-2xl text-black" />
+                    <hr className="border-gray-300" />
 
                     {/* Work Details */}
                     <div>
-                        <h3 className="font-bold text-lg">Work Details</h3>
-                        <div className="mt-2 space-y-4">
-                            <LabelInput label="Worker Assigned" value="Niranjankumar Kalantri" />
-                            <LabelInput label="Last Updated" value="16/07/2024" />
+                        <h3 className="font-bold text-lg mb-2">Work Details</h3>
+                        <div className="space-y-3">
+                            <LabelInput label="Worker Assigned" value={getOrderById?.worker?.name || "NA"} />
+                            <LabelInput label="Last Updated" value={getOrderById?.updatedAt} />
                             <LabelInput label="Quotation Status" value="Rejected" color="#EC2D01" />
-                            <LabelInput label="Reason" value="Cost too high" />
+                            <LabelInput label="Reason" value={getOrderById?.rejectionReason} />
                         </div>
 
                         {/* Product Table */}
-                        <div className="flex flex-col mt-4 overflow-x-auto">
-                            <div className="min-w-[500px] p-4 border border-black">
-                                <p className="text-lg font-medium mb-1">Suresh Raina</p>
-                                <p className="text-sm -mt-1 mb-2">5165484623</p>
-                                <div className="flex justify-between -mt-3 -mb-1 font-medium text-sm">
+                        <div className="overflow-x-auto mt-4">
+                            <div className="min-w-[500px] p-4 border border-gray-300 rounded-lg">
+                                <p className="text-lg font-semibold mb-1">{getOrderById?.customer?.name}</p>
+                                <p className="text-sm -mt-1 mb-2">{getOrderById?.deliveryAddress?.phone}</p>
+                                <div className="flex justify-between -mt-3 -mb-2 text-sm font-medium">
                                     <p>Quotation No: 1</p>
-                                    <p>Quotation Date: 10-07-2025</p>
+                                    <p>{getOrderById?.createdAt}</p>
                                 </div>
-                                <table className="w-full table-auto border border-black text-sm text-left">
-                                    <thead>
-                                        <tr className="border-b font-semibold">
-                                            <th className="p-2">#</th>
-                                            <th className="p-2">Products</th>
-                                            <th className="p-2">Price</th>
-                                            <th className="p-2">Qty</th>
-                                            <th className="p-2">Amount</th>
+                                <table className="w-full table-auto border border-gray-300 text-sm mt-2">
+                                    <thead className="bg-gray-100">
+                                        <tr className="border-b">
+                                            <th className="p-2 text-left">#</th>
+                                            <th className="p-2 text-left">Products</th>
+                                            <th className="p-2 text-right">Price</th>
+                                            <th className="p-2 text-right">Qty</th>
+                                            <th className="p-2 text-right">Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {products.map((item, index) => (
-                                            <tr key={index} className="font-medium">
-                                                <td className="px-2 py-1">{index + 1}</td>
-                                                <td className="px-2 py-1">{item.name}</td>
-                                                <td className="px-2 py-1">{item.price}</td>
-                                                <td className="px-2 py-1">{item.qty}</td>
-                                                <td className="px-2 py-1">{calculateAmount(item.price, item.qty)}</td>
+                                        {getOrderById?.products.map((item, index) => (
+                                            <tr key={index} className="hover:bg-gray-50">
+                                                <td className="p-2">{index + 1}</td>
+                                                <td className="p-2">{item.productName}</td>
+                                                <td className="p-2 text-right">
+                                                    {item.priceAtPurchase.toLocaleString()}
+                                                </td>
+                                                <td className="p-2 text-right">{item.quantity}</td>
+                                                <td className="p-2 text-right">
+                                                    {calculateAmount(
+                                                        item.priceAtPurchase,
+                                                        item.quantity
+                                                    ).toLocaleString()}
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                     <tfoot>
-                                        <tr className="border-t font-semibold">
-                                            <td colSpan="3" className="p-2 text-left">
+                                        <tr className="font-semibold bg-gray-50 border-t">
+                                            <td colSpan="4" className="p-2 text-right">
                                                 Final Amount
                                             </td>
-                                            <td colSpan="2" className="p-2 text-center">
-                                                {total.toLocaleString()}
+                                            <td className="p-2 text-right">
+                                                {getOrderById?.totalProductCost.toLocaleString()}
                                             </td>
                                         </tr>
                                     </tfoot>

@@ -5,6 +5,7 @@ import {useRecoilState, useSetRecoilState} from "recoil";
 import {profileAtom, shopkeeperLoginAtom} from "../state/auth/authState";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
+import {getFcmToken} from "../firebase/getFcmToken";
 
 const useAuth = () => {
     const navigate = useNavigate();
@@ -44,10 +45,18 @@ const useAuth = () => {
 
     const verifyOTP = async (contact, finalOtp) => {
         setLoading(true);
+
         try {
+            const fcm_token = await getFcmToken();
+            if (!fcm_token || typeof fcm_token !== "string") {
+                toast.error("Failed to get FCM token. Please allow notifications.");
+                setLoading(false);
+                return;
+            }
             const data = {
                 contact: contact,
                 otp: finalOtp,
+                fcm_token: fcm_token,
             };
             const res = await fetchData({
                 method: "POST",
