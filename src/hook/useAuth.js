@@ -5,6 +5,7 @@ import {useRecoilState, useSetRecoilState} from "recoil";
 import {profileAtom, shopkeeperLoginAtom} from "../state/auth/authState";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
+import {getFcmToken} from "../firebase/getFcmToken";
 
 const useAuth = () => {
     const navigate = useNavigate();
@@ -21,15 +22,13 @@ const useAuth = () => {
         try {
             const res = await fetchData({
                 method: "POST",
-                url: `${conf.apiBaseUrl}shopkeeper/auth/login-otp`,
+                url: `${conf.apiBaseUrl}/shopkeeper/auth/login-otp`,
                 data: payload,
             });
             if (res) {
                 navigate("/verify-otp");
                 setLoginResponse(res);
-                setUserInfo({
-                    isAuthenticated: true,
-                });
+                // Don't set isAuthenticated to true here - wait for OTP verification
                 setLoading(false);
             }
         } catch (error) {
@@ -44,25 +43,43 @@ const useAuth = () => {
 
     const verifyOTP = async (contact, finalOtp) => {
         setLoading(true);
+
         try {
+            const fcm_token = await getFcmToken();
+            if (!fcm_token || typeof fcm_token !== "string") {
+                toast.error("Failed to get FCM token. Please allow notifications.");
+                setLoading(false);
+                return;
+            }
             const data = {
                 contact: contact,
                 otp: finalOtp,
+                fcm_token: fcm_token,
             };
             const res = await fetchData({
                 method: "POST",
-                url: `${conf.apiBaseUrl}shopkeeper/auth/verify-otp`,
+                url: `${conf.apiBaseUrl}/shopkeeper/auth/verify-otp`,
                 data: data,
             });
             if (res) {
+                // Store token and shopId
                 sessionStorage.setItem("token", res?.token);
                 sessionStorage.setItem("shopId", res?.data?.shopId);
+                
+                // CRITICAL FIX: Update Recoil authentication state
+                setUserInfo({
+                    isAuthenticated: true,
+                });
+                
                 toast.success(res?.message);
+                
+                // Navigate to dashboard
                 navigate("/dashboard");
                 setLoading(false);
             }
         } catch (error) {
             console.log("Error while verify otp :", error);
+            toast.error("Invalid OTP. Please try again.");
             setLoading(false);
         } finally {
             setLoading(false);
@@ -76,7 +93,7 @@ const useAuth = () => {
         try {
             const res = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}shopkeeper/profile/me`,
+                url: `${conf.apiBaseUrl}/shopkeeper/profile/me`,
             });
             if (res) {
                 setProfile(res?.data);
@@ -101,7 +118,7 @@ const useAuth = () => {
         try {
             const res = await fetchData({
                 method: "PUT",
-                url: `${conf.apiBaseUrl}shopkeeper/profile/me`,
+                url: `${conf.apiBaseUrl}/shopkeeper/profile/me`,
                 data: payload,
             });
             if (res) {

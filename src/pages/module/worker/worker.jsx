@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Eye, Edit, Trash2, Search, Filter } from "lucide-react";
+import { Eye, Trash2, Search, Filter, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { FiEdit } from "react-icons/fi";
+import { TbFilter } from "react-icons/tb";
+import { FaPlus } from "react-icons/fa6";
 import conf from "../../../config";
-import SearchBar from "../../../components/layout/Searchbar";
-// import Delete from "../../../components/layout/Delete"; // remove if unused
-// import Button from '../../../components/ui/button'; // remove if unused
-import useFetch from '../../../hook/useFetch';
+import useFetch from "../../../hook/useFetch";
 
 const Worker = () => {
     const navigate = useNavigate();
@@ -17,22 +17,30 @@ const Worker = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
-    const [filters, setFilters] = useState([]);
     const [selectedExpertise, setSelectedExpertise] = useState([]);
-    const [selectedStatus, setSelectedStatus] = useState([]);
-    const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+    const [filterOpen, setFilterOpen] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 5;
+    const [limit] = useState(5);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+
+    const expertiseOptions = [
+        "Electrician",
+       "Painter",
+        "Carpenter",
+        "AC Repair",
+        "Tile Fitting",
+          "Plumber",
+    ];
 
     useEffect(() => {
         fetchAllWorkers();
     }, []);
 
     useEffect(() => {
-        const activeFilters = [...selectedExpertise, ...selectedStatus];
-        setFilters(activeFilters);
-    }, [selectedExpertise, selectedStatus]);
+        applyFiltersAndPagination();
+    }, [workers, searchTerm, selectedExpertise, currentPage]);
 
     const fetchAllWorkers = async () => {
         try {
@@ -41,7 +49,7 @@ const Worker = () => {
 
             const result = await fetchData({
                 method: "GET",
-                url: `${conf.apiBaseUrl}shopkeeper/worker/get-all-worker`,
+                url: `${conf.apiBaseUrl}/shopkeeper/worker/get-all-worker`,
             });
 
             if (result.success) {
@@ -52,7 +60,7 @@ const Worker = () => {
                     expertise: worker.experties || "N/A",
                     phone: worker.contact || "N/A",
                     address: worker.address || "N/A",
-                    status: worker.status || "Pending", // Assuming status exists; adjust as needed
+                    status: worker.status || "Pending",
                 }));
 
                 setWorkers(normalizedWorkers);
@@ -71,6 +79,59 @@ const Worker = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const applyFiltersAndPagination = () => {
+        let filtered = [...workers];
+
+        // Apply search filter
+        if (searchTerm) {
+            filtered = filtered.filter(
+                (worker) =>
+                    worker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    worker.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    worker.address.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Apply expertise filter
+        if (selectedExpertise.length > 0) {
+            filtered = filtered.filter((worker) =>
+                selectedExpertise.includes(worker.expertise)
+            );
+        }
+
+        // Reset page if out of range
+        if ((currentPage - 1) * limit >= filtered.length && filtered.length > 0) {
+            setCurrentPage(1);
+            return;
+        }
+
+        setTotalCount(filtered.length);
+        setTotalPages(Math.ceil(filtered.length / limit));
+    };
+
+    const getPaginatedWorkers = () => {
+        let filtered = [...workers];
+
+        if (searchTerm) {
+            filtered = filtered.filter(
+                (worker) =>
+                    worker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    worker.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    worker.address.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        if (selectedExpertise.length > 0) {
+            filtered = filtered.filter((worker) =>
+                selectedExpertise.includes(worker.expertise)
+            );
+        }
+
+        const start = (currentPage - 1) * limit;
+        const end = start + limit;
+        return filtered.slice(start, end);
     };
 
     const handleDeleteWorker = async (workerId, workerName) => {
@@ -98,272 +159,237 @@ const Worker = () => {
     };
 
     const handleResetFilters = () => {
-        setFilters([]);
         setSelectedExpertise([]);
-        setSelectedStatus([]);
         setSearchTerm("");
         setCurrentPage(1);
     };
 
-    const handleCheckboxToggle = (value, type) => {
-        const setter = type === "expertise" ? setSelectedExpertise : setSelectedStatus;
-        const current = type === "expertise" ? selectedExpertise : selectedStatus;
-
-        setter(current.includes(value) ? current.filter((item) => item !== value) : [...current, value]);
+    const handleExpertiseToggle = (expertise) => {
+        setSelectedExpertise((prev) =>
+            prev.includes(expertise)
+                ? prev.filter((item) => item !== expertise)
+                : [...prev, expertise]
+        );
+        setCurrentPage(1);
     };
 
-    const filteredWorkers = workers.filter((worker) => {
-        const matchesSearch =
-            worker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            worker.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            worker.address.toLowerCase().includes(searchTerm.toLowerCase());
+    const handleAddWorker = () => navigate("/worker/worker-add");
 
-        const matchesExpertise = selectedExpertise.length === 0 || selectedExpertise.includes(worker.expertise);
-
-        const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(worker.status);
-
-        return matchesSearch && matchesExpertise && matchesStatus;
-    });
-
-    const totalPages = Math.ceil(filteredWorkers.length / rowsPerPage);
-    const paginatedWorkers = filteredWorkers.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+    const paginatedWorkers = getPaginatedWorkers();
 
     return (
-        <div className="p-3 bg-gray-200 min-h-screen overflow-hidden">
+        <div className="flex bg-[#E0E9E9] font-medium">
             <ToastContainer />
+            
+            <main className="flex-1 p-3 gap-2">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-start items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-24">
+                    <h1 className="text-lg md:text-xl font-semibold" style={{
+                        fontWeight: 500,
+                        fontSize: '20px',
+                        color: 'rgba(51, 51, 51, 1)'
+                    }}>Worker List</h1>
 
-            {/* Top Navigation Bar */}
-            <div className="bg-white px-6 py-3 shadow-md border rounded-md flex items-center justify-between mb-4">
-                <div className="flex-1">
-                    <h1 className="text-xl font-semibold text-gray-800">Worker List</h1>
-                </div>
-                <div className="flex-1 flex justify-center">
-                    <div className="relative w-full max-w-md">
-                        <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                            <Search size={18} className="text-black" />
-                        </div>
+                    {/* Search */}
+                    <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
+                        <Search className="text-teal-600 mr-2" size={18} />
                         <input
                             type="text"
+                            placeholder="Search by Name, Phone or Address..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Search by Worker Name or Phone No. or Address..."
-                            className="w-full pl-10 pr-4 py-2 rounded-full border-2 border-[#1f8a70] text-sm bg-[#e0e9e9] placeholder-black focus:outline-none  focus:ring-[#1f8a70]"
+                            className="flex-1 outline-none bg-transparent text-sm placeholder-black"
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1);
+                            }}
                         />
                     </div>
-                </div>
-                <div className="flex-1" />
-            </div>
 
-            {/* Combined Filter and Table Container */}
-            <div className="bg-white p-4 rounded-md shadow-md space-y-4 min-h-screen">
-                {/* Filter Section */}
-                <div className="flex items-center justify-between relative">
-                    <div className="flex items-center gap-4 flex-wrap">
+                    {/* Add Worker */}
+                    
+                </div>
+
+                {/* Filters */}
+                <div className="bg-white shadow-xl flex flex-col gap-3 mb-4 relative rounded-lg p-3">
+                    <div className="flex flex-wrap items-center gap-2">
                         <button
-                            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                            className="flex items-center text-[#06A77D] text-sm gap-2 hover:text-[#05745a]"
+                            onClick={() => setFilterOpen(!filterOpen)}
+                            className="border px-2 py-1 rounded bg-[#E0E9E9] hover:bg-[#d0d9d9] transition-colors"
                         >
-                            <Filter size={20} />
+                            <TbFilter className="w-8 h-8 px-1 py-1 border-[#007E74] text-[#0D2E28] bg-[#E0E9E9] rounded-lg" />
                         </button>
 
-                        {/* Display selected filters beside the Filter button */}
-                        {filters.length > 0 && (
-                            <div className="flex gap-2 overflow-x-auto">
-                                {filters.map((filter, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex items-center bg-[#DDF0F0] text-gray-800 text-xs font-medium px-2 py-1 rounded-full shadow-sm whitespace-nowrap"
-                                    >
-                                        {filter}
-                                        <button
-                                            onClick={() => {
-                                                setSelectedExpertise((prev) => prev.filter((item) => item !== filter));
-                                                setSelectedStatus((prev) => prev.filter((item) => item !== filter));
-                                            }}
-                                            className="ml-1 text-gray-500 hover:text-red-600 text-xs"
-                                            title="Remove Filter"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
+                        {selectedExpertise.map((exp) => (
+                            <span
+                                key={exp}
+                                className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm"
+                            >
+                                {exp}
+                                <X
+                                    className="w-4 h-4 ml-2 cursor-pointer hover:text-red-500"
+                                    onClick={() => handleExpertiseToggle(exp)}
+                                />
+                            </span>
+                        ))}
+
+                        {searchTerm && (
+                            <span className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
+                                {`Search: "${searchTerm}"`}
+                                <X
+                                    className="w-4 h-4 ml-2 cursor-pointer hover:text-red-500"
+                                    onClick={() => {
+                                        setSearchTerm("");
+                                        setCurrentPage(1);
+                                    }}
+                                />
+                            </span>
                         )}
+
+                        <button
+                            onClick={handleResetFilters}
+                            className="ml-auto px-10 py-1 bg-[#D9F1EB] border-2 border-[#007E74] text-[#007E74] rounded"
+                        >
+                            Reset Filter
+                        </button>
                     </div>
 
-                    <button
-                        onClick={handleResetFilters}
-                        className="bg-[#DDF0F0] hover:bg-[#b7e2e2] text-sm px-4 py-2 rounded-md shadow-sm"
-                    >
-                        Reset Filter
-                    </button>
-
-                    {showFilterDropdown && (
-                        <div className="absolute z-50 mt-12 w-64 bg-white border border-gray-300 rounded-md shadow-lg p-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <p className="text-sm font-semibold">Expertise</p>
-                                <button
-                                    onClick={() => setShowFilterDropdown(false)}
-                                    className="text-gray-500 hover:text-red-500 text-sm font-bold"
-                                >
-                                    &times;
-                                </button>
-                            </div>
-
-                            <div className="space-y-2">
-                                {["Electrician", "Plumber", "Painter", "Carpenter", "AC Repair", "Tile Fitting"].map(
-                                    (exp) => (
-                                        <label key={exp} className="block text-sm text-gray-700">
+                    {/* Dropdown */}
+                    {filterOpen && (
+                        <div className="absolute top-16 left-3 bg-white border rounded shadow-md p-4 w-64 z-50">
+                            <div className="mb-3">
+                                <h4 className="font-semibold text-sm mb-2">Expertise</h4>
+                                <ul className="space-y-2 text-sm text-gray-700">
+                                    {expertiseOptions.map((exp) => (
+                                        <li key={exp} className="flex items-center gap-2">
                                             <input
                                                 type="checkbox"
+                                                id={exp}
                                                 checked={selectedExpertise.includes(exp)}
-                                                onChange={() => handleCheckboxToggle(exp, "expertise")}
+                                                onChange={() => handleExpertiseToggle(exp)}
+                                                className="cursor-pointer"
                                             />
-                                            <span className="ml-2">{exp}</span>
-                                        </label>
-                                    )
-                                )}
+                                            <label htmlFor={exp} className="cursor-pointer">
+                                                {exp}
+                                            </label>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </div>
                     )}
-                </div>
 
-                {/* Worker Table */}
-                <div className="overflow-x-auto rounded-md border border-gray-300">
-                    {isLoading ? (
-                        <div className="flex justify-center items-center h-48">
-                            <span className="text-lg">Loading workers...</span>
-                        </div>
-                    ) : error ? (
-                        <div className="flex justify-center items-center h-48">
-                            <span className="text-red-500 text-lg">{error}</span>
-                        </div>
-                    ) : (
-                        <>
-                            <table className="min-w-full text-sm text-left border-collapse table-fixed">
-                                <thead className="bg-[#f1f8f8] text-gray-700 font-semibold">
+                    {/* Table */}
+                    <div className="overflow-x-auto">
+                        {isLoading ? (
+                            <div className="text-center py-8">
+                                <p className="text-gray-600">Loading workers...</p>
+                            </div>
+                        ) : error ? (
+                            <div className="text-center py-8">
+                                <p className="text-red-500">{error}</p>
+                            </div>
+                        ) : paginatedWorkers.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-gray-600">No workers found matching your criteria.</p>
+                            </div>
+                        ) : (
+                            <table className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden" style={{ borderSpacing: 0 }}>
+                                <thead className="bg-[#e0e9e9] text-sm md:text-base">
                                     <tr>
-                                        <th className="px-5 py-3 border-b border-gray-200">Sr.No.</th>
-                                        <th className="px-5 py-3 border-b border-gray-200">Worker Name</th>
-                                        <th className="px-5 py-3 border-b border-gray-200">Expertise</th>
-                                        <th className="px-5 py-3 border-b border-gray-200">Phone Number</th>
-                                        <th className="px-5 py-3 border-b border-gray-200">Address</th>
-                                        <th className="px-5 py-3 border-b border-gray-200 text-center">Action</th>
+                                        <th className="px-4 py-3 font-medium">Sr.No.</th>
+                                        <th className="px-4 py-3 font-medium">Worker Name</th>
+                                        <th className="px-4 py-3 font-medium">Expertise</th>
+                                        <th className="px-4 py-3 font-medium">Phone Number</th>
+                                        <th className="px-4 py-3 font-medium">Address</th>
+                                        <th className="px-4 py-3 font-medium">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {paginatedWorkers.length === 0 ? (
-                                        <tr>
-                                            <td colSpan="6" className="text-center py-6 text-gray-500">
-                                                No workers found
+                                <tbody className="text-sm md:text-base">
+                                    {paginatedWorkers.map((worker, index) => (
+                                        <tr
+                                            key={worker.id}
+                                            className="hover:bg-gray-50 transition-colors border-b border-gray-200"
+                                        >
+                                            <td className="px-4 py-3 font-normal">
+                                                {(currentPage - 1) * limit + index + 1}
+                                            </td>
+                                            <td className="px-4 py-3 font-normal">{worker.name}</td>
+                                            <td className="px-4 py-3 font-normal">{worker.expertise}</td>
+                                            <td className="px-4 py-3 font-normal">{worker.phone}</td>
+                                            <td className="px-4 py-3 font-normal">{worker.address}</td>
+                                            <td className="px-4 py-3 font-normal">
+                                                <div className="flex items-center gap-3 text-gray-700">
+                                                    <Eye
+                                                        onClick={() =>
+                                                            navigate(`/worker/worker-view/${worker.id}`, {
+                                                                state: worker,
+                                                            })
+                                                        }
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] hover:text-[#d02801] transition-colors"
+                                                        title="View Worker"
+                                                    />
+                                                    <FiEdit
+                                                        onClick={() =>
+                                                            navigate(`/worker/worker-edit/${worker.id}`, {
+                                                                state: worker,
+                                                            })
+                                                        }
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] hover:text-[#d02801] transition-colors"
+                                                        title="Edit Worker"
+                                                    />
+                                                    <Trash2
+                                                        onClick={() => handleDeleteWorker(worker.id, worker.name)}
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] hover:text-[#d02801] transition-colors"
+                                                        title="Delete Worker"
+                                                    />
+                                                </div>
                                             </td>
                                         </tr>
-                                    ) : (
-                                        paginatedWorkers.map((worker, index) => (
-                                            <tr key={worker.id} className="hover:bg-gray-50 border-b border-gray-200">
-                                                <td className="px-5 py-3">
-                                                    {(currentPage - 1) * rowsPerPage + index + 1}
-                                                </td>
-                                                <td className="px-5 py-3">{worker.name}</td>
-                                                <td className="px-5 py-3">{worker.expertise}</td>
-                                                <td className="px-5 py-3">{worker.phone}</td>
-                                                <td className="px-5 py-3 whitespace-normal break-words max-w-[200px]">
-                                                    {worker.address}
-                                                </td>
-
-                                                <td className="px-5 py-3 text-center">
-                                                    <div className="flex justify-center gap-4 text-[15px]">
-                                                        <button
-                                                            onClick={() =>
-                                                                navigate(`/worker/worker-view/${worker.id}`, {
-                                                                    state: worker,
-                                                                })
-                                                            }
-                                                            className="text-[#06A77D] hover:text-[#05745a]"
-                                                            title="View"
-                                                        >
-                                                            <Eye size={18} />
-                                                        </button>
-                                                        <button
-                                                            onClick={() =>
-                                                                navigate(`/worker/worker-edit/${worker.id}`, {
-                                                                    state: worker,
-                                                                })
-                                                            }
-                                                            className="text-[#06A77D] hover:text-[#05745a]"
-                                                            title="View"
-                                                        >
-                                                            <Edit size={18} />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteWorker(worker.id, worker.name)}
-                                                            className="text-[#06A77D] hover:text-[#a72822]"
-                                                            title="Delete"
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
+                                    ))}
                                 </tbody>
                             </table>
-                        </>
-                    )}
+                        )}
+                    </div>
                 </div>
 
                 {/* Pagination */}
-                <div className="flex justify-between items-center px-4 py-2 mt-3 bg-gray-100 text-sm rounded-md">
-                    <span className="text-gray-600">
-                        Showing {paginatedWorkers.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0} to{" "}
-                        {(currentPage - 1) * rowsPerPage + paginatedWorkers.length} of {filteredWorkers.length} Entries
-                    </span>
-
-                    <div className="flex items-center gap-2">
-                        {/* Previous Button */}
-                        <button
-                            onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
-                            disabled={currentPage === 1}
-                            className={`w-8 h-8 flex items-center justify-center rounded-md border ${
-                                currentPage === 1
-                                    ? "text-gray-600 border-gray-400 cursor-not-allowed"
-                                    : "text-gray-700 border-gray-300 hover:bg-gray-100"
-                            }`}
-                        >
-                            ‹
-                        </button>
-
-                        {/* Page Numbers */}
-                        {[...Array(totalPages)].map((_, i) => (
+                {!isLoading && !error && totalPages > 0 && (
+                    <div className="w-full flex flex-col bg-white md:flex-row justify-between items-center gap-2 p-3 text-sm font-semibold text-black rounded-lg shadow">
+                        <span>
+                            Showing {paginatedWorkers.length} of {totalCount} Entries
+                        </span>
+                        <div className="flex items-center gap-2">
                             <button
-                                key={i}
-                                onClick={() => setCurrentPage(i + 1)}
-                                className={`w-8 h-8 flex items-center justify-center rounded-md ${
-                                    currentPage === i + 1
-                                        ? "bg-[#06A77D] text-white shadow"
-                                        : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
-                                }`}
+                                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="px-3 py-1 text-teal-700 hover:bg-teal-100 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {i + 1}
+                                &lt;
                             </button>
-                        ))}
-
-                        {/* Next Button */}
-                        <button
-                            onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                            className={`w-8 h-8 flex items-center justify-center rounded-md border ${
-                                currentPage === totalPages
-                                    ? "text-gray-600 border-gray-400 cursor-not-allowed"
-                                    : "text-gray-700 border-gray-300 hover:bg-gray-100"
-                            }`}
-                        >
-                            ›
-                        </button>
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i + 1}
+                                    onClick={() => setCurrentPage(i + 1)}
+                                    className={`px-3 py-1 rounded transition-colors ${
+                                        currentPage === i + 1
+                                            ? "bg-teal-700 text-white"
+                                            : "bg-teal-100 text-teal-700 hover:bg-teal-200"
+                                    }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                className="px-3 py-1 text-teal-700 hover:bg-teal-100 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                &gt;
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </div>
+                )}
+            </main>
         </div>
     );
 };

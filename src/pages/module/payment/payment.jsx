@@ -1,7 +1,25 @@
-import React, {useEffect, useState, useRef} from "react";
-import {FaFilter, FaSearch} from "react-icons/fa";
-import {useNavigate} from "react-router-dom";
-import {EyeIcon} from "lucide-react";
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { Eye, Trash2, Filter, X, Search } from "lucide-react";
+import { TbFilter } from "react-icons/tb";
+
+// --- API Helper Function ---
+async function fetchAllPayments(shopkeeperId, searchTerm, page, limit) {
+    const apiUrl = 'https://linemen-be-1.onrender.com/shopkeeper/payments/';
+    const payload = {
+        shopkeeperId,
+        search: searchTerm,
+        page,
+        limit,
+    };
+    const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    return response.json();
+}
 
 const Payment = () => {
     const [payments, setPayments] = useState([]);
@@ -9,300 +27,247 @@ const Payment = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
+    // State for API
     const [search, setSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const SHOPKEEPER_ID = "68c3c3d0357c37bfad321962";
+
     const [filters, setFilters] = useState([]);
     const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
 
-    const filterRef = useRef(null);
-
-    const filterOptions = ["Electrician", "Plumber", "Painter", "AC Repair", "Carpenter"];
+    const filterOptions = ["Electrician",
+        "Painter",
+        "Carpenter",
+        "AC Repair",
+        "Tile Fitting",
+        "Plumber",];
 
     useEffect(() => {
-        const fetchPayments = async () => {
+        const fetchPaymentsData = async () => {
             try {
                 setLoading(true);
-                const data = [
-                    {
-                        id: 1,
-                        orderNo: "ORD8468163287164",
-                        role: "Plumber",
-                        name: "William Clarke",
-                        updated: "10-05-2025",
-                        status: "Pending",
-                    },
-                    {
-                        id: 2,
-                        orderNo: "ORD8468163287164",
-                        role: "AC Repair",
-                        name: "Thomas Bennett",
-                        updated: "15-05-2025",
-                        status: "Paid",
-                    },
-                    {
-                        id: 3,
-                        orderNo: "ORD8468163287164",
-                        role: "Electrician",
-                        name: "Charles Turner",
-                        updated: "16-07-2025",
-                        status: "Pending",
-                    },
-                    {
-                        id: 4,
-                        orderNo: "ORD8468163287164",
-                        role: "Painter",
-                        name: "Samuel Hughes",
-                        updated: "12-04-2025",
-                        status: "Paid",
-                    },
-                    {
-                        id: 5,
-                        orderNo: "ORD8468163287164",
-                        role: "Carpenter",
-                        name: "Oliver Foster",
-                        updated: "28-05-2025",
-                        status: "Pending",
-                    },
-                ];
-                setPayments(data);
-                setLoading(false);
+                const data = await fetchAllPayments(SHOPKEEPER_ID, search, currentPage, 10);
+
+                if (data && data.success) {
+                    const formattedPayments = data.payments.map(p => ({
+                        id: p._id,
+                        orderNo: p.bookingId?.orderId || p.orderId,
+                        role: p.worker?.experties || 'N/A',
+                        name: p.worker?.name || 'N/A',
+                        updated: new Date(p.updatedAt || Date.now()).toLocaleDateString("en-IN"),
+                        status: p.status === 'settled' ? 'Paid' : 'Pending',
+                    }));
+                    setPayments(formattedPayments);
+                    setTotalPages(data.totalPages);
+                    setTotalCount(data.total || formattedPayments.length);
+                } else {
+                    throw new Error("API request failed");
+                }
             } catch (err) {
                 setError("Failed to fetch payments");
+                console.error(err);
+            } finally {
                 setLoading(false);
             }
         };
-        fetchPayments();
-    }, []);
+
+        const timer = setTimeout(() => {
+            fetchPaymentsData();
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search, currentPage]);
 
     const handleView = (id) => navigate(`/payment/${id}`);
     const handlePay = (id) => navigate(`/payment/process/${id}`);
 
-    const handleResetFilter = () => setFilters([]);
+    const handleResetFilter = () => {
+        setFilters([]);
+        setSearch("");
+        setCurrentPage(1);
+    };
 
     const toggleFilter = (option) => {
-        if (filters.includes(option)) {
-            setFilters(filters.filter((f) => f !== option));
-        } else {
-            setFilters([...filters, option]);
-        }
+        setFilters(prev => prev.includes(option) ? prev.filter(f => f !== option) : [...prev, option]);
+        setCurrentPage(1);
+    };
+
+    const removeFilter = (option) => {
+        setFilters(prev => prev.filter(f => f !== option));
+        setCurrentPage(1);
     };
 
     const filteredPayments = payments.filter((item) => {
-        const searchMatch = item.name.toLowerCase().includes(search.toLowerCase());
         const filterMatch = filters.length === 0 || filters.includes(item.role);
-        return searchMatch && filterMatch;
+        return filterMatch;
     });
 
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (filterRef.current && !filterRef.current.contains(event.target)) {
-                setFilterDropdownOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    if (loading) return <p className="p-4">Loading...</p>;
-    if (error) return <p className="p-4 text-red-500">{error}</p>;
-
     return (
-        <div className="sm:p-2 bg-gray-200">
-            {/* Header - separate card */}
-            <div className="bg-white rounded-md p-3 shadow-[0_2px_4px_0_rgba(0,0,0,0.25)]">
-                <div className="flex items-center">
-                    {/* Title Left */}
-                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 whitespace-nowrap">
-                        Payment Management
-                    </h2>
+        <div className="flex bg-[#E0E9E9] font-medium">
+            <main className="flex-1 p-3 gap-2">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-start items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-24">
+                    <h1 className="text-lg md:text-xl font-semibold" style={{
+                        fontWeight: 500,
+                        fontSize: '20px',
+                        color: 'rgba(51, 51, 51, 1)'
+                    }}>Payment Management</h1>
 
-                    {/* Spacer + Search Bar Center */}
-                    <div className="flex-1 flex justify-center">
-                        <div className="relative w-full sm:w-80 lg:w-96">
-                            <FaSearch className="absolute left-4 inset-y-0 my-auto text-gray-400" />
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Search worker name here..."
-                                className="pl-10 pr-4 py-2 w-full border border-teal-500 rounded-full bg-gray-100 outline-none shadow-sm focus:border-teal-600"
-                            />
-                        </div>
+                    {/* Search */}
+                    <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
+                        <Search className="text-teal-600 mr-2" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Search by Worker Name..."
+                            value={search}
+                            className="flex-1 outline-none bg-transparent text-sm placeholder-black"
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                        />
                     </div>
                 </div>
-            </div>
 
-            {/* Filter Bar + Table + Pagination - merged card */}
-            <div className="bg-white  rounded-md p-4 mt-6 shadow-[0_2px_4px_0_rgba(0,0,0,0.25)] min-h-screen">
-                {/* Filter Bar */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 relative">
-                    <div className="flex flex-wrap gap-3 relative" ref={filterRef}>
-                        {/* Filter Icon */}
-                        <div className="relative">
-                            <button
-                                className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
-                                onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
-                            >
-                                <FaFilter className="text-teal-700" />
-                            </button>
+                {/* Filters & Table */}
+                <div className="bg-white shadow-xl flex flex-col gap-3 mb-4 relative rounded-lg p-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <button
+                            onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
+                            className="border px-2 py-1 rounded bg-[#E0E9E9]"
+                        >
+                            <TbFilter className="w-8 h-8 px-1 py-1 border-[#007E74] text-[#0D2E28] bg-[#E0E9E9] rounded-lg" />
+                        </button>
 
-                            {/* Filter Dropdown */}
-                            {filterDropdownOpen && (
-                                <div className="absolute top-12 left-0 bg-white shadow-lg border rounded-lg z-50 w-48 p-2">
-                                    <div className="flex justify-end mb-2">
-                                        <button
-                                            onClick={() => setFilterDropdownOpen(false)}
-                                            className="text-gray-500 font-bold text-lg"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-
-                                    {filterOptions.map((option) => (
-                                        <div
-                                            key={option}
-                                            className={`p-2 cursor-pointer hover:bg-teal-50 flex justify-between items-center ${
-                                                filters.includes(option) ? "bg-teal-100" : ""
-                                            }`}
-                                            onClick={() => toggleFilter(option)}
-                                        >
-                                            <span>{option}</span>
-                                            {filters.includes(option) && <span></span>}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Selected Filters */}
                         {filters.map((filter) => (
-                            <div key={filter} className="flex items-center bg-gray-200 rounded-full px-3 py-1 text-sm">
-                                <span className="text-gray-800">{filter}</span>
-                                <button
-                                    className="ml-2 text-gray-500"
-                                    onClick={() => setFilters(filters.filter((f) => f !== filter))}
-                                >
-                                    ✕
-                                </button>
-                            </div>
+                            <span key={filter} className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
+                                {filter}
+                                <X className="w-4 h-4 ml-2 cursor-pointer" onClick={() => removeFilter(filter)} />
+                            </span>
                         ))}
+                        {search && (
+                            <span className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
+                                {`Name: "${search}"`}
+                                <X className="w-4 h-4 ml-2 cursor-pointer" onClick={() => setSearch("")} />
+                            </span>
+                        )}
+
+                        <button
+                            onClick={handleResetFilter}
+                            className="ml-auto px-10 py-1 bg-[#D9F1EB] border-2 border-[#007E74] text-[#007E74] rounded"
+                        >
+                            Reset Filter
+                        </button>
                     </div>
 
-                    <button
-                        onClick={handleResetFilter}
-                        className="px-4 py-2 bg-teal-50 border border-teal-700 text-teal-700 rounded-lg text-sm sm:text-base"
-                    >
-                        Reset Filter
-                    </button>
-                </div>
-
-                {/* Table - Desktop */}
-                <div className="hidden md:block border rounded-lg mt-4 overflow-x-auto">
-                    <table className="w-full text-sm text-left border-collapse">
-                        <thead className="bg-gray-200 text-gray-800">
-                            <tr>
-                                <th className="p-3">Sr.No</th>
-                                <th className="p-3">Order No.</th>
-                                <th className="p-3">Worker Role</th>
-                                <th className="p-3">Worker Name</th>
-                                <th className="p-3">Last Updated</th>
-                                <th className="p-3">Settlement Status</th>
-                                <th className="p-3">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredPayments.map((item, index) => (
-                                <tr key={item.id} className="border-b">
-                                    <td className="p-3 text-center">{index + 1}</td>
-                                    <td className="p-3">{item.orderNo}</td>
-                                    <td className="p-3">{item.role}</td>
-                                    <td className="p-3">{item.name}</td>
-                                    <td className="p-3">{item.updated}</td>
-                                    <td
-                                        className={`p-3 font-medium ${
-                                            item.status === "Paid" ? "text-green-600" : "text-yellow-600"
-                                        }`}
-                                    >
-                                        {item.status}
-                                    </td>
-                                    <td className="p-3 flex items-center gap-3">
-                                        <button
-                                            onClick={() => handleView(item.id)}
-                                            className="text-teal-700 hover:text-teal-900"
-                                        >
-                                            <EyeIcon className="w-5 h-5" />
-                                        </button>
-                                        <button
-                                            onClick={() => handlePay(item.id)}
-                                            className="text-teal-700 border border-teal-700 px-3 py-1 rounded-lg bg-teal-50"
-                                        >
-                                            Pay
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Card Layout - Mobile */}
-                <div className="grid grid-cols-1 gap-4 md:hidden mt-4">
-                    {filteredPayments.map((item, index) => (
-                        <div key={item.id} className="border rounded-lg p-4 shadow-sm bg-white">
-                            <p className="text-xs text-gray-500 mb-1">#{index + 1}</p>
-                            <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                            <p className="text-gray-600 text-sm">{item.role}</p>
-                            <p className="text-gray-600 text-sm">{item.orderNo}</p>
-                            <p className="text-gray-500 text-xs">Updated: {item.updated}</p>
-                            <p
-                                className={`text-sm font-medium mt-1 ${
-                                    item.status === "Paid" ? "text-green-600" : "text-yellow-600"
-                                }`}
-                            >
-                                {item.status}
-                            </p>
-                            <div className="flex gap-3 mt-3">
-                                <button onClick={() => handleView(item.id)} className="text-teal-700 text-sm">
-                                    👁️
-                                </button>
-                                <button
-                                    onClick={() => handlePay(item.id)}
-                                    className="text-teal-700 border border-teal-700 px-3 py-1 rounded-lg bg-teal-50 text-sm"
-                                >
-                                    Pay
-                                </button>
+                    {/* Dropdown */}
+                    {filterDropdownOpen && (
+                        <div className="absolute top-16 left-3 bg-white border rounded shadow-md p-4 w-64 z-50">
+                            <div className="mb-3">
+                                <h4 className="font-semibold text-sm mb-2">Expertise</h4>
+                                <ul className="space-y-2 text-sm text-gray-700">
+                                    {filterOptions.map((option) => (
+                                        <li key={option} className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                id={option}
+                                                checked={filters.includes(option)}
+                                                onChange={() => toggleFilter(option)}
+                                            />
+                                            <label htmlFor={option}>{option}</label>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </div>
-                    ))}
-                </div>
+                    )}
 
-                {/* Pagination - inside merged card */}
-                {/* Pagination */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-200 p-1.5 mt-6 rounded-md shadow-[0_2px_4px_0_rgba(0,0,0,0.25)]">
-                    <span className="text-sm font-medium text-gray-700">
-                        Showing 1 to {filteredPayments.length} of {payments.length} Entries
-                    </span>
-
-                    {/* Page buttons */}
-                    <div className="flex gap-2 mt-2 sm:mt-0">
-                        <button className="px-3 py-1.5 rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 shadow-sm">
-                            «
-                        </button>
-                        <button className="px-3 py-1.5 rounded-md border border-teal-600 bg-teal-600 text-white font-medium shadow-sm">
-                            1
-                        </button>
-                        <button className="px-3 py-1.5 rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 shadow-sm">
-                            2
-                        </button>
-                        <button className="px-3 py-1.5 rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 shadow-sm">
-                            3
-                        </button>
-                        <button className="px-3 py-1.5 rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-700 shadow-sm">
-                            »
-                        </button>
+                    {/* Table */}
+                    <div className="overflow-x-auto">
+                        {loading ? (
+                            <p>Loading...</p>
+                        ) : error ? (
+                            <p className="text-red-500">{error}</p>
+                        ) : (
+                            <table className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden" style={{ borderSpacing: 0 }}>
+                                <thead className="bg-[#e0e9e9] text-sm md:text-base">
+                                    <tr>
+                                        <th className="px-4 py-3 font-medium">Sr.No</th>
+                                        <th className="px-4 py-3 font-medium">Order No.</th>
+                                        <th className="px-4 py-3 font-medium">Worker Role</th>
+                                        <th className="px-4 py-3 font-medium">Worker Name</th>
+                                        <th className="px-4 py-3 font-medium">Last Updated</th>
+                                        <th className="px-4 py-3 font-medium">Settlement Status</th>
+                                        <th className="px-4 py-3 font-medium">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-sm md:text-base">
+                                    {filteredPayments.map((item, index) => (
+                                        <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-4 py-3 font-normal">{(currentPage - 1) * 10 + index + 1}</td>
+                                            <td className="px-4 py-3 font-normal">{item.orderNo}</td>
+                                            <td className="px-4 py-3 font-normal">{item.role}</td>
+                                            <td className="px-4 py-3 font-normal">{item.name}</td>
+                                            <td className="px-4 py-3 font-normal">{item.updated}</td>
+                                            <td className={`px-4 py-3 font-normal ${item.status === "Paid" ? "text-green-500" : "text-yellow-500"}`}>
+                                                {item.status}
+                                            </td>
+                                            <td className="px-4 py-3 flex items-center gap-3 text-gray-700">
+                                                <Eye
+                                                    onClick={() => handlePay(item.id)}
+                                                    className="w-5 h-5 cursor-pointer text-[#06A77D]"
+                                                />
+                                                <button
+                                                    onClick={() => handlePay(item.id)}
+                                                    className="text-teal-700 border border-teal-700 px-3 py-1 rounded-lg bg-[#D9F1EB]"
+                                                >
+                                                    Pay
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 </div>
-            </div>
+
+                {/* Pagination */}
+                {!loading && !error && totalPages > 0 && (
+                    <div className="w-full flex flex-col bg-[#F5F5F5] md:flex-row justify-between items-center gap-2 p-2 text-sm font-semibold text-black">
+                        <span>
+                            Showing {filteredPayments.length} of {totalCount} Entries
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="px-2 py-1 text-teal-700 hover:bg-purple-100 rounded disabled:opacity-50"
+                            >
+                                &lt;
+                            </button>
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i + 1}
+                                    onClick={() => setCurrentPage(i + 1)}
+                                    className={`px-3 py-1 rounded ${currentPage === i + 1 ? "bg-teal-700 text-white" : "bg-teal-100 text-teal-700"}`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                className="px-2 py-1 text-teal-700 hover:bg-purple-100 rounded disabled:opacity-50"
+                            >
+                                &gt;
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </main>
         </div>
     );
 };

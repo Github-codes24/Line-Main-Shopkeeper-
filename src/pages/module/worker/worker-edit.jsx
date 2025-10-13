@@ -32,7 +32,7 @@ const WorkerEdit = () => {
         try {
             const result = await fetchData({
                 method: "PATCH",
-                url: `${conf.apiBaseUrl}shopkeeper/worker/update-worker/${id}`,
+                url: `${conf.apiBaseUrl}/shopkeeper/worker/update-worker/${id}`,
                 data: {
                     name: formData.name,
                     experties: formData.expertise, // send as 'experties'

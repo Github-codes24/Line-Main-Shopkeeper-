@@ -3,7 +3,7 @@ import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Card from "../components/cards/card";
 import OrderTable from "../components/cards/OrderTable";
-import TopSellingProduct from "../components/cards/Products";
+import TopSellinśgProduct from "../components/cards/Products";
 import TopWorker from "../components/cards/worker-card";
 import Searchbar from "../components/layout/Searchbar";
 import useDashboard from "../hook/dashboard/useDashboard";
@@ -25,11 +25,12 @@ const DashboardPage = () => {
     const {stats, orderManagement, topSellingProduct, topWorker} = dashboardData;
 
     return (
-        <div className="space-y-6 bg-gray-200 p-2 min-h-screen">
+        <div className="space-y-3 bg-gray-200 p-2 min-h-screen">
             <ToastContainer />
             <Searchbar />
 
             {/* Stats */}
+            <div class="bg-white shadow-xl flex flex-col gap-3 mb-4 relative rounded-lg p-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-40">
                 <Card title="Total Sales" value={stats?.totalSales?.value} change={stats?.totalSales?.change} />
                 <Card title="Total Worker" value={stats?.totalWorker?.value} change={stats?.totalWorker?.change} />
@@ -44,11 +45,12 @@ const DashboardPage = () => {
             {/* Order Table & Products */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <OrderTable orders={orderManagement} />
-                <TopSellingProduct products={topSellingProduct} />
+                <TopSellinśgProduct products={topSellingProduct} />
             </div>
 
             {/* Workers */}
             <TopWorker workers={topWorker} />
+        </div>
         </div>
     );
 };

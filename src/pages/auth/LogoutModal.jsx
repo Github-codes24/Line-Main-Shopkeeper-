@@ -3,14 +3,14 @@ import React from "react";
 const LogoutModal = ({onClose, onConfirm}) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-lg max-w-sm w-full p-10 text-center">
-                <h2 className="text-lg font-bold text-gray-800 mb-2">Confirm Logout</h2>
+            <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-10 text-center">
+                <h2 className="text-xl font-bold text-gray-800 mb-2">Confirm Logout</h2>
                 <p className="text-lg text-gray-500 mb-6">You’ll need to login again to access</p>
 
                 <div className="flex justify-between gap-3">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-1 rounded-md border border-teal-500 text-teal-700 hover:bg-teal-50 transition"
+                        className="flex-1 py-1 rounded-md border border-teal-500 text-teal-700 bg-teal-50 "
                     >
                         Cancel
                     </button>
