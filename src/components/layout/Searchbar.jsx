@@ -31,7 +31,11 @@ export default function ProductListHeader() {
     return (
         <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-3 bg-white p-3 rounded-md shadow">
             {/* Title */}
-            <h4 className="font-semibold text-xl">Product List</h4>
+            <h4 className=" text-xl" style={{
+                        fontWeight: 500,
+                        fontSize: '20px',
+                        color: 'rgba(51, 51, 51, 1)'
+                    }}> Product List</h4>
 
             {/* Search bar */}
             <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">

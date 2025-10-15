@@ -11,12 +11,16 @@ const TopSellingProduct = () => {
     }, []);
 
     return (
-        <div className="bg-white p-5 rounded-xl shadow-lg border border-gray-200 w-full">
+        <div className="bg-white p-5  overflow-x-auto rounded-xl shadow-lg border border-gray-800 w-full">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-                <h4 className="text-lg font-semibold text-gray-800">Top Selling Products</h4>
+                <h4 className="text-lg font-semibold text-gray-800" style={{
+                        fontWeight: 500,
+                        fontSize: '18px',
+                        color: 'rgba(51, 51, 51, 1)'
+                    }}>Top Selling Products</h4>
                 <button
-                    className="text-sm font-medium text-teal-600 hover:text-teal-800 transition-colors"
+                    className="text-sm font-medium text--200 "
                     // onClick={() => navigate("/products")}
                 >
                     See All
@@ -24,13 +28,13 @@ const TopSellingProduct = () => {
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <div className="overflow-x-auto rounded-lg border border-gray-800">
                 <table className="w-full text-sm text-gray-700">
                     <thead>
                         <tr className="bg-gray-100 text-left border-b border-gray-100/70">
-                            <th className="p-3 font-semibold text-gray-900">Product Image</th>
-                            <th className="p-3 font-semibold text-gray-900">Product Name</th>
-                            <th className="p-3 font-semibold text-gray-900">Product Category</th>
+                            <th className="p-3 font-medium text-center text-gray-900">Product Image</th>
+                            <th className="p-3 font-medium text-center text-gray-900">Product Name</th>
+                            <th className="p-3 font-medium text-center text-gray-900">Product Category</th>
                         </tr>
                     </thead>
 
@@ -39,17 +43,17 @@ const TopSellingProduct = () => {
                             productsToDisplay.map((item, index) => (
                                 <tr
                                     key={index}
-                                    className="hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100/60"
+                                    className=""
                                 >
-                                    <td className="p-3">
+                                    <td className="p-3 text-center">
                                         <img
                                             src={item.productImageUrl || item.productImage}
                                             alt={item.productName}
-                                            className="w-10 h-10 rounded-md object-cover border border-gray-200"
+                                            className="w-10 h-10 rounded-md object-cover border border-gray-200 text-center mx-auto"
                                         />
                                     </td>
-                                    <td className="p-3 font-medium text-gray-800">{item.productName}</td>
-                                    <td className="p-3 text-gray-600">{item.productSubCategory || "—"}</td>
+                                    <td className="p-3 font-medium text-center text-gray-800">{item.productName}</td>
+                                    <td className="p-3  font-medium  text-center text-gray-800">{item.productCategory}</td>
                                 </tr>
                             ))
                         ) : (
