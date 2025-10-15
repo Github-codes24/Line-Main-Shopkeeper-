@@ -56,7 +56,7 @@ const Card = ({title, value, change}) => {
                     {isPositive ? <TrendingUp size={16} className="mr-1" /> : <TrendingDown size={16} className="mr-1" />}
                     <span>{change}</span>
                 </div>
-                <p className="text-md font-medium ">This Month</p>
+                <p className="text-md font-medium ">This Monthc vbtr</p>
             </div>
         </div>
     );
