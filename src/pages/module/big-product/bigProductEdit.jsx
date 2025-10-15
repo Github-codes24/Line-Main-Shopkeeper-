@@ -3,11 +3,13 @@ import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+import conf from "../../../config";
+import useFetch from "../../../hook/useFetch";
 
 const BigProductEdit = () => {
     const navigate = useNavigate();
     const {id} = useParams();
+    const [fetchData] = useFetch();
 
     const [product, setProduct] = useState({
         productName: "",
@@ -18,23 +20,21 @@ const BigProductEdit = () => {
         productImageUrl: "",
     });
 
+    const [loading, setLoading] = useState(false);
+
     // Fetch product details
     useEffect(() => {
         const getProduct = async () => {
             try {
-                const res = await axios.get(
-                    `https://linemen-be-1.onrender.com/shopkeeper/bigproduct/get-single-bigproduct/${id}`,
-                    {
-                        headers: {
-                            Authorization:
-                                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGVjOTM4MzdlMGU0ZTA2ZWExZmRhMTEiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc2MDMzNDgyOSwiZXhwIjoxNzYwMzYzNjI5fQ.LTh_6QMFjALzK6rrhonR_p8xgz0WGPBNh3KC6iBTVes",
-                        },
-                    }
-                );
-                if (res.data.success) {
-                    setProduct(res.data.data);
+                const result = await fetchData({
+                    method: "GET",
+                    url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/get-single-bigproduct/${id}`,
+                });
+
+                if (result.success) {
+                    setProduct(result.data);
                 } else {
-                    toast.error(res.data.message || "Failed to fetch product data");
+                    toast.error(result.message || "Failed to fetch product data");
                 }
             } catch (err) {
                 console.error("Error fetching product:", err);
@@ -54,33 +54,45 @@ const BigProductEdit = () => {
     };
 
     const handleUpdate = async () => {
+        // Validation
+        if (!product.productPrice || product.productPrice <= 0) {
+            toast.error("Please enter a valid product price");
+            return;
+        }
+
+        if (!product.productDescription || product.productDescription.length < 10) {
+            toast.error("Product description must be at least 10 characters");
+            return;
+        }
+
+        setLoading(true);
+
         try {
             const payload = {
                 productPrice: Number(product.productPrice),
                 productDescription: product.productDescription,
             };
 
-            const res = await axios.put(
-                `https://linemen-be-1.onrender.com/shopkeeper/bigproduct/update-bigproduct/${id}`,
-                payload,
-                {
-                    headers: {
-                        Authorization:
-                            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGVjOTM4MzdlMGU0ZTA2ZWExZmRhMTEiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc2MDMzNDgyOSwiZXhwIjoxNzYwMzYzNjI5fQ.LTh_6QMFjALzK6rrhonR_p8xgz0WGPBNh3KC6iBTVes",
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+            const result = await fetchData({
+                method: "PUT",
+                url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/update-bigproduct/${id}`,
+                data: payload,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-            if (res.data.success) {
-                toast.success("Product updated successfully!");
+            if (result.success) {
+                toast.success("Product updated successfully! ✅");
                 setTimeout(() => navigate("/big-product"), 1500);
             } else {
-                toast.error(res.data.message || "Failed to update product");
+                toast.error(result.message || "Failed to update product");
             }
         } catch (err) {
             console.error("Error updating product:", err);
             toast.error("Something went wrong while updating product");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -88,7 +100,7 @@ const BigProductEdit = () => {
         <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28]">
             <ToastContainer />
             <div className="flex bg-white m-2 border rounded-lg shadow-lg p-2">
-                <button onClick={() => navigate(-1)} className="text-xl text-black hover:opacity-75">
+                <button onClick={() => navigate(-1)} className="text-xl text-black ">
                     <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z"
@@ -121,7 +133,11 @@ const BigProductEdit = () => {
                     <div className="flex items-start">
                         <p className="w-1/3 font-medium">Product Image</p>
                         <div className="w-full">
-                            <img src={product.productImageUrl} alt={product.productName} className="max-h-60 rounded" />
+                            <img 
+                                src={product.productImageUrl || "https://via.placeholder.com/300?text=No+Image"} 
+                                alt={product.productName} 
+                                className="max-h-60 rounded" 
+                            />
                         </div>
                     </div>
 
@@ -186,45 +202,20 @@ const BigProductEdit = () => {
                 <div className="flex justify-center space-x-3">
                     <button
                         onClick={handleBack}
-                        className="bg-teal-100 text-[#007E74] border-1 border-[#007E74] px-5 py-2 rounded-lg"
+                        className="bg-teal-100 text-[#007E74] border-1 border-[#007E74] px-5 py-2 rounded-lg  transition-colors"
+                        disabled={loading}
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleUpdate}
-                        className="bg-teal-700 text-white px-5 py-2 rounded hover:bg-teal-800"
+                        disabled={loading}
+                        className="bg-teal-700 text-white px-5 py-2 rounded  transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
-                        Update
+                        {loading ? "Updating..." : "Update"}
                     </button>
                 </div>
             </div>
-        </div>
-    );
-};
-
-// Reusable Form Field
-const FormField = ({label, placeholder, type, children}) => {
-    return (
-        <div className="flex flex-col sm:flex-row sm:items-center w-full gap-2">
-            <label className="w-full sm:w-1/3 font-medium">{label}</label>
-            <span className="hidden sm:inline font-medium">:</span>
-            {type === "textarea" ? (
-                <textarea
-                    placeholder={placeholder}
-                    rows={4}
-                    className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2 focus:outline-none focus:border-teal-500 placeholder:text-[#0D2E28]"
-                />
-            ) : type === "select" ? (
-                <select className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2 focus:outline-none focus:border-teal-500 text-[#0D2E28]">
-                    {children}
-                </select>
-            ) : (
-                <input
-                    type="text"
-                    placeholder={placeholder}
-                    className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2 focus:outline-none focus:border-teal-500 placeholder:text-[#0D2E28]"
-                />
-            )}
         </div>
     );
 };

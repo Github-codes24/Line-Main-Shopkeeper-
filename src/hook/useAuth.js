@@ -51,22 +51,29 @@ const useAuth = () => {
                 setLoading(false);
                 return;
             }
+            
+            // FIX: Get expertise from sessionStorage
+            const expertise = sessionStorage.getItem("expertise");
+            
             const data = {
                 contact: contact,
                 otp: finalOtp,
                 fcm_token: fcm_token,
+                experties: expertise,  // ← ADDED THIS (note the typo "experties" matches your API)
             };
+            
             const res = await fetchData({
                 method: "POST",
                 url: `${conf.apiBaseUrl}/shopkeeper/auth/verify-otp`,
                 data: data,
             });
+            
             if (res) {
                 // Store token and shopId
                 sessionStorage.setItem("token", res?.token);
                 sessionStorage.setItem("shopId", res?.data?.shopId);
                 
-                // CRITICAL FIX: Update Recoil authentication state
+                // CRITICAL: Update Recoil authentication state
                 setUserInfo({
                     isAuthenticated: true,
                 });
@@ -74,13 +81,14 @@ const useAuth = () => {
                 toast.success(res?.message);
                 
                 // Navigate to dashboard
-                navigate("/dashboard");
+                navigate("/dashboard", { replace: true });
                 setLoading(false);
             }
         } catch (error) {
             console.log("Error while verify otp :", error);
-            toast.error("Invalid OTP. Please try again.");
+            toast.error(error?.response?.data?.message || "Invalid OTP. Please try again.");
             setLoading(false);
+            throw error; // Re-throw so OtpVerification component can handle it
         } finally {
             setLoading(false);
         }
@@ -143,6 +151,7 @@ const useAuth = () => {
         });
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("contact");
+        sessionStorage.removeItem("expertise");
         sessionStorage.removeItem("shopId");
         sessionStorage.removeItem("ownerName");
         sessionStorage.removeItem("isVerified");

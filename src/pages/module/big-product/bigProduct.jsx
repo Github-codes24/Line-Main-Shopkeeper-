@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react"; 
-import { Eye, Trash2, Filter, X, Search } from "lucide-react";
+import { Eye, Trash2, X, Search } from "lucide-react";
 import { TbFilter } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { FiEdit } from "react-icons/fi";
+import { FaPlus } from "react-icons/fa6";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import conf from "../../../config";
+import useFetch from "../../../hook/useFetch";
 
 const getStatusColor = (status) => {
     switch (status) {
@@ -22,21 +26,20 @@ const getStatusColor = (status) => {
 
 const BigProduct = () => {
     const navigate = useNavigate();
-
-    const API_BASE_URL = "https://linemen-be-1.onrender.com";
-    const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGVjOTM4MzdlMGU0ZTA2ZWExZmRhMTEiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc2MDMzNDgyOSwiZXhwIjoxNzYwMzYzNjI5fQ.LTh_6QMFjALzK6rrhonR_p8xgz0WGPBNh3KC6iBTVes";
+    const [fetchData] = useFetch();
 
     // Expertise options
     const expertiseOptions = [
         "Electrician",
-       "Painter",
+        "Painter",
         "Carpenter",
         "AC Repair",
         "Tile Fitting",
-          "Plumber",
+        "Plumber",
     ];
 
     const [products, setProducts] = useState([]);
+    const [allProducts, setAllProducts] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterOpen, setFilterOpen] = useState(false);
@@ -46,84 +49,79 @@ const BigProduct = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-    const [limit] = useState(5);
+    const [limit] = useState(10);
 
-    // Fetch all products and filter + paginate locally
-    const fetchProducts = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await axios.get(`${API_BASE_URL}/shopkeeper/bigproduct/get-all-bigproduct?limit=1000`, {
-                headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
-            });
-
-            if (response.data.success) {
-                let fetchedProducts = response.data.data;
-
-                // Apply filters
-                if (selectedFilters.length > 0) {
-                    fetchedProducts = fetchedProducts.filter(p => 
-                        selectedFilters.includes(p.productSubCategory)
-                    );
-                }
-                if (searchTerm) {
-                    fetchedProducts = fetchedProducts.filter(p => 
-                        p.productName.toLowerCase().includes(searchTerm.toLowerCase())
-                    );
-                }
-
-                // Reset page if currentPage is out of range
-                if ((currentPage - 1) * limit >= fetchedProducts.length && fetchedProducts.length > 0) {
-                    setCurrentPage(1);
-                    setLoading(false);
-                    return;
-                }
-
-                setTotalCount(fetchedProducts.length);
-                setTotalPages(Math.ceil(fetchedProducts.length / limit));
-
-                // Slice for current page
-                const start = (currentPage - 1) * limit;
-                const end = start + limit;
-                setProducts(fetchedProducts.slice(start, end));
-            }
-        } catch (err) {
-            setError("Failed to fetch products. Please try again later.");
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    }, [selectedFilters, searchTerm, currentPage, limit]);
-
+    // Fetch all products once
     useEffect(() => {
-        fetchProducts();
-    }, [fetchProducts]);
-
-    // Actions
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this product?")) {
+        const fetchAllProducts = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                const response = await axios.delete(`${API_BASE_URL}/shopkeeper/bigproduct/delete-bigproduct/${id}`, {
-                    headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
+                const result = await fetchData({
+                    method: "GET",
+                    url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/get-all-bigproduct?limit=1000`,
                 });
-                if (response.data.success) {
-                    alert("Product deleted successfully!");
-                    fetchProducts();
+
+                if (result.success) {
+                    const productData = result.data || [];
+                    setAllProducts(productData);
+
+                    if (productData.length === 0) {
+                        toast.info("No products found");
+                    }
                 } else {
-                    alert(response.data.message);
+                    setError(result.message || "Failed to fetch products");
+                    setAllProducts([]);
                 }
             } catch (err) {
-                alert("Failed to delete product.");
-                console.error(err);
+                console.error("Error fetching products:", err);
+                setError(err.message || "Error fetching products");
+                setAllProducts([]);
+            } finally {
+                setLoading(false);
             }
+        };
+
+        fetchAllProducts();
+    }, []);
+
+    // Apply filters and pagination
+    useEffect(() => {
+        applyFiltersAndPagination();
+    }, [allProducts, searchTerm, selectedFilters, currentPage]);
+
+    const applyFiltersAndPagination = () => {
+        let filtered = [...allProducts];
+
+        // Apply search filter
+        if (searchTerm) {
+            filtered = filtered.filter((product) =>
+                product.productName.toLowerCase().includes(searchTerm.toLowerCase())
+            );
         }
+
+        // Apply expertise filter
+        if (selectedFilters.length > 0) {
+            filtered = filtered.filter((product) =>
+                selectedFilters.includes(product.productSubCategory)
+            );
+        }
+
+        // Reset page if out of range
+        if ((currentPage - 1) * limit >= filtered.length && filtered.length > 0) {
+            setCurrentPage(1);
+            return;
+        }
+
+        setTotalCount(filtered.length);
+        setTotalPages(Math.ceil(filtered.length / limit));
+
+        // Paginate
+        const start = (currentPage - 1) * limit;
+        const end = start + limit;
+        setProducts(filtered.slice(start, end));
     };
 
-    const handleAdd = () => navigate("/big-product/add");
-    const handleEdit = (id) => navigate(`/big-product/edit/${id}`);
-    const handleView = (id) => navigate(`/big-product/view/${id}`);
-    const handleSearchChange = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
-    
     const toggleFilter = (option) => {
         setSelectedFilters((prev) =>
             prev.includes(option)
@@ -138,65 +136,120 @@ const BigProduct = () => {
         setCurrentPage(1);
     };
 
-    const resetFilter = () => { 
-        setSelectedFilters([]); 
-        setSearchTerm(""); 
-        setCurrentPage(1); 
+    const resetFilter = () => {
+        setSelectedFilters([]);
+        setSearchTerm("");
+        setCurrentPage(1);
     };
 
+    const handleDelete = async (id, productName) => {
+        if (!window.confirm(`Are you sure you want to delete ${productName}?`)) return;
+
+        try {
+            const result = await fetchData({
+                method: "DELETE",
+                url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/delete-bigproduct/${id}`,
+            });
+
+            if (result.success) {
+                toast.success(result.message || "Product deleted successfully!");
+                // Remove from allProducts state instead of refetching
+                setAllProducts((prev) => prev.filter((product) => product._id !== id));
+            } else {
+                toast.error(result.message || "Failed to delete product");
+            }
+        } catch (err) {
+            console.error("Delete error:", err);
+            toast.error(err.message || "Error deleting product");
+        }
+    };
+
+    const handleAdd = () => navigate("/big-product/add");
+    const handleEdit = (id) => navigate(`/big-product/edit/${id}`);
+    const handleView = (id) => navigate(`/big-product/view/${id}`);
+
     return (
-        <div className="flex bg-[#E0E9E9] font-medium ">
+        <div className="flex bg-[#E0E9E9] font-medium">
+            <ToastContainer />
+
             <main className="flex-1 p-3 gap-2">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-3">
-                    <h1 className="text-lg md:text-xl " style={{
-                        fontWeight: 500,
-                        fontSize: '20px',
-                        color: 'rgba(51, 51, 51, 1)'
-                    }}>Big Product List</h1>
+                    <h1
+                        className="text-lg md:text-xl"
+                        style={{
+                            fontWeight: 500,
+                            fontSize: "20px",
+                            color: "rgba(51, 51, 51, 1)",
+                        }}
+                    >
+                        Big Product List
+                    </h1>
 
                     {/* Search */}
                     <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
-                                <Search className="text-teal-600 mr-2" size={18} />
-                                <input
-                                  type="text"
-                                  placeholder="Search by Product Name..."
-                                  value={searchTerm}
-                                  className="flex-1 outline-none bg-transparent text-sm placeholder-black"
-                                  onChange={(e) => {
-                                    setSearchTerm(e.target.value);
-                                    setCurrentPage(1);
-                                  }}
-                                />
-                              </div>
+                        <Search className="text-teal-600 mr-2" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Search by Product Name..."
+                            value={searchTerm}
+                            className="flex-1 outline-none bg-transparent text-sm placeholder-black"
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                        />
+                    </div>
 
                     {/* Add Product */}
-                    <button onClick={handleAdd} className="bg-[#007E74] text-white text-base px-4 py-2 rounded-lg w-full md:w-auto">
-                        + Add New Product
+                    <button
+                        onClick={handleAdd}
+                        className="bg-[#007E74] text-white text-base px-4 py-2 rounded-lg w-full md:w-auto  transition-colors flex items-center justify-center gap-2"
+                    >
+                        <FaPlus className="inline" /> Add New Product
                     </button>
                 </div>
 
                 {/* Filters */}
                 <div className="bg-white shadow-xl flex flex-col gap-3 mb-4 relative rounded-lg p-3">
                     <div className="flex flex-wrap items-center gap-2">
-                        <button onClick={() => setFilterOpen(!filterOpen)} className="border px-2 py-1 rounded bg-[#E0E9E9]">
+                        <button
+                            onClick={() => setFilterOpen(!filterOpen)}
+                            className="border px-2 py-1 rounded bg-[#E0E9E9] "
+                        >
                             <TbFilter className="w-8 h-8 px-1 py-1 border-[#007E74] text-[#0D2E28] bg-[#E0E9E9] rounded-lg" />
                         </button>
 
                         {selectedFilters.map((filter) => (
-                            <span key={filter} className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
+                            <span
+                                key={filter}
+                                className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm"
+                            >
                                 {filter}
-                                <X className="w-4 h-4 ml-2 cursor-pointer" onClick={() => removeFilter(filter)} />
+                                <X
+                                    className="w-4 h-4 ml-2 cursor-pointer "
+                                    onClick={() => removeFilter(filter)}
+                                />
                             </span>
                         ))}
+
                         {searchTerm && (
                             <span className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
-                                {`Name: "${searchTerm}"`}
-                                <X className="w-4 h-4 ml-2 cursor-pointer" onClick={() => setSearchTerm("")} />
+                                {`Search: "${searchTerm}"`}
+                                <X
+                                    className="w-4 h-4 ml-2 cursor-pointer "
+                                    onClick={() => {
+                                        setSearchTerm("");
+                                        setCurrentPage(1);
+                                    }}
+                                />
                             </span>
                         )}
 
-                        <button onClick={resetFilter} className="ml-auto px-10 py-1 bg-[#D9F1EB] border-2 border-[#007E74] text-[#007E74] rounded">
+                        <button
+                            onClick={resetFilter}
+                            className="ml-auto px-10 py-1 bg-[#D9F1EB] border-2 border-[#007E74] text-[#007E74] rounded"
+                        >
                             Reset Filter
                         </button>
                     </div>
@@ -209,13 +262,16 @@ const BigProduct = () => {
                                 <ul className="space-y-2 text-sm text-gray-700">
                                     {expertiseOptions.map((option) => (
                                         <li key={option} className="flex items-center gap-2">
-                                            <input 
-                                                type="checkbox" 
-                                                id={option} 
-                                                checked={selectedFilters.includes(option)} 
-                                                onChange={() => toggleFilter(option)} 
+                                            <input
+                                                type="checkbox"
+                                                id={option}
+                                                checked={selectedFilters.includes(option)}
+                                                onChange={() => toggleFilter(option)}
+                                                className="cursor-pointer"
                                             />
-                                            <label htmlFor={option}>{option}</label>
+                                            <label htmlFor={option} className="cursor-pointer">
+                                                {option}
+                                            </label>
                                         </li>
                                     ))}
                                 </ul>
@@ -223,10 +279,27 @@ const BigProduct = () => {
                         </div>
                     )}
 
-                    {/* Table */} 
+                    {/* Table */}
                     <div className="overflow-x-auto">
-                        {loading ? <p>Loading...</p> : error ? <p className="text-red-500">{error}</p> : (
-                            <table className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden" style={{ borderSpacing: 0 }}>
+                        {loading ? (
+                            <div className="text-center py-8">
+                                <p className="text-gray-600">Loading products...</p>
+                            </div>
+                        ) : error ? (
+                            <div className="text-center py-8">
+                                <p className="text-red-500">{error}</p>
+                            </div>
+                        ) : products.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-gray-600">
+                                    No products found matching your criteria.
+                                </p>
+                            </div>
+                        ) : (
+                            <table
+                                className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden"
+                                style={{ borderSpacing: 0 }}
+                            >
                                 <thead className="bg-[#e0e9e9] text-sm md:text-base">
                                     <tr>
                                         <th className="px-4 py-3 font-medium">Sr.No.</th>
@@ -241,39 +314,61 @@ const BigProduct = () => {
                                 </thead>
                                 <tbody className="text-sm md:text-base">
                                     {products.map((product, index) => (
-                                        <tr key={product._id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-4 py-3 font-normal">{(currentPage - 1) * limit + index + 1}</td>
+                                        <tr
+                                            key={product._id}
+                                            className=" border-b border-gray-200"
+                                        >
+                                            <td className="px-4 py-3 font-normal">
+                                                {(currentPage - 1) * limit + index + 1}
+                                            </td>
                                             <td className="px-4 py-3">
                                                 <img
                                                     src={product.productImageUrl || "PVC.png"}
                                                     alt={product.productName}
-                                                    className="w-12 h-12 md:w-14 md:h-14 rounded border border-[#007E74]"
+                                                    className="w-12 h-12 md:w-14 md:h-14 rounded border border-[#007E74] object-cover"
                                                 />
                                             </td>
-                                            <td className="px-4 py-3 font-normal">{product.productName}</td>
+                                            <td className="px-4 py-3 font-normal">
+                                                {product.productName}
+                                            </td>
                                             <td className="px-4 py-3 font-normal">
                                                 {typeof product.productCategory === "object"
                                                     ? product.productCategory?.tabName || "N/A"
                                                     : product.productCategory || "N/A"}
                                             </td>
-                                            <td className="px-4 py-3 font-normal">{product.productSubCategory || "N/A"}</td>
-                                            <td className="px-4 py-3 font-normal">₹{product.productPrice}</td>
-                                            <td className={`px-4 py-3 font-normal ${getStatusColor(product.approvalStatus)}`}>
+                                            <td className="px-4 py-3 font-normal">
+                                                {product.productSubCategory || "N/A"}
+                                            </td>
+                                            <td className="px-4 py-3 font-normal">
+                                                ₹{product.productPrice}
+                                            </td>
+                                            <td
+                                                className={`px-4 py-3 font-normal ${getStatusColor(
+                                                    product.approvalStatus
+                                                )}`}
+                                            >
                                                 {product.approvalStatus}
                                             </td>
-                                            <td className="px-4 py-3 flex items-center gap-3 text-gray-700">
-                                                <Eye
-                                                    onClick={() => handleView(product._id)}
-                                                    className="w-5 h-5 cursor-pointer text-[#EC2D01]"
-                                                />
-                                                <FiEdit
-                                                    onClick={() => handleEdit(product._id)}
-                                                    className="w-5 h-5 cursor-pointer text-[#EC2D01]"
-                                                />
-                                                <Trash2
-                                                    onClick={() => handleDelete(product._id)}
-                                                    className="w-5 h-5 cursor-pointer text-[#EC2D01]"
-                                                />
+                                            <td className="px-4 py-3 font-normal">
+                                                <div className="flex items-center gap-3 text-gray-700">
+                                                    <Eye
+                                                        onClick={() => handleView(product._id)}
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D]  transition-colors"
+                                                        title="View Product"
+                                                    />
+                                                    <FiEdit
+                                                        onClick={() => handleEdit(product._id)}
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D]  transition-colors"
+                                                        title="Edit Product"
+                                                    />
+                                                    <Trash2
+                                                        onClick={() =>
+                                                            handleDelete(product._id, product.productName)
+                                                        }
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D]  transition-colors"
+                                                        title="Delete Product"
+                                                    />
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -285,15 +380,15 @@ const BigProduct = () => {
 
                 {/* Pagination */}
                 {!loading && !error && totalPages > 0 && (
-                    <div className="w-full flex flex-col bg-[#F5F5F5] md:flex-row justify-between items-center gap-2 p-2 text-sm font-semibold text-black">
+                    <div className="w-full flex flex-col bg-white md:flex-row justify-between items-center gap-2 p-3 text-sm font-semibold text-black rounded-lg shadow">
                         <span>
                             Showing {products.length} of {totalCount} Entries
                         </span>
                         <div className="flex items-center gap-2">
                             <button
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
-                                className="px-2 py-1 text-teal-700 hover:bg-purple-100 rounded disabled:opacity-50"
+                                className="px-3 py-1 text-teal-700  rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 &lt;
                             </button>
@@ -301,15 +396,21 @@ const BigProduct = () => {
                                 <button
                                     key={i + 1}
                                     onClick={() => setCurrentPage(i + 1)}
-                                    className={`px-3 py-1 rounded ${currentPage === i + 1 ? "bg-teal-700 text-white" : "bg-teal-100 text-teal-700"}`}
+                                    className={`px-3 py-1 rounded transition-colors ${
+                                        currentPage === i + 1
+                                            ? "bg-teal-700 text-white"
+                                            : "bg-teal-100 text-teal-700 "
+                                    }`}
                                 >
                                     {i + 1}
                                 </button>
                             ))}
                             <button
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                onClick={() =>
+                                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                                }
                                 disabled={currentPage === totalPages}
-                                className="px-2 py-1 text-teal-700 hover:bg-purple-100 rounded disabled:opacity-50"
+                                className="px-3 py-1 text-teal-700  rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 &gt;
                             </button>
