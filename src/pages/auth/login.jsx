@@ -7,34 +7,34 @@ import useAuth from "../../hook/useAuth";
 
 const AdminLogin = () => {
     const navigate = useNavigate();
-    const {loading, shopkeeperLogin, loginResponse} = useAuth();
+    const {loading, shopkeeperLogin, fetchExpertiseList, expertiseList, loadingExpertise} = useAuth();
 
+    // -------------------Formik Setup-------------------
     const formik = useFormik({
         initialValues: {
-            role: "",
+            expertise: "",
             emailOrPhone: "",
         },
         validationSchema: Yup.object({
-            // role: Yup.string().required("Role is required"),
+            expertise: Yup.string().required("Expertise is required"),
             emailOrPhone: Yup.string().required("Email or Mobile Number is required"),
         }),
         onSubmit: async (values) => {
             const payload = {
                 contact: values.emailOrPhone,
-                // role: values.role
+                experties: values.expertise,
             };
+
             sessionStorage.setItem("contact", values.emailOrPhone);
-            // const success = await generateOtp(payload);
+            sessionStorage.setItem("expertise", values.expertise);
 
             shopkeeperLogin(payload);
-
-            // if (success) {
-            //     sessionStorage.setItem("contact", values.emailOrPhone);
-            //     sessionStorage.setItem("role", values.role);
-            //     navigate("/verify-otp");
-            // }
         },
     });
+
+    useEffect(() => {
+        fetchExpertiseList();
+    }, [fetchExpertiseList]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-teal-600">
@@ -49,21 +49,25 @@ const AdminLogin = () => {
                 <p className="text-sm text-gray-500 text-center mb-6 mt-1">Please Log In To Your Account</p>
 
                 <form onSubmit={formik.handleSubmit} className="space-y-4">
-                    {/* Role Select */}
+                    {/* Expertise Select */}
                     <select
-                        name="role"
+                        name="expertise"
                         className={`w-full border ${
-                            formik.touched.role && formik.errors.role ? "border-red-500" : "border-teal-500"
+                            formik.touched.expertise && formik.errors.expertise ? "border-red-500" : "border-teal-500"
                         } rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400`}
-                        {...formik.getFieldProps("role")}
+                        {...formik.getFieldProps("expertise")}
+                        onClick={fetchExpertiseList}
+                        disabled={loadingExpertise}
                     >
-                        <option value="">Select Role</option>
-                        <option value="admin">Admin</option>
-                        <option value="shopkeeper">Shopkeeper</option>
-                        <option value="user">User</option>
+                        <option value="">{loadingExpertise ? "Loading expertise..." : "Select Expertise"}</option>
+                        {expertiseList.map((item) => (
+                            <option key={item._id} value={item._id}>
+                                {item.tabName}
+                            </option>
+                        ))}
                     </select>
-                    {formik.touched.role && formik.errors.role && (
-                        <div className="text-red-500 text-xs">{formik.errors.role}</div>
+                    {formik.touched.expertise && formik.errors.expertise && (
+                        <div className="text-red-500 text-xs">{formik.errors.expertise}</div>
                     )}
 
                     {/* Email/Phone Input */}

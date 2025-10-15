@@ -148,7 +148,10 @@ const UploadBill = () => {
 
                 {/* Action Buttons */}
                 <div className="flex justify-center space-x-5 mt-6">
-                    <button className="px-12 py-2 border-1 bg-[#D9F1EB] border-[#007E74] font-medium text-[#007E74] rounded-lg">
+                    <button
+                        className="px-12 py-2 border-1 bg-[#D9F1EB] border-[#007E74] font-medium text-[#007E74] rounded-lg"
+                        onClick={() => navigate(-1)}
+                    >
                         Cancel
                     </button>
                     <button className="px-12 py-2 bg-[#007E74] text-white font-medium rounded-md">Submit</button>

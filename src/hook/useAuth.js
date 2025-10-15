@@ -6,6 +6,7 @@ import {profileAtom, shopkeeperLoginAtom} from "../state/auth/authState";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {getFcmToken} from "../firebase/getFcmToken";
+import axios from "axios";
 
 const useAuth = () => {
     const navigate = useNavigate();
@@ -14,9 +15,32 @@ const useAuth = () => {
     const [fetchData] = useFetch();
     const [loginResponse, setLoginResponse] = useState(null);
     const [profile, setProfile] = useRecoilState(profileAtom);
+    const [expertiseList, setExpertiseList] = useState([]);
+    const [loadingExpertise, setLoadingExpertise] = useState(false);
+    const [expertiseFetched, setExpertiseFetched] = useState(false);
+
+    // -------------------Fetch Expertise---------------------------
+    const fetchExpertiseList = async () => {
+        if (expertiseFetched) return; // Avoid redundant calls
+
+        setLoadingExpertise(true);
+        try {
+            const response = await axios.get(`${conf.apiBaseUrl}/shopkeeper/auth/experties`);
+            if (response.data?.success) {
+                setExpertiseList(response.data.data);
+                setExpertiseFetched(true);
+            } else {
+                toast.error("Failed to load expertise list");
+            }
+        } catch (error) {
+            console.error("Error fetching expertise:", error);
+            toast.error("Error fetching expertise list");
+        } finally {
+            setLoadingExpertise(false);
+        }
+    };
 
     // -------------------Login---------------------------
-
     const shopkeeperLogin = async (payload) => {
         setLoading(true);
         try {
@@ -45,7 +69,6 @@ const useAuth = () => {
 
     const verifyOTP = async (contact, finalOtp) => {
         setLoading(true);
-
         try {
             const fcm_token = await getFcmToken();
             if (!fcm_token || typeof fcm_token !== "string") {
@@ -53,26 +76,33 @@ const useAuth = () => {
                 setLoading(false);
                 return;
             }
+
+            const experties = sessionStorage.getItem("expertise");
+
             const data = {
                 contact: contact,
                 otp: finalOtp,
                 fcm_token: fcm_token,
+                experties: experties,
             };
+
             const res = await fetchData({
                 method: "POST",
                 url: `${conf.apiBaseUrl}/shopkeeper/auth/verify-otp`,
                 data: data,
             });
-            if (res) {
+
+            if (res?.success) {
                 sessionStorage.setItem("token", res?.token);
                 sessionStorage.setItem("shopId", res?.data?.shopId);
-                toast.success(res?.message);
+                toast.success(res?.message || "OTP verified successfully");
                 navigate("/dashboard");
-                setLoading(false);
+            } else {
+                toast.error(res?.message || "Invalid OTP. Please try again.");
             }
         } catch (error) {
-            console.log("Error while verify otp :", error);
-            setLoading(false);
+            console.log("Error while verify otp:", error);
+            toast.error("Failed to verify OTP. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -141,7 +171,19 @@ const useAuth = () => {
         sessionStorage.removeItem("isActive");
     };
 
-    return {loading, shopkeeperLogin, loginResponse, verifyOTP, fetchProfile, profile, updateProfile, logoutAdmin};
+    return {
+        loading,
+        loadingExpertise,
+        expertiseList,
+        fetchExpertiseList,
+        shopkeeperLogin,
+        loginResponse,
+        verifyOTP,
+        fetchProfile,
+        profile,
+        updateProfile,
+        logoutAdmin,
+    };
 };
 
 export default useAuth;

@@ -1,4 +1,3 @@
-// src/components/Card.jsx
 import React from "react";
 import {TrendingUp, TrendingDown, Users, ShoppingCart, Briefcase, Target} from "lucide-react";
 
@@ -10,6 +9,7 @@ const Card = ({title, value, change}) => {
         "Total Sales": {
             color: "from-blue-400 to-blue-300", // soft blue
             icon: <ShoppingCart size={22} />,
+            isCurrency: true, // ✅ mark this as currency
         },
         "Total Worker": {
             color: "from-orange-400 to-orange-300", // soft orange
@@ -25,9 +25,10 @@ const Card = ({title, value, change}) => {
         },
     };
 
-    const {color, icon} = config[title] || {
+    const {color, icon, isCurrency} = config[title] || {
         color: "from-gray-400 to-gray-300",
         icon: <Users size={22} />,
+        isCurrency: false,
     };
 
     return (
@@ -39,7 +40,7 @@ const Card = ({title, value, change}) => {
             </div>
 
             {/* Value */}
-            <p className="text-3xl font-bold mb-2">₹ {value}</p>
+            <p className="text-3xl font-bold mb-2">{isCurrency ? `₹ ${value}` : value}</p>
 
             {/* Change indicator */}
             <div className={`flex items-center text-sm font-medium ${isPositive ? "text-green-600" : "text-red-500"}`}>
