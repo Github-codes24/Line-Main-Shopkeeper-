@@ -42,23 +42,33 @@ const AdminEditProfile = () => {
             try {
                 setSubmitting(true);
                 
+                // Create FormData to send both text and file data
+                const formData = new FormData();
+                formData.append('ownerName', values.fullName);
+                
+                // Add photo if selected
                 if (photo) {
-                    // If photo is selected, you can handle it here
-                    // For now, just updating the name as per original logic
-                    await updateProfile({ownerName: values.fullName});
-                    
-                    // Clear photo preview after successful upload
-                    setPhoto(null);
-                    if (photoPreview) {
-                        URL.revokeObjectURL(photoPreview);
-                    }
-                    setPhotoPreview(null);
-                } else {
-                    await updateProfile({ownerName: values.fullName});
+                    formData.append('profilePicture', photo);
                 }
+                
+                // Call updateProfile with FormData - API call happens HERE
+                await updateProfile(formData);
+                
+                // Clear photo preview after successful upload
+                setPhoto(null);
+                if (photoPreview) {
+                    URL.revokeObjectURL(photoPreview);
+                }
+                setPhotoPreview(null);
+                
+                // Show success message ONLY after API call succeeds
+                toast.success("Profile updated successfully!");
+                
+                // Optionally refresh profile data to show updated image
+                await fetchProfile();
             } catch (error) {
                 console.error("Error updating profile:", error);
-                toast.error("Error updating profile");
+                toast.error(error?.response?.data?.message || "Error updating profile");
             } finally {
                 setSubmitting(false);
             }
@@ -90,13 +100,17 @@ const AdminEditProfile = () => {
                 URL.revokeObjectURL(photoPreview);
             }
             setPhotoPreview(URL.createObjectURL(file));
-            toast.success("Photo selected successfully!");
+            
+            // REMOVED SUCCESS MESSAGE - only show preview, no API call yet
         }
     };
 
     const handleBack = () => {
         navigate(-1);
     };
+
+    // Get the image to display: new preview, existing profile pic, or placeholder
+    const displayImage = photoPreview || profile?.profilePictureUrl;
 
     return (
         <div className="flex flex-col min-h-screen bg-[#E0E9E9] w-full p-4">
@@ -200,6 +214,7 @@ const AdminEditProfile = () => {
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             className="w-full border border-[#007E74] px-3 py-2 rounded-md bg-[#F5FFFF] focus:outline-none min-w-0"
+                                            disabled
                                         />
                                     </div>
                                 </div>
@@ -208,25 +223,28 @@ const AdminEditProfile = () => {
                             {/* Right Section - Profile Image + Upload */}
                             <div className="flex flex-col items-center md:items-center md:justify-start md:ml-auto w-full md:w-1/3 mt-6 md:mt-0">
                                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-[#007E74] overflow-hidden bg-gray-200 flex items-center justify-center">
-                                    {photoPreview ? (
+                                    {displayImage ? (
                                         <img
-                                            key={photoPreview}
-                                            src={photoPreview}
-                                            alt="Profile Preview"
+                                            src={displayImage}
+                                            alt="Profile"
                                             className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'block';
+                                            }}
                                         />
-                                    ) : (
-                                        <svg 
-                                            className="w-20 h-20 text-gray-400" 
-                                            fill="currentColor" 
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                                        </svg>
-                                    )}
+                                    ) : null}
+                                    <svg 
+                                        className="w-20 h-20 text-gray-400" 
+                                        fill="currentColor" 
+                                        viewBox="0 0 20 20"
+                                        style={{display: displayImage ? 'none' : 'block'}}
+                                    >
+                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                    </svg>
                                 </div>
 
-                                {/* Upload Button */}
+                                {/* Upload Button - Only selects file, doesn't call API */}
                                 <label className="mt-4 flex items-center justify-center gap-2 bg-[#007E74] text-white rounded-md cursor-pointer w-[200px] h-[40px] hover:bg-[#0c7d7d]">
                                     <FiUpload />
                                     Upload Photo
@@ -257,6 +275,7 @@ const AdminEditProfile = () => {
                                 Cancel
                             </button>
 
+                            {/* Update Profile Button - THIS calls the API */}
                             <button
                                 type="submit"
                                 disabled={formik.isSubmitting || loading}

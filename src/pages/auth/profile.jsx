@@ -118,11 +118,23 @@ const AdminProfile = () => {
                                         ))}
                                     </div>
 
-                                    {/* Right - Profile Image (Empty placeholder for consistency) */}
+                                    {/* Right - Profile Image */}
                                     <div className="flex flex-col items-center justify-start w-full md:w-1/3 mt-6 md:mt-0">
                                         <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-[#007E74] overflow-hidden bg-gray-200 flex items-center justify-center">
+                                            {profile?.profilePictureUrl ? (
+                                                <img
+                                                    src={profile.profilePictureUrl}
+                                                    alt={profile?.ownerName || "Profile"}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextSibling.style.display = 'block';
+                                                    }}
+                                                />
+                                            ) : null}
                                             <svg 
-                                                className="w-20 h-20 text-gray-400" 
+                                                className="w-20 h-20 text-gray-400"
+                                                style={{ display: profile?.profilePictureUrl ? 'none' : 'block' }}
                                                 fill="currentColor" 
                                                 viewBox="0 0 20 20"
                                             >

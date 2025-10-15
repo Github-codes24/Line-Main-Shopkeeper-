@@ -1,7 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import useAuth from "../../hook/useAuth";
+
+// Add axios interceptor to include token in requests
+axios.interceptors.request.use(
+  (config) => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const OtpVerification = () => {
   const navigate = useNavigate();
@@ -10,11 +21,11 @@ const OtpVerification = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const inputsRef = useRef([]);
   const contact = sessionStorage.getItem("contact");
-  const { verifyOTP, loading } = useAuth();
+  const expertise = sessionStorage.getItem("expertise");
 
   useEffect(() => {
-    if (!contact) navigate("/");
-  }, [contact, navigate]);
+    if (!contact || !expertise) navigate("/");
+  }, [contact, expertise, navigate]);
 
   const handleChange = (e, index) => {
     const value = e.target.value.replace(/\D/, "");
@@ -50,12 +61,48 @@ const OtpVerification = () => {
     setError("");
 
     try {
-      // Don't navigate here - let verifyOTP handle it
-      await verifyOTP(contact, finalOtp);
-      // verifyOTP will handle navigation to dashboard
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/shopkeeper/auth/verify-otp`,
+        {
+          contact: contact,
+          experties: expertise,
+          otp: finalOtp
+        }
+      );
+
+      console.log("API Response:", response.data); // Debug log
+
+      // Check if API response is successful
+      if (response.data?.success) {
+        // Store token and shopId in sessionStorage BEFORE navigation
+        if (response.data.token) {
+          sessionStorage.setItem("token", response.data.token);
+          console.log("Token stored:", response.data.token); // Debug log
+          
+          // Set axios default header immediately
+          axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+        }
+        if (response.data.data?.shopId) {
+          sessionStorage.setItem("shopId", response.data.data.shopId);
+          console.log("ShopId stored:", response.data.data.shopId); // Debug log
+        }
+        
+        // Verify token is stored before navigation
+        const storedToken = sessionStorage.getItem("token");
+        console.log("Stored token before navigation:", storedToken); // Debug log
+        
+        if (storedToken) {
+          // Use window.location for hard navigation to ensure clean state
+          navigate("/dashboard");
+        } else {
+          setError("Failed to store authentication token. Please try again.");
+        }
+      } else {
+        setError(response.data?.message || "Verification failed. Please try again.");
+      }
     } catch (err) {
       console.error("Verification error:", err);
-      setError("Invalid OTP. Please try again.");
+      setError(err.response?.data?.message || "Invalid OTP. Please try again.");
       setOtp(new Array(6).fill(""));
       inputsRef.current[0]?.focus();
     } finally {
@@ -67,7 +114,10 @@ const OtpVerification = () => {
     try {
       await axios.post(
         `${process.env.REACT_APP_API_URL}/shopkeeper/auth/resend-otp`,
-        { contact }
+        { 
+          contact,
+          experties: expertise
+        }
       );
       alert("OTP resent successfully!");
       setOtp(new Array(6).fill(""));
@@ -99,7 +149,7 @@ const OtpVerification = () => {
               ref={(el) => (inputsRef.current[index] = el)}
               onChange={(e) => handleChange(e, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
-              disabled={isVerifying || loading}
+              disabled={isVerifying}
               className="w-10 h-10 text-center text-lg font-medium border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-200 disabled:opacity-50"
             />
           ))}
@@ -113,7 +163,7 @@ const OtpVerification = () => {
           Didn't receive the code?
           <button
             onClick={handleResend}
-            disabled={isVerifying || loading}
+            disabled={isVerifying}
             className="text-red-500 font-semibold ml-1 disabled:opacity-50"
           >
             Resend
@@ -124,17 +174,17 @@ const OtpVerification = () => {
         <div className="flex justify-between gap-3">
           <button
             onClick={() => navigate("/")}
-            disabled={isVerifying || loading}
+            disabled={isVerifying}
             className="flex-1 py-1 rounded-md border border-teal-500 text-teal-700 bg-teal-50 disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleVerify}
-            disabled={isVerifying || loading}
-            className="flex-1 py-1 rounded-md bg-teal-700 text-white hover:bg-teal-800 transition disabled:opacity-50"
+            disabled={isVerifying}
+            className="flex-1 py-1 rounded-md bg-teal-700 text-white  transition disabled:opacity-50"
           >
-            {isVerifying || loading ? "Verifying..." : "Verify"}
+            {isVerifying ? "Verifying..." : "Verify"}
           </button>
         </div>
       </div>

@@ -1,9 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { MdOutlineFileUpload } from "react-icons/md";
+import { toast } from "react-toastify";
+import conf from "../../../config";
+import useFetch from "../../../hook/useFetch";
 
 const AddBigProduct = () => {
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const [fetchData] = useFetch();
 
   const [formData, setFormData] = useState({
     productName: "",
@@ -11,40 +16,36 @@ const AddBigProduct = () => {
     productSubCategory: "",
     productPrice: "",
     productDescription: "",
-    productImage: null, // Changed to store file object
+    productImage: null,
   });
   
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
-  const [shopkeeperId, setShopkeeperId] = useState("68c2cbcdeaa35f894cb1df34"); // Default shopkeeper ID
-
-  const API_BASE_URL = "https://linemen-be-1.onrender.com";
-  const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGVjOTM4MzdlMGU0ZTA2ZWExZmRhMTEiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc2MDMzNDgyOSwiZXhwIjoxNzYwMzYzNjI5fQ.LTh_6QMFjALzK6rrhonR_p8xgz0WGPBNh3KC6iBTVes";
-
-  const api = axios.create({
-    baseURL: API_BASE_URL,
-    headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
-  });
+  const [shopkeeperId] = useState("68c2cbcdeaa35f894cb1df34"); // Default shopkeeper ID
 
   // Unified input class
   const inputClass =
     "bg-[#F5FFFF] border border-[#B2D8D5] text-[#0D2E28] text-lg font-medium rounded-lg px-4 py-2 w-full outline-none focus:outline-none placeholder:text-[#0D2E28] placeholder:font-medium";
 
   const handleBack = () => {
-    window.history.back();
+    navigate(-1);
   };
 
   // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await api.get("/shopkeeper/bigproduct/experties");
-        if (res.data.success) {
-          setCategories(res.data.data);
+        const result = await fetchData({
+          method: "GET",
+          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/experties`,
+        });
+
+        if (result.success) {
+          setCategories(result.data || []);
+        } else {
+          console.error("Error fetching categories:", result.message);
         }
       } catch (err) {
         console.error("Error fetching categories:", err);
@@ -63,11 +64,15 @@ const AddBigProduct = () => {
 
     const fetchSubCategories = async () => {
       try {
-        const res = await api.get(
-          `/shopkeeper/bigproduct/${formData.productCategory}/subtabs`
-        );
-        if (res.data.success) {
-          setSubCategories(res.data.data);
+        const result = await fetchData({
+          method: "GET",
+          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/${formData.productCategory}/subtabs`,
+        });
+
+        if (result.success) {
+          setSubCategories(result.data || []);
+        } else {
+          console.error("Error fetching sub-categories:", result.message);
         }
       } catch (err) {
         console.error("Error fetching sub-categories:", err);
@@ -96,9 +101,24 @@ const AddBigProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation
+    if (!formData.productImage) {
+      toast.error("Please select a product image");
+      return;
+    }
+
+    if (formData.productDescription.length < 10) {
+      toast.error("Product description must be at least 10 characters");
+      return;
+    }
+
+    if (subCategories.length > 0 && !formData.productSubCategory) {
+      toast.error("Please select a valid product sub-category for this category.");
+      return;
+    }
+
     setLoading(true);
-    setError("");
-    setSuccess("");
 
     try {
       // Create FormData as per API documentation
@@ -106,26 +126,31 @@ const AddBigProduct = () => {
       submitFormData.append("productCategory", formData.productCategory);
       submitFormData.append("productPrice", formData.productPrice);
       submitFormData.append("productDescription", formData.productDescription);
-      submitFormData.append("productImage", formData.productImage); // File object
+      submitFormData.append("productImage", formData.productImage);
       submitFormData.append("productName", formData.productName);
       submitFormData.append("productSubCategory", formData.productSubCategory);
       submitFormData.append("shopkeeperId", shopkeeperId);
 
-      const response = await api.post("/shopkeeper/bigproduct/add-bigproduct", submitFormData, {
+      const result = await fetchData({
+        method: "POST",
+        url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/add-bigproduct`,
+        data: submitFormData,
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      if (response.data.success) {
-        setSuccess("Product added successfully!");
+      if (result.success) {
+        toast.success("Product added successfully! ✅");
         setTimeout(() => {
-          window.history.back();
-        }, 2000);
+          navigate(-1);
+        }, 1500);
+      } else {
+        toast.error(`Failed to add product: ${result.message || "Unknown error"}`);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to add product");
-      console.error(err);
+      console.error("Error adding product:", err);
+      toast.error(`Failed to add product: ${err.message || "Unknown error"}`);
     } finally {
       setLoading(false);
     }
@@ -177,10 +202,6 @@ const AddBigProduct = () => {
       {/* Form */}
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
-          {/* Success/Error Messages */}
-          {success && <div className="bg-green-100 text-green-700 p-3 rounded-lg">{success}</div>}
-          {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg">{error}</div>}
-
           <div className="border border-[#616666] p-4 rounded-lg">
             {/* Product Image */}
             <div className="flex gap-4 mb-6">
@@ -325,7 +346,7 @@ const AddBigProduct = () => {
             <button
               type="button"
               onClick={handleBack}
-              className="w-[200px] bg-[#E6F2F1] text-[#007E74] border border-[#007E74] font-medium px-10 py-2 rounded-lg hover:bg-[#d1e5e4]"
+              className="w-[200px] bg-[#E6F2F1] text-[#007E74] border border-[#007E74] font-medium px-10 py-2 rounded-lg "
               disabled={loading}
             >
               Cancel
@@ -333,7 +354,7 @@ const AddBigProduct = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-[200px] font-medium px-10 py-2 rounded-lg bg-[#007E74] text-white hover:bg-[#006a62] transition-colors disabled:bg-gray-400"
+              className="w-[200px] font-medium px-10 py-2 rounded-lg bg-[#007E74] text-white  transition-colors disabled:bg-gray-400"
             >
               {loading ? "Adding..." : "Add Product"}
             </button>

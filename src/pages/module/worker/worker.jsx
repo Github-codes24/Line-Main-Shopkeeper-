@@ -21,17 +21,17 @@ const Worker = () => {
     const [filterOpen, setFilterOpen] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [limit] = useState(5);
+    const [limit] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
     const expertiseOptions = [
         "Electrician",
-       "Painter",
+        "Painter",
         "Carpenter",
         "AC Repair",
         "Tile Fitting",
-          "Plumber",
+        "Plumber",
     ];
 
     useEffect(() => {
@@ -180,7 +180,7 @@ const Worker = () => {
     return (
         <div className="flex bg-[#E0E9E9] font-medium">
             <ToastContainer />
-            
+
             <main className="flex-1 p-3 gap-2">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-start items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-24">
@@ -206,7 +206,7 @@ const Worker = () => {
                     </div>
 
                     {/* Add Worker */}
-                    
+
                 </div>
 
                 {/* Filters */}
@@ -214,7 +214,7 @@ const Worker = () => {
                     <div className="flex flex-wrap items-center gap-2">
                         <button
                             onClick={() => setFilterOpen(!filterOpen)}
-                            className="border px-2 py-1 rounded bg-[#E0E9E9] hover:bg-[#d0d9d9] transition-colors"
+                            className="border px-2 py-1 rounded bg-[#E0E9E9] "
                         >
                             <TbFilter className="w-8 h-8 px-1 py-1 border-[#007E74] text-[#0D2E28] bg-[#E0E9E9] rounded-lg" />
                         </button>
@@ -226,7 +226,7 @@ const Worker = () => {
                             >
                                 {exp}
                                 <X
-                                    className="w-4 h-4 ml-2 cursor-pointer hover:text-red-500"
+                                    className="w-4 h-4 ml-2 cursor-pointer "
                                     onClick={() => handleExpertiseToggle(exp)}
                                 />
                             </span>
@@ -236,7 +236,7 @@ const Worker = () => {
                             <span className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
                                 {`Search: "${searchTerm}"`}
                                 <X
-                                    className="w-4 h-4 ml-2 cursor-pointer hover:text-red-500"
+                                    className="w-4 h-4 ml-2 cursor-pointer "
                                     onClick={() => {
                                         setSearchTerm("");
                                         setCurrentPage(1);
@@ -296,36 +296,41 @@ const Worker = () => {
                             <table className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden" style={{ borderSpacing: 0 }}>
                                 <thead className="bg-[#e0e9e9] text-sm md:text-base">
                                     <tr>
-                                        <th className="px-4 py-3 font-medium">Sr.No.</th>
-                                        <th className="px-4 py-3 font-medium">Worker Name</th>
-                                        <th className="px-4 py-3 font-medium">Expertise</th>
-                                        <th className="px-4 py-3 font-medium">Phone Number</th>
-                                        <th className="px-4 py-3 font-medium">Address</th>
-                                        <th className="px-4 py-3 font-medium">Action</th>
+                                        <th className="px-4 py-3 font-medium text-center">Sr.No.</th>
+                                        <th className="px-4 py-3 font-medium text-center">Worker Name</th>
+                                        <th className="px-4 py-3 font-medium text-center">Expertise</th>
+                                        <th className="px-4 py-3 font-medium text-center">Phone Number</th>
+                                        <th className="px-4 py-3 font-medium text-center">Address</th>
+                                        <th className="px-4 py-3 font-medium text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-sm md:text-base">
                                     {paginatedWorkers.map((worker, index) => (
                                         <tr
                                             key={worker.id}
-                                            className="hover:bg-gray-50 transition-colors border-b border-gray-200"
+                                            className=" border-b border-gray-200"
                                         >
                                             <td className="px-4 py-3 font-normal">
                                                 {(currentPage - 1) * limit + index + 1}
                                             </td>
-                                            <td className="px-4 py-3 font-normal">{worker.name}</td>
-                                            <td className="px-4 py-3 font-normal">{worker.expertise}</td>
-                                            <td className="px-4 py-3 font-normal">{worker.phone}</td>
-                                            <td className="px-4 py-3 font-normal">{worker.address}</td>
+                                            <td className="px-4 py-3 font-normal text-center">{worker.name}</td>
+                                            <td className="px-4 py-3 font-normal text-center">{worker.expertise}</td>
+                                            <td className="px-4 py-3 font-normal text-center">{worker.phone}</td>
+                                            <td className="px-4 py-3 font-normal text-center">
+                                                {worker.address && worker.address.length > 15
+                                                    ? `${worker.address.slice(0, 35)}...`
+                                                    : worker.address}
+                                            </td>
+
                                             <td className="px-4 py-3 font-normal">
-                                                <div className="flex items-center gap-3 text-gray-700">
+                                                <div className="flex items-center gap-3 text-gray-700 text-center">
                                                     <Eye
                                                         onClick={() =>
                                                             navigate(`/worker/worker-view/${worker.id}`, {
                                                                 state: worker,
                                                             })
                                                         }
-                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] hover:text-[#d02801] transition-colors"
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] "
                                                         title="View Worker"
                                                     />
                                                     <FiEdit
@@ -334,12 +339,12 @@ const Worker = () => {
                                                                 state: worker,
                                                             })
                                                         }
-                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] hover:text-[#d02801] transition-colors"
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] "
                                                         title="Edit Worker"
                                                     />
                                                     <Trash2
                                                         onClick={() => handleDeleteWorker(worker.id, worker.name)}
-                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] hover:text-[#d02801] transition-colors"
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D]"
                                                         title="Delete Worker"
                                                     />
                                                 </div>
@@ -362,7 +367,7 @@ const Worker = () => {
                             <button
                                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
-                                className="px-3 py-1 text-teal-700 hover:bg-teal-100 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="px-3 py-1 text-teal-700 "
                             >
                                 &lt;
                             </button>
@@ -370,11 +375,10 @@ const Worker = () => {
                                 <button
                                     key={i + 1}
                                     onClick={() => setCurrentPage(i + 1)}
-                                    className={`px-3 py-1 rounded transition-colors ${
-                                        currentPage === i + 1
+                                    className={`px-3 py-1 rounded transition-colors ${currentPage === i + 1
                                             ? "bg-teal-700 text-white"
-                                            : "bg-teal-100 text-teal-700 hover:bg-teal-200"
-                                    }`}
+                                            : "bg-teal-100 text-teal-700 "
+                                        }`}
                                 >
                                     {i + 1}
                                 </button>
@@ -382,7 +386,7 @@ const Worker = () => {
                             <button
                                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-1 text-teal-700 hover:bg-teal-100 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="px-3 py-1 text-teal-700 "
                             >
                                 &gt;
                             </button>
