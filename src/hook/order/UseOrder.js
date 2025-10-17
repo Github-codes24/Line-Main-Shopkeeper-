@@ -41,7 +41,7 @@ const UseOrder = () => {
                 url: `${conf.apiBaseUrl}/shopkeeper/orders/${id}`,
             });
             if (res?.data) {
-                setGetOrderById(res?.data);
+                setGetOrderById(res);
             }
         } catch (error) {
             console.log("Error while fetching order by id :", error);
@@ -51,20 +51,28 @@ const UseOrder = () => {
         }
     };
 
-    const uploadFinalBill = async (orderId, data) => {
+    const uploadFinalBill = async (id, formData) => {
         setLoading(true);
         try {
             const res = await fetchData({
                 method: "PUT",
-                url: `${conf.apiBaseUrl}/shopkeeper/orders/${orderId}/finalize-bill`,
-                data: data,
+                url: `${conf.apiBaseUrl}/shopkeeper/orders/${id}/finalize-bill`,
+                data: formData,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
             });
-            if (res) {
-                toast.success(res.message);
+
+            if (res?.success) {
+                toast.success(res.message || "Bill uploaded successfully!");
+            } else {
+                toast.error(res.message || "Failed to upload bill");
             }
+
+            return res;
         } catch (error) {
-            console.log("Error while uploading final bill :", error);
-            setLoading(false);
+            toast.error("Error while uploading final bill");
+            return {success: false, error};
         } finally {
             setLoading(false);
         }
@@ -147,6 +155,30 @@ const UseOrder = () => {
             setLoading(false);
         }
     };
+
+    const settlePayment = async (payload) => {
+        setLoading(true);
+        try {
+            const res = await fetchData({
+                method: "POST",
+                url: `${conf.apiBaseUrl}/shopkeeper/payments/settle-payment`,
+                data: payload,
+            });
+
+            if (res) {
+                toast.success(res.message);
+                fetchOrderById(payload.orderId);
+            }
+            return res;
+        } catch (error) {
+            console.log("Error while settle payment:", error);
+            toast.error("Error while settling payment");
+            return {success: false, error};
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         loading,
         getOrders,
@@ -158,6 +190,7 @@ const UseOrder = () => {
         rejectOrder,
         reassignWorker,
         pickupVerificationOTP,
+        settlePayment,
     };
 };
 

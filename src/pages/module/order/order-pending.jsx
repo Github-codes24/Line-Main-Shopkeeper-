@@ -3,6 +3,7 @@ import {IoArrowBackCircleOutline} from "react-icons/io5";
 import {useNavigate, useParams} from "react-router-dom";
 import UseOrder from "../../../hook/order/UseOrder";
 import CircularProgress from "@mui/material/CircularProgress";
+import {toast} from "react-toastify";
 
 const SuccessModal = ({isOpen, onClose, bookingId}) => {
     if (!isOpen) return null;
@@ -83,7 +84,8 @@ const LabelInput = ({label, value}) => (
 const OrderPending = () => {
     const navigate = useNavigate();
     const {id} = useParams();
-    const {loading, getOrderById, fetchOrderById, rejectOrder, acceptOrder, pickupVerificationOTP} = UseOrder();
+    const {loading, getOrderById, fetchOrderById, rejectOrder, acceptOrder, pickupVerificationOTP, settlePayment} =
+        UseOrder();
     const [showModal, setShowModal] = useState(false);
     const [reason, setReason] = useState("");
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -91,6 +93,7 @@ const OrderPending = () => {
     const [openVerificationModal, setOpenVerificationModal] = useState(false);
     const [otp, setOtp] = useState(Array(6).fill(""));
     const inputRefs = useRef([]);
+    const shopkeeperId = sessionStorage.getItem("shopId");
 
     useEffect(() => {
         fetchOrderById(id);
@@ -103,16 +106,9 @@ const OrderPending = () => {
     };
 
     const handleAcceptOrder = () => {
-        let workerId = getOrderById?.worker?._id;
+        const workerId = getOrderById?.data?.worker?._id;
         acceptOrder(id, workerId);
     };
-
-    const Section = ({title, children}) => (
-        <div>
-            <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1">{title}</h3>
-            <div className="space-y-4">{children}</div>
-        </div>
-    );
 
     const handleChange = (e, index) => {
         const value = e.target.value;
@@ -134,8 +130,18 @@ const OrderPending = () => {
         setOpenVerificationModal(false);
     };
 
+    const handleSettlePayment = async () => {
+        const payload = {
+            shopkeeperId,
+            paymentId: getOrderById?.paymentObj?._id,
+            orderId: getOrderById?.data?._id,
+        };
+        const res = await settlePayment(payload);
+        if (res?.success) setShowSettlePaymentModal(true);
+    };
+
     return (
-        <div className="h-screen bg-gray-100 p-4 ">
+        <div className="h-screen bg-gray-100 p-4">
             <div className="bg-white shadow-sm rounded-lg px-4 py-3 flex items-center space-x-4">
                 <IoArrowBackCircleOutline
                     className="text-4xl text-[#0D2E28] cursor-pointer hover:text-[#007E74] transition"
@@ -145,188 +151,164 @@ const OrderPending = () => {
             </div>
 
             {loading ? (
-                <div className="flex justify-center pt-10 ">
+                <div className="flex justify-center pt-10">
                     <CircularProgress />
                 </div>
             ) : (
-                <div className="bg-white shadow rounded-lg p-6 mt-5 flex flex-col h-auto ">
+                <div className="bg-white shadow rounded-lg p-6 mt-5 flex flex-col h-auto">
                     <div className="overflow-y-auto flex-1 space-y-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                        <LabelInput label="Order Number" value={getOrderById?.orderId || "-"} />
-                        <div>
-                            <h3 className="font-bold text-lg mb-3 text-gray-800">Customer Details</h3>
-                            <LabelInput label="Customer Name" value={getOrderById?.customer?.name || "-"} />
-                            {getOrderById?.customer?.contact ? (
-                                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(getOrderById.customer.contact) ? (
-                                    <LabelInput label="Email Id" value={getOrderById.customer.contact} />
-                                ) : /^\+?\d{10,15}$/.test(getOrderById.customer.contact) ? (
-                                    <LabelInput label="Phone Number" value={getOrderById.customer.contact} />
-                                ) : (
-                                    <LabelInput label="Contact" value={getOrderById.customer.contact} />
-                                )
-                            ) : (
-                                <LabelInput label="Contact" value="-" />
-                            )}
-                            <LabelInput label="Address" value={getOrderById?.deliveryAddress?.fullAddress} />
-                            <div className="flex items-center mb-2">
-                                <label className="font-medium w-40 text-gray-700">Order Status</label>
-                                <span className="font-medium mr-2">:</span>
-                                <input
-                                    className="border border-[#007E74] bg-[#E0E9E9] px-3 py-1 rounded-lg w-80 font-semibold"
-                                    style={{
-                                        color:
-                                            getOrderById?.orderStatus === "Pending"
-                                                ? " #FFCC00"
-                                                : getOrderById?.orderStatus === "WorkInProgress"
-                                                ? "#0088FF"
-                                                : getOrderById?.orderStatus === "Rejected"
-                                                ? "#EC2D01"
-                                                : getOrderById?.orderStatus === "Completed"
-                                                ? "#34C759"
-                                                : "black",
-                                    }}
-                                    readOnly
-                                    value={
-                                        getOrderById?.orderStatus === "Pending"
-                                            ? "Pending"
-                                            : getOrderById?.orderStatus === "WorkInProgress"
-                                            ? "Work In Progress"
-                                            : getOrderById?.orderStatus === "Rejected"
-                                            ? "Rejected"
-                                            : getOrderById?.orderStatus === "Completed"
-                                            ? "Completed"
-                                            : "Unwanted Status"
-                                    }
-                                />
-                            </div>
-                        </div>
+                        <LabelInput label="Order Number" value={getOrderById?.data?.orderId || "-"} />
+                        <h3 className="font-bold text-lg mb-3 text-gray-800">Customer Details</h3>
+                        <LabelInput label="Customer Name" value={getOrderById?.data?.customer?.name || "-"} />
+                        <LabelInput label="Contact" value={getOrderById?.data?.customer?.contact || "-"} />
+                        <LabelInput label="Address" value={getOrderById?.data?.deliveryAddress?.fullAddress || "-"} />
 
-                        <hr className="border-t border-gray-300 my-4" />
-
-                        {/* Service Details */}
-                        <div>
-                            <h3 className="font-bold text-lg mb-3 text-gray-800">Service Details</h3>
-                            <LabelInput label="Service Required" value={getOrderById?.specificServiceName} />
-                            <LabelInput
-                                label="Date"
+                        <div className="flex items-center mb-2">
+                            <label className="font-medium w-40 text-gray-700">Order Status</label>
+                            <span className="font-medium mr-2">:</span>
+                            <input
+                                className="border border-[#007E74] bg-[#E0E9E9] px-3 py-1 rounded-lg w-80 font-semibold"
+                                style={{
+                                    color:
+                                        getOrderById?.data?.orderStatus === "Pending"
+                                            ? "#FFCC00"
+                                            : getOrderById?.data?.orderStatus === "WorkInProgress"
+                                            ? "#0088FF"
+                                            : getOrderById?.data?.orderStatus === "Rejected"
+                                            ? "#EC2D01"
+                                            : getOrderById?.data?.orderStatus === "Completed"
+                                            ? "#34C759"
+                                            : "black",
+                                }}
+                                readOnly
                                 value={
-                                    getOrderById?.serviceDate
-                                        ? new Date(getOrderById.serviceDate).toLocaleString("en-In", {
-                                              year: "numeric",
-                                              month: "long",
-                                              day: "numeric",
-                                          })
-                                        : ""
+                                    getOrderById?.data?.orderStatus === "Pending"
+                                        ? "Pending"
+                                        : getOrderById?.data?.orderStatus === "WorkInProgress"
+                                        ? "Work In Progress"
+                                        : getOrderById?.data?.orderStatus === "Rejected"
+                                        ? "Rejected"
+                                        : getOrderById?.data?.orderStatus === "Completed"
+                                        ? "Completed"
+                                        : "Unwanted Status"
                                 }
                             />
+                        </div>
+
+                        <h3 className="font-bold text-lg mb-3 text-gray-800">Service Details</h3>
+                        <LabelInput label="Service Required" value={getOrderById?.data?.specificServiceName || "-"} />
+                        <LabelInput
+                            label="Date"
+                            value={
+                                getOrderById?.data?.serviceDate
+                                    ? new Date(getOrderById.data.serviceDate).toLocaleString("en-IN", {
+                                          year: "numeric",
+                                          month: "long",
+                                          day: "numeric",
+                                      })
+                                    : "-"
+                            }
+                        />
+                        {getOrderById?.data?.initialRequestImages && (
                             <div className="flex items-center mb-4">
                                 <label className="font-medium w-40 text-gray-700">Photos</label>
                                 <span className="font-medium mr-2">:</span>
                                 <img
-                                    src={getOrderById?.initialRequestImages}
+                                    src={getOrderById?.data?.initialRequestImages}
                                     alt="service"
                                     className="w-32 h-32 object-cover border rounded shadow-sm"
                                 />
                             </div>
+                        )}
 
-                            {/* Product Details Table */}
-                            <div className="overflow-x-auto mt-4 rounded-lg border border-gray-200 shadow-sm">
-                                <h4 className="font-medium mb-2 text-gray-700 p-2 bg-gray-100 rounded-t-lg">
-                                    Product List
-                                </h4>
-                                <table className="min-w-full text-sm divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-3 py-2 text-left font-medium text-gray-600">#</th>
-                                            <th className="px-3 py-2 text-left font-medium text-gray-600">Product</th>
-                                            <th className="px-3 py-2 text-right font-medium text-gray-600">Price</th>
-                                            <th className="px-3 py-2 text-right font-medium text-gray-600">Qty</th>
-                                            <th className="px-3 py-2 text-right font-medium text-gray-600">Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {(getOrderById?.products || []).map((item, index) => {
-                                            const price = Number(item?.priceAtPurchase) || 0;
-                                            const quantity = Number(item?.quantity) || 0;
-                                            const name = item?.productName || "-";
-
-                                            return (
-                                                <tr key={index} className="hover:bg-gray-50 transition">
-                                                    <td className="px-3 py-2">{index + 1}</td>
-                                                    <td className="px-3 py-2">{name}</td>
-                                                    <td className="px-3 py-2 text-right">{price.toLocaleString()}</td>
-                                                    <td className="px-3 py-2 text-right">
-                                                        {quantity.toLocaleString()}
-                                                    </td>
-                                                    <td className="px-3 py-2 text-right">
-                                                        {(price * quantity).toLocaleString()}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                    <tfoot>
-                                        <tr className="font-semibold bg-gray-50">
-                                            <td colSpan="4" className="px-3 py-2 text-right">
-                                                Final Amount
-                                            </td>
-                                            <td className="px-3 py-2 text-right">
-                                                {(Number(getOrderById?.totalProductCost) || 0).toLocaleString()}
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <hr className="border-t border-gray-300 my-4" />
-
-                            {/* WorkInProgress / Completed Sections */}
-                            {["WorkInProgress", "Completed"].includes(getOrderById?.orderStatus) && (
-                                <div>
-                                    <h3 className="font-bold text-lg mb-3 text-gray-800">Work Details</h3>
-
-                                    <LabelInput label="Worker Assigned" value={getOrderById?.worker?.name || "-"} />
-                                    <LabelInput
-                                        label="Last Update"
-                                        value={
-                                            getOrderById?.updatedAt
-                                                ? new Date(getOrderById.updatedAt).toLocaleString("en-IN", {
-                                                      year: "numeric",
-                                                      month: "long",
-                                                      day: "numeric",
-                                                  })
-                                                : "-"
-                                        }
-                                    />
-                                    {getOrderById?.paymentMethod === "COD" && (
-                                        <LabelInput
-                                            label="Quotation Status"
-                                            value={getOrderById?.updatedAt ? "Pending" : "-"}
-                                        />
-                                    )}
-                                    <hr className="border-t border-gray-300 my-4" />
-
-                                    <h3 className="font-bold text-lg mb-3 text-gray-800">Payment Details</h3>
-
-                                    <LabelInput label="Total Bill" value={getOrderById?.finalAmount} />
-                                    <LabelInput label="Payment Method" value={getOrderById?.paymentMethod || "-"} />
-                                    {getOrderById?.paymentMethod !== "COD" && (
-                                        <LabelInput
-                                            label="Transaction Id"
-                                            value={getOrderById?.updatedAt ? "1234" : "-"}
-                                        />
-                                    )}
-                                    <LabelInput label="Payment Status" value={getOrderById?.paymentStatus || "-"} />
-                                    <LabelInput
-                                        label="Customer Feedback"
-                                        value={getOrderById?.workDoneConformationByCustomer || "-"}
-                                    />
-                                </div>
-                            )}
+                        <div className="overflow-x-auto mt-4 rounded-lg border border-gray-200 shadow-sm">
+                            <h4 className="font-medium mb-2 text-gray-700 p-2 bg-gray-100 rounded-t-lg">
+                                Product List
+                            </h4>
+                            <table className="min-w-full text-sm divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-3 py-2 text-left font-medium text-gray-600">#</th>
+                                        <th className="px-3 py-2 text-left font-medium text-gray-600">Product</th>
+                                        <th className="px-3 py-2 text-right font-medium text-gray-600">Price</th>
+                                        <th className="px-3 py-2 text-right font-medium text-gray-600">Qty</th>
+                                        <th className="px-3 py-2 text-right font-medium text-gray-600">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {(getOrderById?.data?.products || []).map((item, index) => {
+                                        const price = Number(item?.priceAtPurchase) || 0;
+                                        const quantity = Number(item?.quantity) || 0;
+                                        const name = item?.productName || "-";
+                                        return (
+                                            <tr key={index} className="hover:bg-gray-50 transition">
+                                                <td className="px-3 py-2">{index + 1}</td>
+                                                <td className="px-3 py-2">{name}</td>
+                                                <td className="px-3 py-2 text-right">{price.toLocaleString()}</td>
+                                                <td className="px-3 py-2 text-right">{quantity.toLocaleString()}</td>
+                                                <td className="px-3 py-2 text-right">
+                                                    {(price * quantity).toLocaleString()}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                                <tfoot>
+                                    <tr className="font-semibold bg-gray-50">
+                                        <td colSpan="4" className="px-3 py-2 text-right">
+                                            Final Amount
+                                        </td>
+                                        <td className="px-3 py-2 text-right">
+                                            {(Number(getOrderById?.data?.totalProductCost) || 0).toLocaleString()}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
+
+                        {["WorkInProgress", "Completed"].includes(getOrderById?.data?.orderStatus) && (
+                            <div>
+                                <h3 className="font-bold text-lg mb-3 text-gray-800">Work Details</h3>
+                                <LabelInput label="Worker Assigned" value={getOrderById?.data?.worker?.name || "-"} />
+                                <LabelInput
+                                    label="Last Update"
+                                    value={
+                                        getOrderById?.data?.updatedAt
+                                            ? new Date(getOrderById.data.updatedAt).toLocaleString("en-IN", {
+                                                  year: "numeric",
+                                                  month: "long",
+                                                  day: "numeric",
+                                              })
+                                            : "-"
+                                    }
+                                />
+                                {getOrderById?.data?.paymentMethod === "COD" && (
+                                    <LabelInput
+                                        label="Quotation Status"
+                                        value={getOrderById?.data?.updatedAt ? "Pending" : "-"}
+                                    />
+                                )}
+
+                                <h3 className="font-bold text-lg mb-3 text-gray-800 mt-4">Payment Details</h3>
+                                <LabelInput label="Total Bill" value={getOrderById?.data?.finalAmount || "-"} />
+                                <LabelInput label="Payment Method" value={getOrderById?.data?.paymentMethod || "-"} />
+                                {getOrderById?.data?.paymentMethod !== "COD" && (
+                                    <LabelInput
+                                        label="Transaction Id"
+                                        value={getOrderById?.paymentObj?.orderId || "-"}
+                                    />
+                                )}
+                                <LabelInput label="Payment Status" value={getOrderById?.data?.paymentStatus || "-"} />
+                                <LabelInput
+                                    label="Customer Feedback"
+                                    value={getOrderById?.data?.workDoneConformationByCustomer || "-"}
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    {/* Buttons */}
                     <div className="flex flex-col md:flex-row justify-center space-y-3 md:space-y-0 md:space-x-5 mt-6">
-                        {getOrderById?.orderStatus === "Pending" ? (
+                        {getOrderById?.data?.orderStatus === "Pending" ? (
                             <>
                                 <button
                                     className="px-10 py-2 border border-[#007E74] bg-[#D9F1EB] text-[#007E74] font-medium rounded-lg hover:bg-[#c0ece1] transition"
@@ -334,7 +316,6 @@ const OrderPending = () => {
                                 >
                                     Reject Order
                                 </button>
-
                                 <button
                                     className="px-10 py-2 bg-[#007E74] text-white font-medium rounded-lg hover:bg-[#005f58] transition"
                                     onClick={handleAcceptOrder}
@@ -342,91 +323,67 @@ const OrderPending = () => {
                                     Accept Order
                                 </button>
                             </>
-                        ) : getOrderById?.orderStatus === "WorkInProgress" ? (
-                            getOrderById?.pickupStatus === "Picked Up" ? (
-                                <>
+                        ) : getOrderById?.data?.orderStatus === "WorkInProgress" ? (
+                            getOrderById?.data?.pickupStatus === "Picked Up" ? (
+                                getOrderById?.data?.paymentMethod === "COD" ? (
                                     <button
-                                        className="px-10 py-2 border border-[#007E74] bg-[#D9F1EB] text-[#007E74] font-medium rounded-lg hover:bg-[#c0ece1] transition"
-                                        onClick={() => navigate(-1)}
+                                        onClick={handleSettlePayment}
+                                        className="px-10 py-2 font-medium rounded-lg transition bg-[#007E74] text-white hover:bg-[#005f58]"
                                     >
-                                        Cancel
+                                        Settle Payment
                                     </button>
-                                    {getOrderById?.paymentMethod === "COD" ? (
-                                        <button
-                                            onClick={() => {
-                                                // if (
-                                                //     !getOrderById?.statusHistory?.some(
-                                                //         (status) => status.status === "approved"
-                                                //     )
-                                                // ) {
-                                                //     navigate("/orders/uploadbill");
-                                                // } else {
-                                                //     alert("You can upload the bill only after approval");
-                                                // }
-                                                setShowSettlePaymentModal(true);
-                                            }}
-                                            className={`px-10 py-2 font-medium rounded-lg transition bg-[#007E74] text-white hover:bg-[#005f58]`}
-                                        >
-                                            Settle Payment
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => {
-                                                if (
-                                                    !getOrderById?.statusHistory?.some(
-                                                        (status) => status.status === "approved"
-                                                    )
-                                                ) {
-                                                    navigate("/orders/uploadbill");
-                                                } else {
-                                                    alert("You can upload the bill only after approval");
-                                                }
-                                            }}
-                                            className={`px-10 py-2 font-medium rounded-lg transition ${
-                                                !getOrderById?.statusHistory?.some(
-                                                    (status) => status.status === "approved"
-                                                )
-                                                    ? "bg-[#007E74] text-white hover:bg-[#005f58]"
-                                                    : "bg-gray-400 cursor-not-allowed text-white"
-                                            }`}
-                                        >
-                                            Upload Bill
-                                        </button>
-                                    )}
-                                </>
-                            ) : getOrderById?.statusHistory?.some(
-                                  (status) => status.status === "ShopkeeperAccepted"
-                              ) ? (
-                                <>
+                                ) : (
                                     <button
-                                        className="px-10 py-2 bg-[#007E74] text-white font-medium rounded-lg hover:bg-[#005f58] transition"
-                                        onClick={() => navigate(-1)}
+                                        onClick={() => {
+                                            if (
+                                                getOrderById?.data?.workDoneConformationByCustomer === "Work Done" ||
+                                                getOrderById?.data?.workDoneConformationByCustomer === "Work Approved"
+                                            ) {
+                                                navigate(`/orders/uploadbill/${id}`);
+                                            } else {
+                                                toast.info("Customer feedback is not Approved");
+                                            }
+                                        }}
+                                        className={`px-10 py-2 font-medium rounded-lg transition ${
+                                            getOrderById?.data?.workDoneConformationByCustomer === "Work Done" ||
+                                            getOrderById?.data?.workDoneConformationByCustomer === "Work Approved"
+                                                ? "bg-slate-400 text-black cursor-not-allowed"
+                                                : "bg-[#007E74] text-white hover:bg-[#005f58]"
+                                        }`}
                                     >
-                                        Cancel
+                                        Upload Bill
                                     </button>
-                                    <button
-                                        className="px-10 py-2 bg-[#007E74] text-white font-medium rounded-lg hover:bg-[#005f58] transition"
-                                        onClick={() => setOpenVerificationModal(true)}
-                                    >
-                                        Verify OTP
-                                    </button>
-                                </>
+                                )
                             ) : (
                                 <button
-                                    className="px-10 py-2 bg-gray-400 text-white font-medium rounded-lg cursor-not-allowed"
-                                    disabled
+                                    className="px-10 py-2 bg-[#007E74] text-white font-medium rounded-lg hover:bg-[#005f58] transition"
+                                    onClick={() => setOpenVerificationModal(true)}
                                 >
-                                    Waiting for Shopkeeper Approval
+                                    Verify OTP
                                 </button>
                             )
                         ) : (
-                            ""
+                            <button
+                                onClick={() => {
+                                    if (getOrderById?.data?.isBillSharedWithCustomer !== true) {
+                                        navigate(`/orders/uploadbill/${id}`);
+                                    } else {
+                                        toast.info("Bill has already been uploaded for this order");
+                                    }
+                                }}
+                                className={`px-10 py-2 font-medium rounded-lg transition ${
+                                    getOrderById?.data?.isBillSharedWithCustomer !== true
+                                        ? "bg-[#007E74] text-white hover:bg-[#005f58]"
+                                        : "bg-slate-400 text-black cursor-not-allowed"
+                                }`}
+                            >
+                                Upload Bill
+                            </button>
                         )}
                     </div>
                 </div>
             )}
 
-            {/* Reject Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
                     <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg border border-blue-500">
@@ -465,22 +422,27 @@ const OrderPending = () => {
                 </div>
             )}
 
-            {/* Success Modal */}
             {showSuccessModal && (
                 <SuccessModal
                     isOpen={showSuccessModal}
                     onClose={() => setShowSuccessModal(false)}
-                    bookingId={getOrderById?.orderId}
+                    bookingId={getOrderById?.data?.orderId}
                 />
             )}
 
-            {/* OTP Verification Modal */}
+            {showSettlePaymentModal && (
+                <SettlePaymentModal
+                    isOpen={showSettlePaymentModal}
+                    onClose={() => setShowSettlePaymentModal(false)}
+                    bookingId={getOrderById?.data?.orderId}
+                />
+            )}
+
             {openVerificationModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF] bg-opacity-10">
                     <div className="bg-white p-8 rounded-2xl border-1 border-[#D9F1EB] shadow-md w-full max-w-md">
                         <h2 className="text-2xl font-bold text-center text-[#0D2E28] mb-4">Verify OTP</h2>
                         <p className="text-xl text-center text-[#616666] mb-6">Enter the OTP provided by worker</p>
-
                         <div className="flex justify-center gap-3 mb-6">
                             {otp.map((digit, i) => (
                                 <input
@@ -495,7 +457,6 @@ const OrderPending = () => {
                                 />
                             ))}
                         </div>
-
                         <div className="flex justify-between items-center gap-4">
                             <button
                                 onClick={() => setOpenVerificationModal(false)}
@@ -512,14 +473,6 @@ const OrderPending = () => {
                         </div>
                     </div>
                 </div>
-            )}
-
-            {showSettlePaymentModal && (
-                <SettlePaymentModal
-                    isOpen={showSettlePaymentModal}
-                    onClose={() => setShowSettlePaymentModal(false)}
-                    bookingId={getOrderById?.orderId}
-                />
             )}
         </div>
     );
