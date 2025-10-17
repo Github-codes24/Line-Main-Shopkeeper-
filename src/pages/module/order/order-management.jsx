@@ -35,17 +35,14 @@ const OrderManagement = () => {
         fetchAllOrders(shopId, page, limit, search, expertise);
     }, [page, limit, search, expertise]);
 
-    // Apply filtering whenever orders or filters change
     useEffect(() => {
         if (getOrders?.orders?.length > 0) {
             let orders = [...getOrders.orders];
 
-            // Filter by Expertise
             if (expertise.length > 0) {
                 orders = orders.filter((order) => expertise.includes(order.specificServiceName));
             }
 
-            // Filter by Status
             if (selectedStatus.length > 0 && !selectedStatus.includes("All")) {
                 orders = orders.filter((order) => selectedStatus.includes(order.orderStatus));
             }
@@ -79,28 +76,6 @@ const OrderManagement = () => {
         setSelectedExpertise([]);
         setSelectedStatus([]);
     };
-
-    // const handleView = (order) => {
-    //     switch (order.orderStatus) {
-    //         case "Pending":
-    //             navigate(`/orders/pending/${order._id}`);
-    //             break;
-    //         case "WorkInProgress":
-    //             navigate(`/orders/workinprogress/${order._id}`);
-    //             break;
-    //         case "Completed":
-    //             navigate(`/orders/completed/${order._id}`);
-    //             break;
-    //         case "Accepted":
-    //             navigate(`/orders/completed/${order._id}`);
-    //             break;
-    //         case "Rejected":
-    //             navigate(`/orders/rejected/${order._id}`);
-    //             break;
-    //         default:
-    //             navigate(`/orders/${order._id}`);
-    //     }
-    // };
 
     return (
         <div className="p-3 bg-gray-200 min-h-screen">

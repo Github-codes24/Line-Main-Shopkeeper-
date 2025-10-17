@@ -7,7 +7,7 @@ const statusColors = {
     Pending: "bg-transparent text-[#FDB913] border-0",
     Completed: "bg-transparent text-[#1BC47D] border-0",
     Rejected: "bg-transparent text-[#FF4444] border-0",
-    WorkInProgress: "bg-transparent text-[#FF4444] border-0"
+    WorkInProgress: "bg-transparent text-[#FF4444] border-0",
 };
 
 const OrderTable = ({orders = []}) => {
@@ -17,15 +17,17 @@ const OrderTable = ({orders = []}) => {
         <div className="bg-white p-5 rounded-xl shadow-lg border border-gray-800 w-full">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-                <h4 className="text-lg font-semibold text-gray-800" style={{
+                <h4
+                    className="text-lg font-semibold text-gray-800"
+                    style={{
                         fontWeight: 500,
-                        fontSize: '18px',
-                        color: 'rgba(51, 51, 51, 1)'
-                    }}>Order Management</h4>
-                <button
-                    onClick={() => navigate("/orders")}
-                    className="text-sm font-medium text-grey-100 "
+                        fontSize: "18px",
+                        color: "rgba(51, 51, 51, 1)",
+                    }}
                 >
+                    Order Management
+                </h4>
+                <button onClick={() => navigate("/orders")} className="text-sm font-medium text-grey-100 ">
                     See All
                 </button>
             </div>
@@ -44,10 +46,7 @@ const OrderTable = ({orders = []}) => {
 
                     <tbody>
                         {orders.map((order, idx) => (
-                            <tr
-                                key={idx}
-                                className=""
-                            >
+                            <tr key={idx} className="">
                                 <td className="p-3 font-medium text-gray-800 text-center">{order.orderNo}</td>
                                 <td className="p-3 font-medium text-gray-800 text-center">{order.serviceRequired}</td>
                                 <td className="p-3">
