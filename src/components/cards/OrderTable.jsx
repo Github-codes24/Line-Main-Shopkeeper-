@@ -61,7 +61,7 @@ const OrderTable = ({orders = []}) => {
                                 </td>
                                 <td className="p-3 text-center">
                                     <button
-                                        onClick={() => navigate(`/orders/${order.orderNo}`)}
+                                        onClick={() => navigate(`/orders/orderdetails/${order._id}`)}
                                         className="text-teal-600 "
                                     >
                                         <Eye size={18} />
