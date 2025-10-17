@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { MdOutlineFileUpload } from "react-icons/md";
-
-const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGVjOTM4MzdlMGU0ZTA2ZWExZmRhMTEiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc2MDMzNDgyOSwiZXhwIjoxNzYwMzYzNjI5fQ.LTh_6QMFjALzK6rrhonR_p8xgz0WGPBNh3KC6iBTVes";
+import { toast } from "react-toastify";
+import conf from "../../../config";
+import useFetch from "../../../hook/useFetch";
 
 const SmallProductAdd = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const [fetchData] = useFetch();
 
   const [productName, setProductName] = useState("");
   const [productCategory, setProductCategory] = useState("");
@@ -21,11 +22,6 @@ const SmallProductAdd = () => {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
 
-  const api = axios.create({
-    baseURL: "https://linemen-be-1.onrender.com",
-    headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
-  });
-
   // Unified input class
   const inputClass =
     "bg-[#F5FFFF] border border-[#B2D8D5] text-[#0D2E28] text-lg font-medium rounded-lg px-4 py-2 w-full outline-none focus:outline-none placeholder:text-[#0D2E28] placeholder:font-medium";
@@ -34,9 +30,15 @@ const SmallProductAdd = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await api.get("/shopkeeper/bigproduct/experties");
-        if (res.data.success) {
-          setCategories(res.data.data);
+        const result = await fetchData({
+          method: "GET",
+          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/experties`,
+        });
+
+        if (result.success) {
+          setCategories(result.data || []);
+        } else {
+          console.error("Error fetching categories:", result.message);
         }
       } catch (err) {
         console.error("Error fetching categories:", err);
@@ -55,11 +57,15 @@ const SmallProductAdd = () => {
 
     const fetchSubCategories = async () => {
       try {
-        const res = await api.get(
-          `/shopkeeper/bigproduct/${productCategory}/subtabs`
-        );
-        if (res.data.success) {
-          setSubCategories(res.data.data);
+        const result = await fetchData({
+          method: "GET",
+          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/${productCategory}/subtabs`,
+        });
+
+        if (result.success) {
+          setSubCategories(result.data || []);
+        } else {
+          console.error("Error fetching sub-categories:", result.message);
         }
       } catch (err) {
         console.error("Error fetching sub-categories:", err);
@@ -88,17 +94,17 @@ const SmallProductAdd = () => {
       !productDescription ||
       !productImage
     ) {
-      alert("Please fill all fields and select an image");
+      toast.error("Please fill all fields and select an image");
       return;
     }
 
     if (productDescription.length < 10) {
-      alert("Product description must be at least 10 characters");
+      toast.error("Product description must be at least 10 characters");
       return;
     }
 
     if (subCategories.length > 0 && !productSubCategory) {
-      alert("Please select a valid product sub-category for this category.");
+      toast.error("Please select a valid product sub-category for this category.");
       return;
     }
 
@@ -114,18 +120,22 @@ const SmallProductAdd = () => {
 
     try {
       setLoading(true);
-      const res = await api.post("/shopkeeper/small-products", formData, {
+      const result = await fetchData({
+        method: "POST",
+        url: `${conf.apiBaseUrl}/shopkeeper/small-products`,
+        data: formData,
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("Product Added Successfully ✅");
-      navigate(-1);
+
+      if (result.success) {
+        toast.success("Product Added Successfully ✅");
+        navigate(-1);
+      } else {
+        toast.error(`Failed to add product: ${result.message || "Unknown error"}`);
+      }
     } catch (error) {
-      console.error("Error adding product:", error.response?.data || error);
-      alert(
-        `Failed to add product ❌: ${
-          error.response?.data?.message || error
-        }`
-      );
+      console.error("Error adding product:", error);
+      toast.error(`Failed to add product: ${error.message || "Unknown error"}`);
     } finally {
       setLoading(false);
     }
@@ -314,7 +324,7 @@ const SmallProductAdd = () => {
             <button
               type="button"
               onClick={handleBack}
-              className="w-[200px] bg-[#E6F2F1] text-[#007E74] border border-[#007E74] font-medium px-10 py-2 rounded-lg hover:bg-[#d1e5e4]"
+              className="w-[200px] bg-[#E6F2F1] text-[#007E74] border border-[#007E74] font-medium px-10 py-2 rounded-lg"
               disabled={loading}
             >
               Cancel
@@ -322,7 +332,7 @@ const SmallProductAdd = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-[200px] font-medium px-10 py-2 rounded-lg bg-[#007E74] text-white hover:bg-[#006a62] transition-colors disabled:bg-gray-400"
+              className="w-[200px] font-medium px-10 py-2 rounded-lg bg-[#007E74] text-white"
             >
               {loading ? "Adding..." : "Add Product"}
             </button>
@@ -332,34 +342,5 @@ const SmallProductAdd = () => {
     </div>
   );
 };
-
-// Reusable Form Field
-const FormField = ({label, placeholder, type, children}) => {
-    return (
-        <div className="flex flex-col sm:flex-row sm:items-center w-full gap-2">
-            <label className="w-full sm:w-1/3 font-medium">{label}</label>
-            <span className="hidden sm:inline font-medium">:</span>
-            {type === "textarea" ? (
-                <textarea
-                    placeholder={placeholder}
-                    rows={3}
-                    className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2 focus:outline-none focus:border-teal-500 placeholder:text-[#0D2E28]"
-                />
-            ) : type === "select" ? (
-                <select className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2 focus:outline-none focus:border-teal-500 text-[#0D2E28]">
-                    {children}
-                </select>
-            ) : (
-                <input
-                    type="text"
-                    placeholder={placeholder}
-                    className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2 focus:outline-none focus:border-teal-500 placeholder:text-[#0D2E28]"
-                />
-            )}
-        </div>
-    );
-};
-
-// Reusable Form Field
 
 export default SmallProductAdd;

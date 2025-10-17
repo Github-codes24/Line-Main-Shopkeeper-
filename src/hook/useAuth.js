@@ -165,6 +165,7 @@ const useAuth = () => {
         });
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("contact");
+        sessionStorage.removeItem("expertise");
         sessionStorage.removeItem("shopId");
         sessionStorage.removeItem("ownerName");
         sessionStorage.removeItem("isVerified");

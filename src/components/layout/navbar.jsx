@@ -6,18 +6,23 @@ import useAuth from "../../hook/useAuth";
 
 function Navbar() {
     const [open, setOpen] = useState(false);
-    const [showModal, setShowModal] = useState(false); // modal state
+    const [showModal, setShowModal] = useState(false);
     const dropdownRef = useRef(null);
-    const {logoutAdmin} = useAuth();
+    const {logoutAdmin, profile, fetchProfile} = useAuth(); // Get profile and fetchProfile from useAuth
     const navigate = useNavigate();
 
+    // Fetch profile data when component mounts
+    useEffect(() => {
+        fetchProfile();
+    }, []);
+
     const handleLogoutClick = () => {
-        setShowModal(true); // open modal instead of direct logout
+        setShowModal(true);
     };
 
     const confirmLogout = () => {
         localStorage.removeItem("token");
-        logoutAdmin(); // if you also want custom logout logic
+        logoutAdmin();
         navigate("/login");
     };
 
@@ -39,6 +44,9 @@ function Navbar() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // Get profile picture URL or use placeholder
+    const profileImageUrl = profile?.profilePictureUrl || "img1.jpg";
+
     return (
         <div className="min-w-full navbar border p-2 flex justify-between items-center">
             {/* Left: Logo */}
@@ -46,7 +54,15 @@ function Navbar() {
 
             {/* Right: Profile + Dropdown */}
             <div className="flex items-center">
-                <img src="img1.jpg" alt="profile" className="profile-pic rounded-full w-8 h-8 object-cover" />
+                <img 
+                    src={profileImageUrl} 
+                    alt="profile" 
+                    className="profile-pic rounded-full w-8 h-8 object-cover" 
+                    onError={(e) => {
+                        // Fallback to default image if profile image fails to load
+                        e.target.src = "img1.jpg";
+                    }}
+                />
                 <div ref={dropdownRef} className="relative">
                     <ChevronDown
                         className="w-4 h-4 ml-2 mr-3 text-gray-700 cursor-pointer"
@@ -57,14 +73,14 @@ function Navbar() {
                         <div className="absolute right-0 mt-2 w-36 bg-white border rounded shadow-md z-50">
                             <ul className="text-sm text-gray-700">
                                 <li
-                                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-[#007E74]"
+                                    className="px-3 py-2  cursor-pointer text-[#007E74]"
                                     onClick={hangleNavigate}
                                 >
                                     Admin Profile
                                 </li>
                                 <button
                                     className="w-full text-left px-3 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
-                                    onClick={handleLogoutClick} // open modal
+                                    onClick={handleLogoutClick}
                                 >
                                     Logout
                                 </button>

@@ -1,31 +1,17 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, Trash2, Filter, X, Search } from "lucide-react";
+import { Eye, X, Search } from "lucide-react";
 import { TbFilter } from "react-icons/tb";
-
-// --- API Helper Function ---
-async function fetchAllPayments(shopkeeperId, searchTerm, page, limit) {
-    const apiUrl = 'https://linemen-be-1.onrender.com/shopkeeper/payments/';
-    const payload = {
-        shopkeeperId,
-        search: searchTerm,
-        page,
-        limit,
-    };
-    const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-    });
-    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-    return response.json();
-}
+import { toast } from "react-toastify";
+import conf from "../../../config";
+import useFetch from "../../../hook/useFetch";
 
 const Payment = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const [fetchData] = useFetch();
 
     // State for API
     const [search, setSearch] = useState("");
@@ -37,21 +23,37 @@ const Payment = () => {
     const [filters, setFilters] = useState([]);
     const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
 
-    const filterOptions = ["Electrician",
+    const filterOptions = [
+        "Electrician",
         "Painter",
         "Carpenter",
         "AC Repair",
         "Tile Fitting",
-        "Plumber",];
+        "Plumber",
+    ];
 
     useEffect(() => {
         const fetchPaymentsData = async () => {
             try {
                 setLoading(true);
-                const data = await fetchAllPayments(SHOPKEEPER_ID, search, currentPage, 10);
+                setError(null);
 
-                if (data && data.success) {
-                    const formattedPayments = data.payments.map(p => ({
+                const payload = {
+                    shopkeeperId: SHOPKEEPER_ID,
+                    search: search,
+                    page: currentPage,
+                    limit: 10,
+                };
+
+                const result = await fetchData({
+                    method: "POST",
+                    url: `${conf.apiBaseUrl}/shopkeeper/payments/`,
+                    data: payload,
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (result && result.success) {
+                    const formattedPayments = result.payments.map(p => ({
                         id: p._id,
                         orderNo: p.bookingId?.orderId || p.orderId,
                         role: p.worker?.experties || 'N/A',
@@ -60,13 +62,15 @@ const Payment = () => {
                         status: p.status === 'settled' ? 'Paid' : 'Pending',
                     }));
                     setPayments(formattedPayments);
-                    setTotalPages(data.totalPages);
-                    setTotalCount(data.total || formattedPayments.length);
+                    setTotalPages(result.totalPages || 1);
+                    setTotalCount(result.total || formattedPayments.length);
                 } else {
-                    throw new Error("API request failed");
+                    throw new Error(result.message || "API request failed");
                 }
             } catch (err) {
-                setError("Failed to fetch payments");
+                const errorMessage = "Failed to fetch payments";
+                setError(errorMessage);
+                toast.error(errorMessage);
                 console.error(err);
             } finally {
                 setLoading(false);
@@ -136,7 +140,7 @@ const Payment = () => {
                     <div className="flex flex-wrap items-center gap-2">
                         <button
                             onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
-                            className="border px-2 py-1 rounded bg-[#E0E9E9]"
+                            className="border px-2 py-1 rounded bg-[#E0E9E9] "
                         >
                             <TbFilter className="w-8 h-8 px-1 py-1 border-[#007E74] text-[#0D2E28] bg-[#E0E9E9] rounded-lg" />
                         </button>
@@ -144,19 +148,19 @@ const Payment = () => {
                         {filters.map((filter) => (
                             <span key={filter} className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
                                 {filter}
-                                <X className="w-4 h-4 ml-2 cursor-pointer" onClick={() => removeFilter(filter)} />
+                                <X className="w-4 h-4 ml-2 cursor-pointer " onClick={() => removeFilter(filter)} />
                             </span>
                         ))}
                         {search && (
                             <span className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
                                 {`Name: "${search}"`}
-                                <X className="w-4 h-4 ml-2 cursor-pointer" onClick={() => setSearch("")} />
+                                <X className="w-4 h-4 ml-2 cursor-pointer " onClick={() => setSearch("")} />
                             </span>
                         )}
 
                         <button
                             onClick={handleResetFilter}
-                            className="ml-auto px-10 py-1 bg-[#D9F1EB] border-2 border-[#007E74] text-[#007E74] rounded"
+                            className="ml-auto px-10 py-1 bg-[#D9F1EB] border-2 border-[#007E74] text-[#007E74] rounded "
                         >
                             Reset Filter
                         </button>
@@ -175,8 +179,9 @@ const Payment = () => {
                                                 id={option}
                                                 checked={filters.includes(option)}
                                                 onChange={() => toggleFilter(option)}
+                                                className="cursor-pointer"
                                             />
-                                            <label htmlFor={option}>{option}</label>
+                                            <label htmlFor={option} className="cursor-pointer">{option}</label>
                                         </li>
                                     ))}
                                 </ul>
@@ -187,9 +192,17 @@ const Payment = () => {
                     {/* Table */}
                     <div className="overflow-x-auto">
                         {loading ? (
-                            <p>Loading...</p>
+                            <div className="text-center py-8">
+                                <p className="text-gray-600">Loading payments...</p>
+                            </div>
                         ) : error ? (
-                            <p className="text-red-500">{error}</p>
+                            <div className="text-center py-8">
+                                <p className="text-red-500">{error}</p>
+                            </div>
+                        ) : filteredPayments.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-gray-600">No payments found matching your criteria.</p>
+                            </div>
                         ) : (
                             <table className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden" style={{ borderSpacing: 0 }}>
                                 <thead className="bg-[#e0e9e9] text-sm md:text-base">
@@ -205,7 +218,7 @@ const Payment = () => {
                                 </thead>
                                 <tbody className="text-sm md:text-base">
                                     {filteredPayments.map((item, index) => (
-                                        <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                                        <tr key={item.id} className=" border-b border-gray-200">
                                             <td className="px-4 py-3 font-normal">{(currentPage - 1) * 10 + index + 1}</td>
                                             <td className="px-4 py-3 font-normal">{item.orderNo}</td>
                                             <td className="px-4 py-3 font-normal">{item.role}</td>
@@ -214,17 +227,20 @@ const Payment = () => {
                                             <td className={`px-4 py-3 font-normal ${item.status === "Paid" ? "text-green-500" : "text-yellow-500"}`}>
                                                 {item.status}
                                             </td>
-                                            <td className="px-4 py-3 flex items-center gap-3 text-gray-700">
-                                                <Eye
-                                                    onClick={() => handlePay(item.id)}
-                                                    className="w-5 h-5 cursor-pointer text-[#06A77D]"
-                                                />
-                                                <button
-                                                    onClick={() => handlePay(item.id)}
-                                                    className="text-teal-700 border border-teal-700 px-3 py-1 rounded-lg bg-[#D9F1EB]"
-                                                >
-                                                    Pay
-                                                </button>
+                                            <td className="px-4 py-3 font-normal">
+                                                <div className="flex items-center gap-3 text-gray-700">
+                                                    <Eye
+                                                        onClick={() => handlePay(item.id)}
+                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] "
+                                                        title="View Payment"
+                                                    />
+                                                    <button
+                                                        onClick={() => handlePay(item.id)}
+                                                        className="text-teal-700 border border-teal-700 px-3 py-1 rounded-lg bg-[#D9F1EB] "
+                                                    >
+                                                        Pay
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -236,7 +252,7 @@ const Payment = () => {
 
                 {/* Pagination */}
                 {!loading && !error && totalPages > 0 && (
-                    <div className="w-full flex flex-col bg-[#F5F5F5] md:flex-row justify-between items-center gap-2 p-2 text-sm font-semibold text-black">
+                    <div className="w-full flex flex-col bg-white md:flex-row justify-between items-center gap-2 p-3 text-sm font-semibold text-black rounded-lg shadow">
                         <span>
                             Showing {filteredPayments.length} of {totalCount} Entries
                         </span>
@@ -244,7 +260,7 @@ const Payment = () => {
                             <button
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
-                                className="px-2 py-1 text-teal-700 hover:bg-purple-100 rounded disabled:opacity-50"
+                                className="px-3 py-1 text-teal-700  rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 &lt;
                             </button>
@@ -252,7 +268,7 @@ const Payment = () => {
                                 <button
                                     key={i + 1}
                                     onClick={() => setCurrentPage(i + 1)}
-                                    className={`px-3 py-1 rounded ${currentPage === i + 1 ? "bg-teal-700 text-white" : "bg-teal-100 text-teal-700"}`}
+                                    className={`px-3 py-1 rounded transition-colors ${currentPage === i + 1 ? "bg-teal-700 text-white" : "bg-teal-100 text-teal-700 "}`}
                                 >
                                     {i + 1}
                                 </button>
@@ -260,7 +276,7 @@ const Payment = () => {
                             <button
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
-                                className="px-2 py-1 text-teal-700 hover:bg-purple-100 rounded disabled:opacity-50"
+                                className="px-3 py-1 text-teal-700  rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 &gt;
                             </button>

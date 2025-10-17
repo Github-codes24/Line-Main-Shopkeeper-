@@ -18,10 +18,12 @@ const Card = ({title, value, change}) => {
         "Total Customer": {
             color: "from-green-400 to-green-300", // soft green
             icon: <Users size={22} />,
+            showRupee: false,
         },
         "Total Order": {
             color: "from-purple-400 to-pink-300", // soft purple-pink
             icon: <Target size={22} />,
+            showRupee: false,
         },
     };
 

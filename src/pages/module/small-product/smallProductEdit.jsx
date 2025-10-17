@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { toast } from "react-toastify";
+import conf from "../../../config";
+import useFetch from "../../../hook/useFetch";
 
 const SmallProductEdit = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [fetchData] = useFetch();
 
   // State for form fields
   const [name, setName] = useState("");
@@ -25,21 +28,18 @@ const SmallProductEdit = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGVjOTM4MzdlMGU0ZTA2ZWExZmRhMTEiLCJyb2xlIjoic2hvcGtlZXBlciIsImlhdCI6MTc2MDMzNDgyOSwiZXhwIjoxNzYwMzYzNjI5fQ.LTh_6QMFjALzK6rrhonR_p8xgz0WGPBNh3KC6iBTVes";
-
   // Fetch product & pre-populate fields
   useEffect(() => {
     const fetchProduct = async () => {
       if (!id) return;
       try {
-        const response = await axios.get(
-          `https://linemen-be-1.onrender.com/shopkeeper/small-products/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const result = await fetchData({
+          method: "GET",
+          url: `${conf.apiBaseUrl}/shopkeeper/small-products/${id}`,
+        });
 
-        if (response.data.success) {
-          const product = response.data.data;
+        if (result.success) {
+          const product = result.data;
           setName(product.productName);
           setPrice(product.productPrice);
           setDescription(product.productDescription);
@@ -51,13 +51,13 @@ const SmallProductEdit = () => {
 
           // Fetch sub-categories for this category
           if (catId) {
-            const subResponse = await axios.get(
-              `https://linemen-be-1.onrender.com/shopkeeper/bigproduct/${catId}/subtabs`,
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const subResult = await fetchData({
+              method: "GET",
+              url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/${catId}/subtabs`,
+            });
 
-            if (subResponse.data.success) {
-              setSubCategories(subResponse.data.data);
+            if (subResult.success) {
+              setSubCategories(subResult.data || []);
 
               // Set selected sub-category
               const subCatId =
@@ -67,32 +67,38 @@ const SmallProductEdit = () => {
               setSubCategoryId(subCatId || "");
             }
           }
+        } else {
+          toast.error(result.message || "Failed to fetch product");
         }
       } catch (error) {
-        console.error("Error fetching product:", error.response?.data || error);
+        console.error("Error fetching product:", error);
+        toast.error("Error loading product details");
       }
     };
 
     fetchProduct();
-  }, [id, token]);
+  }, [id]);
 
   // Fetch all categories (tabs/expertise)
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          "https://linemen-be-1.onrender.com/shopkeeper/bigproduct/experties",
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (response.data.success) {
-          setCategories(response.data.data); // { _id, tabName }
+        const result = await fetchData({
+          method: "GET",
+          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/experties`,
+        });
+
+        if (result.success) {
+          setCategories(result.data || []); // { _id, tabName }
+        } else {
+          console.error("Error fetching categories:", result.message);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error.response?.data || error);
+        console.error("Error fetching categories:", error);
       }
     };
     fetchCategories();
-  }, [token]);
+  }, []);
 
   // Fetch sub-categories when user manually changes category
   useEffect(() => {
@@ -104,21 +110,23 @@ const SmallProductEdit = () => {
 
     const fetchSubCategories = async () => {
       try {
-        const response = await axios.get(
-          `https://linemen-be-1.onrender.com/shopkeeper/bigproduct/${categoryId}/subtabs`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const result = await fetchData({
+          method: "GET",
+          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/${categoryId}/subtabs`,
+        });
 
-        if (response.data.success) {
-          setSubCategories(response.data.data);
+        if (result.success) {
+          setSubCategories(result.data || []);
+        } else {
+          console.error("Error fetching sub-categories:", result.message);
         }
       } catch (error) {
-        console.error("Error fetching sub-categories:", error.response?.data || error);
+        console.error("Error fetching sub-categories:", error);
       }
     };
 
     fetchSubCategories();
-  }, [categoryId, token]);
+  }, [categoryId]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -129,6 +137,16 @@ const SmallProductEdit = () => {
   };
 
   const handleUpdate = async () => {
+    if (!name || !price || !description || !categoryId) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    if (description.length < 10) {
+      toast.error("Product description must be at least 10 characters");
+      return;
+    }
+
     setIsLoading(true);
 
     const formData = new FormData();
@@ -140,19 +158,22 @@ const SmallProductEdit = () => {
     if (imageFile) formData.append("productImage", imageFile);
 
     try {
-      const response = await axios.put(
-        `https://linemen-be-1.onrender.com/shopkeeper/small-products/${id}`,
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const result = await fetchData({
+        method: "PUT",
+        url: `${conf.apiBaseUrl}/shopkeeper/small-products/${id}`,
+        data: formData,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      if (response.data.success) {
-        console.log("Product updated successfully!");
+      if (result.success) {
+        toast.success("Product updated successfully! ✅");
         navigate("/small-product");
+      } else {
+        toast.error(`Failed to update product: ${result.message || "Unknown error"}`);
       }
     } catch (error) {
-      console.error("Error updating product:", error.response?.data || error);
-      alert("Failed to update product. Check console for details.");
+      console.error("Error updating product:", error);
+      toast.error(`Failed to update product: ${error.message || "Unknown error"}`);
     } finally {
       setIsLoading(false);
     }
@@ -162,7 +183,7 @@ const SmallProductEdit = () => {
     <div className="min-h-screen bg-[#EAF1F1] p-4 font-sans text-[#0D2E28]">
       {/* Header */}
       <div className="flex bg-white mb-4 border border-[#D6E2E2] rounded-lg shadow-sm p-4 items-center">
-        <button onClick={() => navigate(-1)} className="text-xl text-black hover:opacity-75">
+        <button onClick={() => navigate(-1)} className="text-xl text-black ">
           {/* Back Icon SVG */}
           <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -182,7 +203,7 @@ const SmallProductEdit = () => {
             <div className="w-3/4">
               <div className="relative w-48 h-48">
                 <img src={imageUrl || "https://via.placeholder.com/150"} alt="Product" className="w-full h-full object-cover rounded-lg border border-gray-300"/>
-                <label className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white rounded-lg opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <label className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white rounded-lg opacity-0  cursor-pointer">
                   Upload Photo
                   <input type="file" accept="image/*" className="hidden" onChange={handleImageChange}/>
                 </label>
@@ -256,13 +277,13 @@ const SmallProductEdit = () => {
 
         {/* Action Buttons */}
         <div className="flex justify-center space-x-4 mt-8">
-          <button onClick={() => navigate("/small-product")} className="bg-[#E0F2F1] text-[#007E74] border border-[#007E74] font-semibold px-8 py-2 rounded-lg hover:bg-[#B2DFDB] transition-colors">
+          <button onClick={() => navigate("/small-product")} className="bg-[#E0F2F1] text-[#007E74] border border-[#007E74] font-semibold px-8 py-2 rounded-lg">
             Cancel
           </button>
           <button
             onClick={handleUpdate}
             disabled={isLoading}
-            className="bg-[#007E74] text-white font-semibold px-8 py-2 rounded-lg hover:bg-[#00695C] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="bg-[#007E74] text-white font-semibold px-8 py-2 rounded-lg  transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {isLoading ? "Updating..." : "Update"}
           </button>
@@ -270,40 +291,6 @@ const SmallProductEdit = () => {
       </div>
     </div>
   );
-};
-
-// Reusable Form Field
-const FormField = ({label, value, setValue, placeholder, type, children}) => {
-    return (
-        <div className="flex flex-col sm:flex-row sm:items-center w-full gap-2">
-            <label className="w-full sm:w-1/3 font-medium">{label}</label>
-            <span className="hidden sm:inline font-medium">:</span>
-            {type === "textarea" ? (
-                <textarea
-                    rows={3}
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2"
-                />
-            ) : type === "select" ? (
-                <select
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2"
-                >
-                    {children}
-                </select>
-            ) : (
-                <input
-                    type="text"
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    placeholder={placeholder}
-                    className="flex-1 w-full sm:w-auto border border-[#007E74] rounded px-3 py-2"
-                />
-            )}
-        </div>
-    );
 };
 
 export default SmallProductEdit;

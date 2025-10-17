@@ -37,7 +37,7 @@ const WorkerView = () => {
             {/* Header */}
             <div className="flex items-center gap-3 mb-6 bg-white p-4 rounded-md shadow-md">
                 <div className="flex items-center">
-                    <button onClick={() => navigate(-1)} className="text-xl text-black hover:text-gray-600">
+                    <button onClick={() => navigate(-1)} className="text-xl text-black ">
                         <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z"
@@ -87,7 +87,7 @@ const WorkerView = () => {
                 <div className="flex justify-center mt-auto">
                     <button
                         onClick={() => navigate(`/worker/worker-edit/${id}`, {state: worker})}
-                        className="px-16 py-2 bg-teal-700 text-white rounded hover:bg-teal-800 transition"
+                        className="px-16 py-2 bg-teal-700 text-white rounded "
                     >
                         Edit
                     </button>
