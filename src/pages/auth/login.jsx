@@ -9,31 +9,30 @@ const AdminLogin = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [expertiseList, setExpertiseList] = React.useState([]);
-  const [loadingExpertise, setLoadingExpertise] = React.useState(false);
-  const [expertiseFetched, setExpertiseFetched] = React.useState(false);
+  const [loadingExpertise, setLoadingExpertise] = React.useState(true);
 
-  // Fetch expertise list when dropdown is clicked
-  const handleExpertiseDropdownClick = async () => {
-    // Only fetch if not already fetched
-    if (expertiseFetched) return;
+  // Fetch expertise list when component mounts
+  React.useEffect(() => {
+    const fetchExpertise = async () => {
+      setLoadingExpertise(true);
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/shopkeeper/auth/experties`
+        );
 
-    setLoadingExpertise(true);
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/shopkeeper/auth/experties`
-      );
-
-      if (response.data?.success) {
-        setExpertiseList(response.data.data);
-        setExpertiseFetched(true);
+        if (response.data?.success) {
+          setExpertiseList(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching expertise:", error);
+        alert("Failed to load expertise. Please try again.");
+      } finally {
+        setLoadingExpertise(false);
       }
-    } catch (error) {
-      console.error("Error fetching expertise:", error);
-      alert("Failed to load expertise. Please try again.");
-    } finally {
-      setLoadingExpertise(false);
-    }
-  };
+    };
+
+    fetchExpertise();
+  }, []); // Empty dependency array means this runs once on mount
 
   const formik = useFormik({
     initialValues: {
@@ -96,11 +95,10 @@ const AdminLogin = () => {
                 : "border-teal-500"
             } rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400`}
             {...formik.getFieldProps("expertise")}
-            onClick={handleExpertiseDropdownClick}
             disabled={loadingExpertise}
           >
             <option value="">
-              {loadingExpertise ? "Loading expertise..." : "Select Expertise"}
+              {loadingExpertise ? "Select Expertise" : "Select Expertise"}
             </option>
             {expertiseList.map((item) => (
               <option key={item._id} value={item._id}>

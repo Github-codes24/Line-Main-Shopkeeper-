@@ -308,9 +308,9 @@ const Worker = () => {
                                     {paginatedWorkers.map((worker, index) => (
                                         <tr
                                             key={worker.id}
-                                            className=" border-b border-gray-200"
+                                            className="border-b border-gray-200"
                                         >
-                                            <td className="px-4 py-3 font-normal">
+                                            <td className="px-4 py-3 font-normal text-center">
                                                 {(currentPage - 1) * limit + index + 1}
                                             </td>
                                             <td className="px-4 py-3 font-normal text-center">{worker.name}</td>

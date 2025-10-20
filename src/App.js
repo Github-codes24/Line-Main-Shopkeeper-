@@ -33,6 +33,7 @@ import QuotationWaiting from "./pages/module/order/quotation-waiting";
 
 // Payment
 import PaymentProcess from "./pages/module/payment/payment-process";
+import PaymentProcessFullwork from "./pages/module/payment/payement-processfullwork"
 import Payment from "./pages/module/payment/payment";
 
 // Auth
@@ -128,6 +129,7 @@ function App() {
                         {/* Payment */}
                         <Route path="/payment" element={<Payment />} />
                         <Route path="/payment/process/:id" element={<PaymentProcess />} />
+                        <Route path="/payment/process-fullwork/:id" element={<PaymentProcessFullwork />} />
 
                         {/* Catch-all → dashboard */}
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
