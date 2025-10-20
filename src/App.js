@@ -25,11 +25,6 @@ import SmallProductView from "./pages/module/small-product/smallProductView";
 // Orders
 import OrderManagement from "./pages/module/order/order-management";
 import OrderPending from "./pages/module/order/order-pending";
-import OrderPlaced from "./pages/module/order/order-placed";
-import OrderProcessing from "./pages/module/order/order-processing";
-import OrderCompleted from "./pages/module/order/quotation-approved";
-import OrderRejected from "./pages/module/order/quotation-rejected";
-import QuotationWaiting from "./pages/module/order/quotation-waiting";
 
 // Payment
 import PaymentProcess from "./pages/module/payment/payment-process";
@@ -45,8 +40,6 @@ import "./App.css";
 import AdminProfile from "./pages/auth/profile";
 import AdminEditProfile from "./pages/auth/profileEdit";
 import {ToastContainer} from "react-toastify";
-import AcceptOrderModals from "./pages/module/order/accept-order-models";
-import OtpModal from "./pages/module/order/otpModal";
 import {useMediaQuery, useTheme} from "@mui/material";
 import UploadBill from "./pages/module/order/upload-bill";
 
@@ -117,14 +110,14 @@ function App() {
                         {/* Orders */}
                         <Route path="/orders" element={<OrderManagement />} />
                         <Route path="/orders/orderdetails/:id" element={<OrderPending />} />
-                        <Route path="/orders/placed" element={<OrderPlaced />} />
+                        {/* <Route path="/orders/placed" element={<OrderPlaced />} /> */}
                         {/* <Route path="/orders/processing" element={<OrderProcessing />} /> */}
-                        <Route path="/orders/completed/:id" element={<OrderCompleted />} />
-                        <Route path="/orders/rejected/:id" element={<OrderRejected />} />
-                        <Route path="/orders/workinprogress/:id" element={<QuotationWaiting />} />
-                        <Route path="/orders/acceptorder/:id" element={<AcceptOrderModals />} />
-                        <Route path="/orders/verifyotp/" element={<OtpModal />} />
-                        <Route path="/orders/uploadbill/" element={<UploadBill />} />
+                        {/* <Route path="/orders/completed/:id" element={<OrderCompleted />} /> */}
+                        {/* <Route path="/orders/rejected/:id" element={<OrderRejected />} /> */}
+                        {/* <Route path="/orders/workinprogress/:id" element={<QuotationWaiting />} /> */}
+                        {/* <Route path="/orders/acceptorder/:id" element={<AcceptOrderModals />} /> */}
+                        {/* <Route path="/orders/verifyotp/" element={<OtpModal />} /> */}
+                        <Route path="/orders/uploadbill/:id" element={<UploadBill />} />
 
                         {/* Payment */}
                         <Route path="/payment" element={<Payment />} />
