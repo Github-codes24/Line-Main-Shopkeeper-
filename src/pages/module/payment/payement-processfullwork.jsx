@@ -8,7 +8,7 @@ import image1 from "../../../assets/image1.png";
 import image2 from "../../../assets/image2.png";
 import image3 from "../../../assets/image3.png";
 
-function PaymentProcess() {
+function PaymentProcessFullwork() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [fetchData] = useFetch();
@@ -227,38 +227,35 @@ function PaymentProcess() {
                     <hr className="my-6 border-gray-300" />
 
                     {/* Service Details */}
-                  
-                   
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Service Details</h3>
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <span className="w-40 text-left font-medium text-gray-700">Service Required :</span>
+                            <input type="text" value={data.service} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="w-40 text-left font-medium text-gray-700">Date :</span>
+                            <input type="text" value={data.date} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <span className="w-40 text-left font-medium text-gray-700">Photos :</span>
+                            <div className="flex gap-2 items-center">
+                                {data.images.map((img, index) => (
+                                    <img key={index} src={img} alt={`img-${index}`} className="w-20 h-16 rounded-md border border-gray-300 object-cover" />
+                                ))}
+                                <a href="#" className="text-teal-600 text-sm font-medium underline">View all</a>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Product List Table - EXACT UI FROM MOCKUP */}
                    <div className="mt-6 mb-6">
-                        
+    <div className="flex items-center gap-3 mb-4">
+        <span className="text-base font-medium text-gray-700">Product List</span>
+        <span className="text-base font-medium text-gray-700">:</span>
+    </div>
     
-    
-</div>
-
-                  
-
-                    {/* Quotation Details */}
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Quotation Details</h3>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Worker Assigned:</span>
-                            <input type="text" value={data.workerAssigned} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Last Update :</span>
-                            <input type="text" value={data.lastUpdate} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Quotation status :</span>
-                            <input type="text" value={data.quotationStatus} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3 mb-4">
-                           
-                        </div>
-                        <div style={{ display: 'inline-block' }}>
+    <div style={{ display: 'inline-block' }}>
         <table className="border-collapse" style={{ borderColor: '#01050bff' }}>
             <thead>
                 <tr >
@@ -354,7 +351,13 @@ function PaymentProcess() {
             </tbody>
         </table>
     </div>
+</div>
+
                     <hr className="my-6 border-gray-300" />
+
+                    {/* Quotation Details */}
+                   
+                  
 
                     {/* Payment Details */}
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Details</h3>
@@ -401,4 +404,4 @@ function PaymentProcess() {
     );
 }
 
-export default PaymentProcess;
+export default PaymentProcessFullwork;

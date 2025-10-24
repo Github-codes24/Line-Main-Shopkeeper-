@@ -45,9 +45,12 @@ const Card = ({title, value, change}) => {
             <p className="text-3xl font-bold mb-2">{isCurrency ? `₹ ${value}` : value}</p>
 
             {/* Change indicator */}
-            <div className={`flex items-center text-sm font-medium ${isPositive ? "text-green-600" : "text-red-500"}`}>
-                {isPositive ? <TrendingUp size={16} className="mr-1" /> : <TrendingDown size={16} className="mr-1" />}
-                <span>{change}</span>
+            <div className="flex space-x-4">
+                <div className={`flex items-center text-sm font-medium ${isPositive ? "text-green-600" : "text-red-500"}`}>
+                    {isPositive ? <TrendingUp size={16} className="mr-1" /> : <TrendingDown size={16} className="mr-1" />}
+                    <span>{change}</span>
+                </div>
+                <p className="text-md font-medium ">This Month </p>
             </div>
         </div>
     );

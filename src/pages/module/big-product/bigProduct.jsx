@@ -286,20 +286,20 @@ const BigProduct = () => {
                             >
                                 <thead className="bg-[#e0e9e9] text-sm md:text-base">
                                     <tr>
-                                        <th className="px-4 py-3 font-medium">Sr.No.</th>
-                                        <th className="px-4 py-3 font-medium">Image</th>
-                                        <th className="px-4 py-3 font-medium">Name</th>
-                                        <th className="px-4 py-3 font-medium">Category</th>
-                                        <th className="px-4 py-3 font-medium">Sub-Category</th>
-                                        <th className="px-4 py-3 font-medium">Price</th>
-                                        <th className="px-4 py-3 font-medium">Status</th>
-                                        <th className="px-4 py-3 font-medium">Action</th>
+                                        <th className="px-4 py-3 font-medium text-center">Sr.No.</th>
+                                        <th className="px-4 py-3 font-medium text-center">Image</th>
+                                        <th className="px-4 py-3 font-medium text-center">Name</th>
+                                        <th className="px-4 py-3 font-medium text-center">Category</th>
+                                        <th className="px-4 py-3 font-medium text-center">Sub-Category</th>
+                                        <th className="px-4 py-3 font-medium text-center">Price</th>
+                                        <th className="px-4 py-3 font-medium text-center">Status</th>
+                                        <th className="px-4 py-3 font-medium text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-sm md:text-base">
                                     {products.map((product, index) => (
                                         <tr key={product._id} className=" border-b border-gray-200">
-                                            <td className="px-4 py-3 font-normal">
+                                            <td className="px-4 py-3 font-normal text-center">
                                                 {(currentPage - 1) * limit + index + 1}
                                             </td>
                                             <td className="px-4 py-3">
@@ -309,24 +309,26 @@ const BigProduct = () => {
                                                     className="w-12 h-12 md:w-14 md:h-14 rounded border border-[#007E74] object-cover"
                                                 />
                                             </td>
-                                            <td className="px-4 py-3 font-normal">{product.productName}</td>
-                                            <td className="px-4 py-3 font-normal">
+                                            <td className="px-4 py-3 font-normal text-center">{product.productName}</td>
+                                            <td className="px-4 py-3 font-normal text-center">
                                                 {typeof product.productCategory === "object"
                                                     ? product.productCategory?.tabName || "N/A"
                                                     : product.productCategory || "N/A"}
                                             </td>
-                                            <td className="px-4 py-3 font-normal">
+                                            <td className="px-4 py-3 font-normal text-center">
                                                 {product.productSubCategory || "N/A"}
                                             </td>
-                                            <td className="px-4 py-3 font-normal">₹{product.productPrice}</td>
+                                            <td className="px-4 py-3 font-normal text-center">
+                                                ₹{product.productPrice}
+                                            </td>
                                             <td
-                                                className={`px-4 py-3 font-normal ${getStatusColor(
+                                                className={`px-4 py-3 font-normaltext-center ${getStatusColor(
                                                     product.approvalStatus
                                                 )}`}
                                             >
                                                 {product.approvalStatus}
                                             </td>
-                                            <td className="px-4 py-3 font-normal">
+                                            <td className="px-4 py-3 font-normal text-center">
                                                 <div className="flex items-center gap-3 text-gray-700">
                                                     <Eye
                                                         onClick={() => handleView(product._id)}

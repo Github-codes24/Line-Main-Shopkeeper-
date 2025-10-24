@@ -12,13 +12,22 @@ const Payment = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const [fetchData] = useFetch();
+    
+    // Debug: Check if auth token exists
+    useEffect(() => {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        console.log("🔑 Auth Token exists:", !!token);
+        if (!token) {
+            console.warn("⚠️ NO AUTH TOKEN FOUND! This might be why the API returns empty data.");
+        }
+    }, []);
 
-    // State for API
+    // State for filtering
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-    const SHOPKEEPER_ID = "68c3c3d0357c37bfad321962";
+    const SHOPKEEPER_ID = "68e9efe94264d4f95dc18389";
 
     const [filters, setFilters] = useState([]);
     const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
@@ -38,54 +47,104 @@ const Payment = () => {
                 setLoading(true);
                 setError(null);
 
+                // Match Postman request - only send shopkeeperId
                 const payload = {
                     shopkeeperId: SHOPKEEPER_ID,
-                    search: search,
-                    page: currentPage,
-                    limit: 10,
                 };
 
-                const result = await fetchData({
+                // Debug logging
+                console.log("=== API REQUEST DEBUG ===");
+                console.log("URL:", `${conf.apiBaseUrl}/shopkeeper/payments/`);
+                console.log("Payload:", payload);
+                console.log("Method:", "POST");
+
+                // TEMPORARY: Direct fetch for debugging (bypass useFetch)
+                const response = await fetch(`${conf.apiBaseUrl}/shopkeeper/payments/`, {
                     method: "POST",
-                    url: `${conf.apiBaseUrl}/shopkeeper/payments/`,
-                    data: payload,
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        "Content-Type": "application/json",
+                        // Add auth token if needed:
+                        // "Authorization": `Bearer ${your_token_here}`
+                    },
+                    body: JSON.stringify(payload),
                 });
+                
+                const result = await response.json();
+                
+                // Original useFetch call (commented for debugging)
+                // const result = await fetchData({
+                //     method: "POST",
+                //     url: `${conf.apiBaseUrl}/shopkeeper/payments/`,
+                //     data: payload,
+                //     headers: { "Content-Type": "application/json" },
+                // });
+
+                console.log("=== API RESPONSE DEBUG ===");
+                console.log("Full Response:", result);
+                console.log("Success:", result?.success);
+                console.log("Total Orders:", result?.totalOrders);
+                console.log("Orders Array:", result?.orders);
 
                 if (result && result.success) {
-                    const formattedPayments = result.payments.map(p => ({
+                    // API returns 'orders' not 'payments'
+                    const ordersData = result.orders || [];
+                    
+                    const formattedPayments = ordersData.map(p => ({
                         id: p._id,
-                        orderNo: p.bookingId?.orderId || p.orderId,
-                        role: p.worker?.experties || 'N/A',
-                        name: p.worker?.name || 'N/A',
+                        orderNo: p.orderId || 'N/A',
+                        // API returns workerExperties directly, not worker.experties
+                        role: p.workerExperties || 'N/A',
+                        // API returns workerName directly, not worker.name
+                        name: p.workerName || 'N/A',
                         updated: new Date(p.updatedAt || Date.now()).toLocaleDateString("en-IN"),
-                        status: p.status === 'settled' ? 'Paid' : 'Pending',
+                        // API returns 'paymentStatus' not 'status'
+                        status: p.paymentStatus === 'Pending' ? 'Pending' : 'Paid',
+                        bookingType: p.bookingType || 'Normal',
                     }));
+                    
                     setPayments(formattedPayments);
-                    setTotalPages(result.totalPages || 1);
-                    setTotalCount(result.total || formattedPayments.length);
+                    // Calculate pagination from total orders
+                    const total = result.totalOrders || ordersData.length;
+                    setTotalCount(total);
+                    setTotalPages(Math.ceil(total / 10));
                 } else {
                     throw new Error(result.message || "API request failed");
                 }
             } catch (err) {
-                const errorMessage = "Failed to fetch payments";
+                const errorMessage = err.message || "Failed to fetch payments";
                 setError(errorMessage);
                 toast.error(errorMessage);
-                console.error(err);
+                console.error("Fetch Error:", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        const timer = setTimeout(() => {
-            fetchPaymentsData();
-        }, 500);
+        fetchPaymentsData();
+    }, []); // Remove dependencies since API doesn't support search/pagination
 
-        return () => clearTimeout(timer);
-    }, [search, currentPage]);
+    const handleView = (id) => {
+    const payment = payments.find(p => p.id === id);
+    if (!payment) return toast.error("Payment not found!");
+    if (payment.bookingType === "Full Work") {
+        navigate(`/payment/process-fullwork/${id}`);
+    } else {
+        navigate(`/payment/process/${id}`);
+    }
+};
 
-    const handleView = (id) => navigate(`/payment/${id}`);
-    const handlePay = (id) => navigate(`/payment/process/${id}`);
+    const handlePay = (id) => {
+    // Find the clicked payment
+    const payment = payments.find(p => p.id === id);
+    if (!payment) return toast.error("Payment not found!");
+
+    // Conditional routing based on bookingType
+    if (payment.bookingType === "Full Work") {
+        navigate(`/payment/process-fullwork/${id}`);
+    } else {
+        navigate(`/payment/process/${id}`);
+    }
+};
 
     const handleResetFilter = () => {
         setFilters([]);
@@ -103,10 +162,20 @@ const Payment = () => {
         setCurrentPage(1);
     };
 
+    // Client-side filtering and pagination
     const filteredPayments = payments.filter((item) => {
+        const searchMatch = search === "" || 
+            item.name.toLowerCase().includes(search.toLowerCase()) ||
+            item.orderNo.toLowerCase().includes(search.toLowerCase());
         const filterMatch = filters.length === 0 || filters.includes(item.role);
-        return filterMatch;
+        return searchMatch && filterMatch;
     });
+
+    // Client-side pagination
+    const startIndex = (currentPage - 1) * 10;
+    const endIndex = startIndex + 10;
+    const paginatedPayments = filteredPayments.slice(startIndex, endIndex);
+    const calculatedTotalPages = Math.ceil(filteredPayments.length / 10);
 
     return (
         <div className="flex bg-[#E0E9E9] font-medium">
@@ -124,7 +193,7 @@ const Payment = () => {
                         <Search className="text-teal-600 mr-2" size={18} />
                         <input
                             type="text"
-                            placeholder="Search by Worker Name..."
+                            placeholder="Search by Worker Name or Order No..."
                             value={search}
                             className="flex-1 outline-none bg-transparent text-sm placeholder-black"
                             onChange={(e) => {
@@ -153,7 +222,7 @@ const Payment = () => {
                         ))}
                         {search && (
                             <span className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
-                                {`Name: "${search}"`}
+                                {`Search: "${search}"`}
                                 <X className="w-4 h-4 ml-2 cursor-pointer " onClick={() => setSearch("")} />
                             </span>
                         )}
@@ -199,7 +268,7 @@ const Payment = () => {
                             <div className="text-center py-8">
                                 <p className="text-red-500">{error}</p>
                             </div>
-                        ) : filteredPayments.length === 0 ? (
+                        ) : paginatedPayments.length === 0 ? (
                             <div className="text-center py-8">
                                 <p className="text-gray-600">No payments found matching your criteria.</p>
                             </div>
@@ -207,30 +276,30 @@ const Payment = () => {
                             <table className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden" style={{ borderSpacing: 0 }}>
                                 <thead className="bg-[#e0e9e9] text-sm md:text-base">
                                     <tr>
-                                        <th className="px-4 py-3 font-medium">Sr.No</th>
-                                        <th className="px-4 py-3 font-medium">Order No.</th>
-                                        <th className="px-4 py-3 font-medium">Worker Role</th>
-                                        <th className="px-4 py-3 font-medium">Worker Name</th>
-                                        <th className="px-4 py-3 font-medium">Last Updated</th>
-                                        <th className="px-4 py-3 font-medium">Settlement Status</th>
-                                        <th className="px-4 py-3 font-medium">Action</th>
+                                        <th className="px-4 py-3 font-medium text-center">Sr.No</th>
+                                        <th className="px-4 py-3 font-medium text-center">Order No.</th>
+                                        <th className="px-4 py-3 font-medium text-center">Worker Role</th>
+                                        <th className="px-4 py-3 font-medium text-center">Worker Name</th>
+                                        <th className="px-4 py-3 font-medium text-center">Last Updated</th>
+                                        <th className="px-4 py-3 font-medium text-center">Settlement Status</th>
+                                        <th className="px-4 py-3 font-medium text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-sm md:text-base">
-                                    {filteredPayments.map((item, index) => (
+                                    {paginatedPayments.map((item, index) => (
                                         <tr key={item.id} className=" border-b border-gray-200">
-                                            <td className="px-4 py-3 font-normal">{(currentPage - 1) * 10 + index + 1}</td>
-                                            <td className="px-4 py-3 font-normal">{item.orderNo}</td>
-                                            <td className="px-4 py-3 font-normal">{item.role}</td>
-                                            <td className="px-4 py-3 font-normal">{item.name}</td>
-                                            <td className="px-4 py-3 font-normal">{item.updated}</td>
-                                            <td className={`px-4 py-3 font-normal ${item.status === "Paid" ? "text-green-500" : "text-yellow-500"}`}>
+                                            <td className="px-4 py-3 font-normal text-center">{startIndex + index + 1}</td>
+                                            <td className="px-4 py-3 font-normal text-center">{item.orderNo}</td>
+                                            <td className="px-4 py-3 font-normal text-center">{item.role}</td>
+                                            <td className="px-4 py-3 font-normal text-center">{item.name}</td>
+                                            <td className="px-4 py-3 font-normal text-center">{item.updated}</td>
+                                            <td className={`px-4 py-3 font-normal text-center ${item.status === "Paid" ? "text-green-500" : "text-yellow-500"}`}>
                                                 {item.status}
                                             </td>
-                                            <td className="px-4 py-3 font-normal">
-                                                <div className="flex items-center gap-3 text-gray-700">
+                                            <td className="px-4 py-3 font-normal text-center">
+                                                <div className="flex items-center gap-3 justify-center text-gray-700">
                                                     <Eye
-                                                        onClick={() => handlePay(item.id)}
+                                                        onClick={() =>  handlePay(item.id)}
                                                         className="w-5 h-5 cursor-pointer text-[#06A77D] "
                                                         title="View Payment"
                                                     />
@@ -251,10 +320,10 @@ const Payment = () => {
                 </div>
 
                 {/* Pagination */}
-                {!loading && !error && totalPages > 0 && (
+                {!loading && !error && calculatedTotalPages > 0 && (
                     <div className="w-full flex flex-col bg-white md:flex-row justify-between items-center gap-2 p-3 text-sm font-semibold text-black rounded-lg shadow">
                         <span>
-                            Showing {filteredPayments.length} of {totalCount} Entries
+                            Showing {paginatedPayments.length} of {filteredPayments.length} Entries
                         </span>
                         <div className="flex items-center gap-2">
                             <button
@@ -264,7 +333,7 @@ const Payment = () => {
                             >
                                 &lt;
                             </button>
-                            {Array.from({ length: totalPages }, (_, i) => (
+                            {Array.from({ length: calculatedTotalPages }, (_, i) => (
                                 <button
                                     key={i + 1}
                                     onClick={() => setCurrentPage(i + 1)}
@@ -274,8 +343,8 @@ const Payment = () => {
                                 </button>
                             ))}
                             <button
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, calculatedTotalPages))}
+                                disabled={currentPage === calculatedTotalPages}
                                 className="px-3 py-1 text-teal-700  rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 &gt;
