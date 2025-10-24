@@ -133,10 +133,10 @@ const BigProductEdit = () => {
                     <div className="flex items-start">
                         <p className="w-1/3 font-medium">Product Image</p>
                         <div className="w-full">
-                            <img 
-                                src={product.productImageUrl || "https://via.placeholder.com/300?text=No+Image"} 
-                                alt={product.productName} 
-                                className="max-h-60 rounded" 
+                            <img
+                                src={product.productImageUrl || "https://via.placeholder.com/300?text=No+Image"}
+                                alt={product.productName}
+                                className="max-h-60 rounded"
                             />
                         </div>
                     </div>

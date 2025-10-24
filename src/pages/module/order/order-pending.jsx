@@ -141,21 +141,30 @@ const OrderPending = () => {
     };
 
     return (
-        <div className="h-screen bg-gray-100 p-4">
+        <div className="h-screen bg-gray-100 p-4 ">
             <div className="bg-white shadow-sm rounded-lg px-4 py-3 flex items-center space-x-4">
                 <IoArrowBackCircleOutline
-                    className="text-4xl text-[#0D2E28] cursor-pointer hover:text-[#007E74] transition"
+                    className=" text-[#0D2E28] cursor-pointer hover:text-[#007E74] transition"
+                    style={{fontSize: "32px"}}
                     onClick={() => navigate(-1)}
                 />
-                <h2 className="text-2xl font-semibold text-[#0D2E28]">Order Details</h2>
+                <h2
+                    style={{
+                        fontWeight: 500,
+                        fontSize: "20px",
+                        color: "rgba(51, 51, 51, 1)",
+                    }}
+                >
+                    Order Details
+                </h2>
             </div>
 
             {loading ? (
-                <div className="flex justify-center pt-10">
+                <div className="flex justify-center pt-10 ">
                     <CircularProgress />
                 </div>
             ) : (
-                <div className="bg-white shadow rounded-lg p-6 mt-5 flex flex-col h-auto">
+                <div className="bg-white shadow rounded-lg p-6 mt-5 flex flex-col h-auto ">
                     <div className="overflow-y-auto flex-1 space-y-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                         <LabelInput label="Order Number" value={getOrderById?.data?.orderId || "-"} />
                         <h3 className="font-bold text-lg mb-3 text-gray-800">Customer Details</h3>

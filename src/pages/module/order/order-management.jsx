@@ -80,7 +80,15 @@ const OrderManagement = () => {
     return (
         <div className="p-3 bg-gray-200 min-h-screen">
             <div className="bg-white p-3 rounded-md shadow-sm flex flex-col sm:flex-row sm:items-center gap-20 mb-3">
-                <h1 className="text-2xl font-medium text-black">Order List</h1>
+                <h1
+                    style={{
+                        fontWeight: 500,
+                        fontSize: "20px",
+                        color: "rgba(51, 51, 51, 1)",
+                    }}
+                >
+                    Order List
+                </h1>
                 <div className="flex-1 sm:flex sm:justify-start">
                     <div className="relative w-full sm:w-[420px]">
                         <input
@@ -98,7 +106,7 @@ const OrderManagement = () => {
                 </div>
             </div>
 
-            <div className="relative bg-white p-3 rounded-md shadow-sm">
+            <div className="relative bg-white p-3 rounded-md shadow-sm min-h-screen">
                 <div className="flex flex-wrap gap-2 mb-3 text-medium items-center relative">
                     <button
                         className="text-gray-600 hover:text-black focus:outline-none"
@@ -160,10 +168,17 @@ const OrderManagement = () => {
                     )}
                 </div>
 
-                <div className="bg-white rounded-lg border-2 border-[#E0E9E9] flex-1">
+                <div className="bg-white rounded-lg border border-[#616666] flex-1">
                     <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white rounded shadow">
-                            <thead className="bg-[#E0E9E9] text-[#333333]">
+                        <table className="min-w-full bg-white rounded shadow ">
+                            <thead
+                                style={{
+                                    fontWeight: 400,
+                                    fontSize: "16px",
+                                    color: "rgba(51, 51, 51, 1)",
+                                    background: "#E0E9E9",
+                                }}
+                            >
                                 <tr className="text-center">
                                     <th className="py-2 px-4">Sr. No.</th>
                                     <th className="py-2 px-4">Order No.</th>
@@ -174,7 +189,16 @@ const OrderManagement = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredOrders?.length > 0 ? (
+                                {loading ? (
+                                    <tr>
+                                        <td
+                                            colSpan="6"
+                                            className="text-center py-10 text-[#0D2E28] font-medium tracking-wide"
+                                        >
+                                            Loading Orders...
+                                        </td>
+                                    </tr>
+                                ) : filteredOrders?.length > 0 ? (
                                     filteredOrders.map((order, index) => (
                                         <tr key={order._id} className="text-[#333333] text-center">
                                             <td className="py-3 px-4">{(page - 1) * limit + (index + 1)}</td>
@@ -208,44 +232,42 @@ const OrderManagement = () => {
                         </table>
                     </div>
                 </div>
-
-                <div className="mt-4 px-4 py-1 flex bg-[#F5F5F5] justify-between items-center rounded-lg">
-                    {getOrders?.totalOrders > 0 ? (
-                        <>
-                            <span className="text-sm text-[#0D2E28] font-semibold">
-                                Showing {(page - 1) * limit + 1} to{" "}
-                                {Math.min(page * limit, getOrders?.totalOrders || 0)} of {getOrders?.totalOrders || 0}{" "}
-                                Entries
-                            </span>
-
-                            <div className="flex items-center gap-2 p-1">
-                                <button onClick={() => setPage(page - 1)} disabled={page === 1}>
-                                    &lt;
-                                </button>
-
-                                {[...Array(getOrders?.totalPages || 0)].map((_, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => setPage(i + 1)}
-                                        className={`px-2 py-1 rounded-md text-sm font-medium ${
-                                            page === i + 1 ? "bg-[#007E74] text-white" : "bg-[#D9F1EB] text-[#007E74]"
-                                        }`}
-                                    >
-                                        {i + 1}
-                                    </button>
-                                ))}
-
-                                <button onClick={() => setPage(page + 1)} disabled={page === getOrders?.totalPages}>
-                                    &gt;
-                                </button>
-                            </div>
-                        </>
-                    ) : (
-                        <span className="w-full text-center text-sm text-gray-500 font-medium py-2">
-                            No entries available
+            </div>
+            <div className="mt-4 px-4 py-1 flex bg-white justify-between items-center rounded-lg">
+                {getOrders?.totalOrders > 0 ? (
+                    <>
+                        <span className="text-sm text-[#0D2E28] font-semibold">
+                            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, getOrders?.totalOrders || 0)} of{" "}
+                            {getOrders?.totalOrders || 0} Entries
                         </span>
-                    )}
-                </div>
+
+                        <div className="flex items-center gap-2 p-1">
+                            <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+                                &lt;
+                            </button>
+
+                            {[...Array(getOrders?.totalPages || 0)].map((_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setPage(i + 1)}
+                                    className={`px-2 py-1 rounded-md text-sm font-medium ${
+                                        page === i + 1 ? "bg-[#007E74] text-white" : "bg-[#D9F1EB] text-[#007E74]"
+                                    }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+
+                            <button onClick={() => setPage(page + 1)} disabled={page === getOrders?.totalPages}>
+                                &gt;
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <span className="w-full text-center text-sm text-gray-500 font-medium py-2">
+                        No entries available
+                    </span>
+                )}
             </div>
         </div>
     );

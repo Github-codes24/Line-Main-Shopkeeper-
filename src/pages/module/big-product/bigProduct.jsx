@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from "react"; 
-import { Eye, Trash2, X, Search } from "lucide-react";
-import { TbFilter } from "react-icons/tb";
-import { useNavigate } from "react-router-dom";
-import { FiEdit } from "react-icons/fi";
-import { FaPlus } from "react-icons/fa6";
-import { ToastContainer, toast } from "react-toastify";
+import React, {useEffect, useState, useCallback} from "react";
+import {Eye, Trash2, X, Search} from "lucide-react";
+import {TbFilter} from "react-icons/tb";
+import {useNavigate} from "react-router-dom";
+import {FiEdit} from "react-icons/fi";
+import {FaPlus} from "react-icons/fa6";
+import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import conf from "../../../config";
 import useFetch from "../../../hook/useFetch";
@@ -29,14 +29,7 @@ const BigProduct = () => {
     const [fetchData] = useFetch();
 
     // Expertise options
-    const expertiseOptions = [
-        "Electrician",
-        "Painter",
-        "Carpenter",
-        "AC Repair",
-        "Tile Fitting",
-        "Plumber",
-    ];
+    const expertiseOptions = ["Electrician", "Painter", "Carpenter", "AC Repair", "Tile Fitting", "Plumber"];
 
     const [products, setProducts] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
@@ -102,9 +95,7 @@ const BigProduct = () => {
 
         // Apply expertise filter
         if (selectedFilters.length > 0) {
-            filtered = filtered.filter((product) =>
-                selectedFilters.includes(product.productSubCategory)
-            );
+            filtered = filtered.filter((product) => selectedFilters.includes(product.productSubCategory));
         }
 
         // Reset page if out of range
@@ -124,9 +115,7 @@ const BigProduct = () => {
 
     const toggleFilter = (option) => {
         setSelectedFilters((prev) =>
-            prev.includes(option)
-                ? prev.filter((item) => item !== option)
-                : [...prev, option]
+            prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]
         );
         setCurrentPage(1);
     };
@@ -226,10 +215,7 @@ const BigProduct = () => {
                                 className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm"
                             >
                                 {filter}
-                                <X
-                                    className="w-4 h-4 ml-2 cursor-pointer "
-                                    onClick={() => removeFilter(filter)}
-                                />
+                                <X className="w-4 h-4 ml-2 cursor-pointer " onClick={() => removeFilter(filter)} />
                             </span>
                         ))}
 
@@ -291,14 +277,12 @@ const BigProduct = () => {
                             </div>
                         ) : products.length === 0 ? (
                             <div className="text-center py-8">
-                                <p className="text-gray-600">
-                                    No products found matching your criteria.
-                                </p>
+                                <p className="text-gray-600">No products found matching your criteria.</p>
                             </div>
                         ) : (
                             <table
                                 className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden"
-                                style={{ borderSpacing: 0 }}
+                                style={{borderSpacing: 0}}
                             >
                                 <thead className="bg-[#e0e9e9] text-sm md:text-base">
                                     <tr>
@@ -314,10 +298,7 @@ const BigProduct = () => {
                                 </thead>
                                 <tbody className="text-sm md:text-base">
                                     {products.map((product, index) => (
-                                        <tr
-                                            key={product._id}
-                                            className=" border-b border-gray-200"
-                                        >
+                                        <tr key={product._id} className=" border-b border-gray-200">
                                             <td className="px-4 py-3 font-normal">
                                                 {(currentPage - 1) * limit + index + 1}
                                             </td>
@@ -328,9 +309,7 @@ const BigProduct = () => {
                                                     className="w-12 h-12 md:w-14 md:h-14 rounded border border-[#007E74] object-cover"
                                                 />
                                             </td>
-                                            <td className="px-4 py-3 font-normal">
-                                                {product.productName}
-                                            </td>
+                                            <td className="px-4 py-3 font-normal">{product.productName}</td>
                                             <td className="px-4 py-3 font-normal">
                                                 {typeof product.productCategory === "object"
                                                     ? product.productCategory?.tabName || "N/A"
@@ -339,9 +318,7 @@ const BigProduct = () => {
                                             <td className="px-4 py-3 font-normal">
                                                 {product.productSubCategory || "N/A"}
                                             </td>
-                                            <td className="px-4 py-3 font-normal">
-                                                ₹{product.productPrice}
-                                            </td>
+                                            <td className="px-4 py-3 font-normal">₹{product.productPrice}</td>
                                             <td
                                                 className={`px-4 py-3 font-normal ${getStatusColor(
                                                     product.approvalStatus
@@ -362,9 +339,7 @@ const BigProduct = () => {
                                                         title="Edit Product"
                                                     />
                                                     <Trash2
-                                                        onClick={() =>
-                                                            handleDelete(product._id, product.productName)
-                                                        }
+                                                        onClick={() => handleDelete(product._id, product.productName)}
                                                         className="w-5 h-5 cursor-pointer text-[#06A77D]  transition-colors"
                                                         title="Delete Product"
                                                     />
@@ -392,23 +367,19 @@ const BigProduct = () => {
                             >
                                 &lt;
                             </button>
-                            {Array.from({ length: totalPages }, (_, i) => (
+                            {Array.from({length: totalPages}, (_, i) => (
                                 <button
                                     key={i + 1}
                                     onClick={() => setCurrentPage(i + 1)}
                                     className={`px-3 py-1 rounded transition-colors ${
-                                        currentPage === i + 1
-                                            ? "bg-teal-700 text-white"
-                                            : "bg-teal-100 text-teal-700 "
+                                        currentPage === i + 1 ? "bg-teal-700 text-white" : "bg-teal-100 text-teal-700 "
                                     }`}
                                 >
                                     {i + 1}
                                 </button>
                             ))}
                             <button
-                                onClick={() =>
-                                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                                }
+                                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
                                 className="px-3 py-1 text-teal-700  rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >

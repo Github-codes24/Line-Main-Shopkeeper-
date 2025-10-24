@@ -1,296 +1,345 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import React, {useState, useEffect} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {toast} from "react-toastify";
 import conf from "../../../config";
 import useFetch from "../../../hook/useFetch";
 
 const SmallProductEdit = () => {
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const [fetchData] = useFetch();
+    const navigate = useNavigate();
+    const {id} = useParams();
+    const [fetchData] = useFetch();
 
-  // State for form fields
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
+    // State for form fields
+    const [name, setName] = useState("");
+    const [price, setPrice] = useState("");
+    const [description, setDescription] = useState("");
 
-  // State for category & sub-category
-  const [categoryId, setCategoryId] = useState("");
-  const [subCategoryId, setSubCategoryId] = useState("");
+    // State for category & sub-category
+    const [categoryId, setCategoryId] = useState("");
+    const [subCategoryId, setSubCategoryId] = useState("");
 
-  // Dropdown data
-  const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
+    // Dropdown data
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
 
-  // Image handling
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageFile, setImageFile] = useState(null);
+    // Image handling
+    const [imageUrl, setImageUrl] = useState("");
+    const [imageFile, setImageFile] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch product & pre-populate fields
-  useEffect(() => {
-    const fetchProduct = async () => {
-      if (!id) return;
-      try {
-        const result = await fetchData({
-          method: "GET",
-          url: `${conf.apiBaseUrl}/shopkeeper/small-products/${id}`,
-        });
+    // Fetch product & pre-populate fields
+    useEffect(() => {
+        const fetchProduct = async () => {
+            if (!id) return;
+            try {
+                const result = await fetchData({
+                    method: "GET",
+                    url: `${conf.apiBaseUrl}/shopkeeper/small-products/${id}`,
+                });
 
-        if (result.success) {
-          const product = result.data;
-          setName(product.productName);
-          setPrice(product.productPrice);
-          setDescription(product.productDescription);
-          setImageUrl(product.productImageUrl);
+                if (result.success) {
+                    const product = result.data;
+                    setName(product.productName);
+                    setPrice(product.productPrice);
+                    setDescription(product.productDescription);
+                    setImageUrl(product.productImageUrl);
 
-          // Set category
-          const catId = product.productCategory?._id || "";
-          setCategoryId(catId);
+                    // Set category
+                    const catId = product.productCategory?._id || "";
+                    setCategoryId(catId);
 
-          // Fetch sub-categories for this category
-          if (catId) {
-            const subResult = await fetchData({
-              method: "GET",
-              url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/${catId}/subtabs`,
+                    // Fetch sub-categories for this category
+                    if (catId) {
+                        const subResult = await fetchData({
+                            method: "GET",
+                            url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/${catId}/subtabs`,
+                        });
+
+                        if (subResult.success) {
+                            setSubCategories(subResult.data || []);
+
+                            // Set selected sub-category
+                            const subCatId =
+                                typeof product.productSubCategory === "object"
+                                    ? product.productSubCategory._id
+                                    : product.productSubCategory;
+                            setSubCategoryId(subCatId || "");
+                        }
+                    }
+                } else {
+                    toast.error(result.message || "Failed to fetch product");
+                }
+            } catch (error) {
+                console.error("Error fetching product:", error);
+                toast.error("Error loading product details");
+            }
+        };
+
+        fetchProduct();
+    }, [id]);
+
+    // Fetch all categories (tabs/expertise)
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const result = await fetchData({
+                    method: "GET",
+                    url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/experties`,
+                });
+
+                if (result.success) {
+                    setCategories(result.data || []); // { _id, tabName }
+                } else {
+                    console.error("Error fetching categories:", result.message);
+                }
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // Fetch sub-categories when user manually changes category
+    useEffect(() => {
+        if (!categoryId) {
+            setSubCategories([]);
+            setSubCategoryId("");
+            return;
+        }
+
+        const fetchSubCategories = async () => {
+            try {
+                const result = await fetchData({
+                    method: "GET",
+                    url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/${categoryId}/subtabs`,
+                });
+
+                if (result.success) {
+                    setSubCategories(result.data || []);
+                } else {
+                    console.error("Error fetching sub-categories:", result.message);
+                }
+            } catch (error) {
+                console.error("Error fetching sub-categories:", error);
+            }
+        };
+
+        fetchSubCategories();
+    }, [categoryId]);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImageUrl(URL.createObjectURL(file));
+        }
+    };
+
+    const handleUpdate = async () => {
+        if (!name || !price || !description || !categoryId) {
+            toast.error("Please fill all required fields");
+            return;
+        }
+
+        if (description.length < 10) {
+            toast.error("Product description must be at least 10 characters");
+            return;
+        }
+
+        setIsLoading(true);
+
+        const formData = new FormData();
+        formData.append("productName", name);
+        formData.append("productPrice", price);
+        formData.append("productDescription", description);
+        formData.append("productCategory", categoryId);
+        formData.append("productSubCategory", subCategoryId);
+        if (imageFile) formData.append("productImage", imageFile);
+
+        try {
+            const result = await fetchData({
+                method: "PUT",
+                url: `${conf.apiBaseUrl}/shopkeeper/small-products/${id}`,
+                data: formData,
+                headers: {"Content-Type": "multipart/form-data"},
             });
 
-            if (subResult.success) {
-              setSubCategories(subResult.data || []);
-
-              // Set selected sub-category
-              const subCatId =
-                typeof product.productSubCategory === "object"
-                  ? product.productSubCategory._id
-                  : product.productSubCategory;
-              setSubCategoryId(subCatId || "");
+            if (result.success) {
+                toast.success("Product updated successfully! ✅");
+                navigate("/small-product");
+            } else {
+                toast.error(`Failed to update product: ${result.message || "Unknown error"}`);
             }
-          }
-        } else {
-          toast.error(result.message || "Failed to fetch product");
+        } catch (error) {
+            console.error("Error updating product:", error);
+            toast.error(`Failed to update product: ${error.message || "Unknown error"}`);
+        } finally {
+            setIsLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching product:", error);
-        toast.error("Error loading product details");
-      }
     };
 
-    fetchProduct();
-  }, [id]);
-
-  // Fetch all categories (tabs/expertise)
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const result = await fetchData({
-          method: "GET",
-          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/experties`,
-        });
-
-        if (result.success) {
-          setCategories(result.data || []); // { _id, tabName }
-        } else {
-          console.error("Error fetching categories:", result.message);
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  // Fetch sub-categories when user manually changes category
-  useEffect(() => {
-    if (!categoryId) {
-      setSubCategories([]);
-      setSubCategoryId("");
-      return;
-    }
-
-    const fetchSubCategories = async () => {
-      try {
-        const result = await fetchData({
-          method: "GET",
-          url: `${conf.apiBaseUrl}/shopkeeper/bigproduct/${categoryId}/subtabs`,
-        });
-
-        if (result.success) {
-          setSubCategories(result.data || []);
-        } else {
-          console.error("Error fetching sub-categories:", result.message);
-        }
-      } catch (error) {
-        console.error("Error fetching sub-categories:", error);
-      }
-    };
-
-    fetchSubCategories();
-  }, [categoryId]);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setImageUrl(URL.createObjectURL(file));
-    }
-  };
-
-  const handleUpdate = async () => {
-    if (!name || !price || !description || !categoryId) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-
-    if (description.length < 10) {
-      toast.error("Product description must be at least 10 characters");
-      return;
-    }
-
-    setIsLoading(true);
-
-    const formData = new FormData();
-    formData.append("productName", name);
-    formData.append("productPrice", price);
-    formData.append("productDescription", description);
-    formData.append("productCategory", categoryId);
-    formData.append("productSubCategory", subCategoryId);
-    if (imageFile) formData.append("productImage", imageFile);
-
-    try {
-      const result = await fetchData({
-        method: "PUT",
-        url: `${conf.apiBaseUrl}/shopkeeper/small-products/${id}`,
-        data: formData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      if (result.success) {
-        toast.success("Product updated successfully! ✅");
-        navigate("/small-product");
-      } else {
-        toast.error(`Failed to update product: ${result.message || "Unknown error"}`);
-      }
-    } catch (error) {
-      console.error("Error updating product:", error);
-      toast.error(`Failed to update product: ${error.message || "Unknown error"}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-[#EAF1F1] p-4 font-sans text-[#0D2E28]">
-      {/* Header */}
-      <div className="flex bg-white mb-4 border border-[#D6E2E2] rounded-lg shadow-sm p-4 items-center">
-        <button onClick={() => navigate(-1)} className="text-xl text-black ">
-          {/* Back Icon SVG */}
-          <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M19.9997 13.334L13.333 20.0007L19.9997 26.6673" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M26.6663 20H13.333" stroke="#0D2E28" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-        <h1 className="ml-4 text-xl font-semibold">Edit Small Product</h1>
-      </div>
-
-      {/* Form Card */}
-      <div className="bg-white border border-[#D6E2E2] rounded-lg shadow-sm p-8">
-        <div className="space-y-6">
-          {/* Product Image */}
-          <div className="flex">
-            <p className="w-1/4 font-medium pt-2">Product Image</p>
-            <div className="w-3/4">
-              <div className="relative w-48 h-48">
-                <img src={imageUrl || "https://via.placeholder.com/150"} alt="Product" className="w-full h-full object-cover rounded-lg border border-gray-300"/>
-                <label className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white rounded-lg opacity-0  cursor-pointer">
-                  Upload Photo
-                  <input type="file" accept="image/*" className="hidden" onChange={handleImageChange}/>
-                </label>
-              </div>
+    return (
+        <div className="min-h-screen bg-[#EAF1F1] p-4 font-sans text-[#0D2E28]">
+            {/* Header */}
+            <div className="flex bg-white mb-4 border border-[#D6E2E2] rounded-lg shadow-sm p-4 items-center">
+                <button onClick={() => navigate(-1)} className="text-xl text-black ">
+                    {/* Back Icon SVG */}
+                    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z"
+                            stroke="#0D2E28"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                        <path
+                            d="M19.9997 13.334L13.333 20.0007L19.9997 26.6673"
+                            stroke="#0D2E28"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                        <path
+                            d="M26.6663 20H13.333"
+                            stroke="#0D2E28"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                </button>
+                <h1 className="ml-4 text-xl font-semibold">Edit Small Product</h1>
             </div>
-          </div>
 
-          {/* Product Name */}
-          <div className="flex items-center">
-            <p className="w-1/4 font-medium">Product Name:</p>
-            <div className="w-3/4">
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full border border-[#A7C4C2]  bg-[#F5FFFF] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] focus:border-transparent outline-none"/>
-            </div>
-          </div>
+            {/* Form Card */}
+            <div className="bg-white border border-[#D6E2E2] rounded-lg shadow-sm p-8">
+                <div className="space-y-6">
+                    {/* Product Image */}
+                    <div className="flex">
+                        <p className="w-1/4 font-medium pt-2">Product Image</p>
+                        <div className="w-3/4">
+                            <div className="relative w-48 h-48">
+                                <img
+                                    src={imageUrl || "https://via.placeholder.com/150"}
+                                    alt="Product"
+                                    className="w-full h-full object-cover rounded-lg border border-gray-300"
+                                />
+                                <label className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white rounded-lg opacity-0  cursor-pointer">
+                                    Upload Photo
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleImageChange}
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
-          {/* Category */}
-          <div className="flex items-center">
-            <p className="w-1/4 font-medium">Product Category:</p>
-            <div className="w-3/4">
-              <select
-                value={categoryId}
-                onChange={(e) => {
-                  setCategoryId(e.target.value);
-                  setSubCategoryId("");
-                }}
-                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none "
-              >
-                <option value="">Select Product Category</option>
-                {categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>{cat.tabName}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+                    {/* Product Name */}
+                    <div className="flex items-center">
+                        <p className="w-1/4 font-medium">Product Name:</p>
+                        <div className="w-3/4">
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-full border border-[#A7C4C2]  bg-[#F5FFFF] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] focus:border-transparent outline-none"
+                            />
+                        </div>
+                    </div>
 
-          {/* Sub-Category */}
-          <div className="flex items-center">
-            <p className="w-1/4 font-medium">Product Sub-Category:</p>
-            <div className="w-3/4">
-              <select
-                value={subCategoryId}
-                onChange={(e) => setSubCategoryId(e.target.value)}
-                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none  disabled:bg-gray-100"
-                disabled={!categoryId || subCategories.length === 0}
-              >
-                <option value="">Select Product Sub-Category</option>
-                {subCategories.map((sub) => (
-                  <option key={sub._id} value={sub._id}>{sub.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+                    {/* Category */}
+                    <div className="flex items-center">
+                        <p className="w-1/4 font-medium">Product Category:</p>
+                        <div className="w-3/4">
+                            <select
+                                value={categoryId}
+                                onChange={(e) => {
+                                    setCategoryId(e.target.value);
+                                    setSubCategoryId("");
+                                }}
+                                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none "
+                            >
+                                <option value="">Select Product Category</option>
+                                {categories.map((cat) => (
+                                    <option key={cat._id} value={cat._id}>
+                                        {cat.tabName}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
 
-          {/* Price */}
-          <div className="flex items-center">
-            <p className="w-1/4 font-medium">Product Price:</p>
-            <div className="w-3/4 relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 pl-8 focus:ring-2 bg-[#F5FFFF] focus:ring-[#007E74] focus:border-transparent outline-none"/>
-            </div>
-          </div>
+                    {/* Sub-Category */}
+                    <div className="flex items-center">
+                        <p className="w-1/4 font-medium">Product Sub-Category:</p>
+                        <div className="w-3/4">
+                            <select
+                                value={subCategoryId}
+                                onChange={(e) => setSubCategoryId(e.target.value)}
+                                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none  disabled:bg-gray-100"
+                                disabled={!categoryId || subCategories.length === 0}
+                            >
+                                <option value="">Select Product Sub-Category</option>
+                                {subCategories.map((sub) => (
+                                    <option key={sub._id} value={sub._id}>
+                                        {sub.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
 
-          {/* Description */}
-          <div className="flex">
-            <p className="w-1/4 font-medium pt-2">Product Description:</p>
-            <div className="w-3/4">
-              <textarea rows="4" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none"/>
+                    {/* Price */}
+                    <div className="flex items-center">
+                        <p className="w-1/4 font-medium">Product Price:</p>
+                        <div className="w-3/4 relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                            <input
+                                type="number"
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
+                                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 pl-8 focus:ring-2 bg-[#F5FFFF] focus:ring-[#007E74] focus:border-transparent outline-none"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="flex">
+                        <p className="w-1/4 font-medium pt-2">Product Description:</p>
+                        <div className="w-3/4">
+                            <textarea
+                                rows="4"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-center space-x-4 mt-8">
+                    <button
+                        onClick={() => navigate("/small-product")}
+                        className="bg-[#E0F2F1] text-[#007E74] border border-[#007E74] font-semibold px-8 py-2 rounded-lg"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleUpdate}
+                        disabled={isLoading}
+                        className="bg-[#007E74] text-white font-semibold px-8 py-2 rounded-lg  transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                        {isLoading ? "Updating..." : "Update"}
+                    </button>
+                </div>
             </div>
-          </div>
         </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-center space-x-4 mt-8">
-          <button onClick={() => navigate("/small-product")} className="bg-[#E0F2F1] text-[#007E74] border border-[#007E74] font-semibold px-8 py-2 rounded-lg">
-            Cancel
-          </button>
-          <button
-            onClick={handleUpdate}
-            disabled={isLoading}
-            className="bg-[#007E74] text-white font-semibold px-8 py-2 rounded-lg  transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Updating..." : "Update"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default SmallProductEdit;
