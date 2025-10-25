@@ -14,11 +14,16 @@ const TopSellingProduct = () => {
         <div className="bg-white p-5  overflow-x-auto rounded-xl shadow-lg border border-gray-800 w-full">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-                <h4 className="text-lg font-semibold text-gray-800" style={{
+                <h4
+                    className="text-lg font-semibold text-gray-800"
+                    style={{
                         fontWeight: 500,
-                        fontSize: '18px',
-                        color: 'rgba(51, 51, 51, 1)'
-                    }}>Top Selling Products</h4>
+                        fontSize: "18px",
+                        color: "rgba(51, 51, 51, 1)",
+                    }}
+                >
+                    Top Selling Products
+                </h4>
                 <button
                     className="text-sm font-medium text--200 "
                     // onClick={() => navigate("/products")}
@@ -41,10 +46,7 @@ const TopSellingProduct = () => {
                     <tbody>
                         {productsToDisplay.length > 0 ? (
                             productsToDisplay.map((item, index) => (
-                                <tr
-                                    key={index}
-                                    className=""
-                                >
+                                <tr key={index} className="">
                                     <td className="p-3 text-center">
                                         <img
                                             src={item.productImageUrl || item.productImage}
@@ -53,7 +55,9 @@ const TopSellingProduct = () => {
                                         />
                                     </td>
                                     <td className="p-3 font-medium text-center text-gray-800">{item.productName}</td>
-                                    <td className="p-3  font-medium  text-center text-gray-800">{item.productCategory}</td>
+                                    <td className="p-3  font-medium  text-center text-gray-800">
+                                        {item.productCategory}
+                                    </td>
                                 </tr>
                             ))
                         ) : (

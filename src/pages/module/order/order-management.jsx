@@ -79,7 +79,8 @@ const OrderManagement = () => {
 
     return (
         <div className="p-3 bg-gray-200 min-h-screen">
-            <div className="bg-white p-3 rounded-md shadow-sm flex flex-col sm:flex-row sm:items-center gap-20 mb-3">
+            <div className="bg-white p-3 rounded-md shadow-sm flex flex-col md:flex-row items-center justify-between mb-3 gap-3">
+                {/* Title */}
                 <h1
                     style={{
                         fontWeight: 500,
@@ -89,21 +90,23 @@ const OrderManagement = () => {
                 >
                     Order List
                 </h1>
-                <div className="flex-1 sm:flex sm:justify-start">
-                    <div className="relative w-full sm:w-[420px]">
+
+                {/* Search Bar — Centered */}
+                <div className="flex justify-center w-full md:w-auto">
+                    <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
+                        <TbSearch className="text-teal-600 mr-2" size={18} />
                         <input
                             type="text"
-                            placeholder="Search by order number"
-                            className="w-full border-1 border-teal-600 bg-[#F5FFFF] text-[#0D2E28] px-12 py-2 rounded-full placeholder-[#0D2E28] placeholder:font-medium focus:outline-none"
+                            placeholder="Search by Order No..."
                             value={search}
+                            className="flex-1 outline-none bg-transparent text-sm placeholder-black"
                             onChange={(e) => setSearch(e.target.value)}
-                        />
-                        <TbSearch
-                            className="absolute left-5 top-1/2 -translate-y-1/2 transform text-[#0D2E28]"
-                            size={18}
                         />
                     </div>
                 </div>
+
+                {/* (Optional) Right-side placeholder if you want to add a button later */}
+                <div className="hidden md:block w-[80px]"></div>
             </div>
 
             <div className="relative bg-white p-3 rounded-md shadow-sm min-h-screen">

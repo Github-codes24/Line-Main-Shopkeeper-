@@ -124,23 +124,16 @@ const WorkerEdit = () => {
                         value={formData.address || ""}
                         onChange={handleChange}
                     />
-                    <DetailInput label="Email Id" name="email" value={formData.email || ""} onChange={handleChange} />
+                    {/* <DetailInput label="Email Id" name="email" value={formData.email || ""} onChange={handleChange} /> */}
                 </div>
             </div>
 
             {/* Bottom Buttons */}
             <div className="flex justify-center gap-6 mt-6">
-                <button
-                    onClick={handleCancel}
-                    className="px-16 py-2 border border-teal-700 text-teal-700 rounded "
-                >
+                <button onClick={handleCancel} className="px-16 py-2 border border-teal-700 text-teal-700 rounded ">
                     Cancel
                 </button>
-                <button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="px-16 py-2 bg-teal-700 text-white rounded "
-                >
+                <button onClick={handleSave} disabled={isSaving} className="px-16 py-2 bg-teal-700 text-white rounded ">
                     {isSaving ? "Saving..." : "Save"}
                 </button>
             </div>
