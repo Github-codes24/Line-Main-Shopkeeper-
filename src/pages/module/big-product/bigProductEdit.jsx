@@ -21,7 +21,6 @@ const BigProductEdit = () => {
     const [subCategories, setSubCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Fetch product details
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -66,7 +65,6 @@ const BigProductEdit = () => {
         fetchProduct();
     }, [id]);
 
-    // Fetch categories
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -82,7 +80,6 @@ const BigProductEdit = () => {
         fetchCategories();
     }, []);
 
-    // Fetch subcategories when category changes
     useEffect(() => {
         if (!categoryId) {
             setSubCategories([]);
@@ -142,7 +139,7 @@ const BigProductEdit = () => {
             });
 
             if (result.success) {
-                toast.success("Product updated successfully ✅");
+                toast.success("Product updated successfully!");
                 navigate("/big-product");
             } else {
                 toast.error(result.message || "Failed to update product");
@@ -157,7 +154,6 @@ const BigProductEdit = () => {
 
     return (
         <div className="min-h-screen bg-[#EAF1F1] p-4 font-sans text-[#0D2E28]">
-            {/* Header */}
             <div className="flex bg-white mb-4 border border-[#D6E2E2] rounded-lg shadow-sm p-4 items-center">
                 <button onClick={() => navigate(-1)} className="text-xl text-black">
                     <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -187,10 +183,8 @@ const BigProductEdit = () => {
                 <h1 className="ml-4 text-xl font-semibold">Edit Big Product</h1>
             </div>
 
-            {/* Form */}
             <div className="bg-white border border-[#D6E2E2] rounded-lg shadow-sm p-8">
                 <div className="space-y-6">
-                    {/* Image */}
                     <div className="flex">
                         <p className="w-1/4 font-medium pt-2">Product Image</p>
                         <div className="w-3/4">
@@ -213,7 +207,6 @@ const BigProductEdit = () => {
                         </div>
                     </div>
 
-                    {/* Name */}
                     <div className="flex items-center">
                         <p className="w-1/4 font-medium">Product Name:</p>
                         <div className="w-3/4">
@@ -226,7 +219,6 @@ const BigProductEdit = () => {
                         </div>
                     </div>
 
-                    {/* Category */}
                     <div className="flex items-center">
                         <p className="w-1/4 font-medium">Product Category:</p>
                         <div className="w-3/4">
@@ -248,7 +240,6 @@ const BigProductEdit = () => {
                         </div>
                     </div>
 
-                    {/* SubCategory */}
                     <div className="flex items-center">
                         <p className="w-1/4 font-medium">Product Sub-Category:</p>
                         <div className="w-3/4">
@@ -268,7 +259,6 @@ const BigProductEdit = () => {
                         </div>
                     </div>
 
-                    {/* Price */}
                     <div className="flex items-center">
                         <p className="w-1/4 font-medium">Product Price:</p>
                         <div className="w-3/4 relative">
@@ -282,7 +272,6 @@ const BigProductEdit = () => {
                         </div>
                     </div>
 
-                    {/* Description */}
                     <div className="flex">
                         <p className="w-1/4 font-medium pt-2">Product Description:</p>
                         <div className="w-3/4">
@@ -296,18 +285,17 @@ const BigProductEdit = () => {
                     </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex justify-center space-x-4 mt-8">
                     <button
                         onClick={() => navigate("/big-product")}
-                        className="bg-[#E0F2F1] text-[#007E74] border border-[#007E74] font-semibold px-8 py-2 rounded-lg"
+                        className="bg-[#E0F2F1] text-[#007E74] border border-[#007E74] font-semibold px-12 py-1.5 rounded-lg"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleUpdate}
                         disabled={isLoading}
-                        className="bg-[#007E74] text-white font-semibold px-8 py-2 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="bg-[#007E74] text-white font-semibold px-12 py-1.5 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                         {isLoading ? "Updating..." : "Update"}
                     </button>

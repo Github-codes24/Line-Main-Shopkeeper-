@@ -1,4 +1,3 @@
-// SmallProductView.jsx
 import React, {useState, useEffect} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {toast} from "react-toastify";
@@ -7,7 +6,7 @@ import useFetch from "../../../hook/useFetch";
 
 const SmallProductView = () => {
     const navigate = useNavigate();
-    const {id} = useParams(); // Get product ID from URL
+    const {id} = useParams();
     const [fetchData] = useFetch();
 
     const [product, setProduct] = useState(null);
@@ -87,7 +86,6 @@ const SmallProductView = () => {
 
     return (
         <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28]">
-            {/* Header */}
             <div className="flex bg-white m-2 border rounded-lg shadow-lg p-2">
                 <button onClick={handleBack} className="text-xl font-semibold text-gray-800 p-2 rounded-lg ">
                     <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -117,9 +115,7 @@ const SmallProductView = () => {
                 <h2 className="text-xl font-semibold text-gray-800 p-2 rounded-lg">View Small Product</h2>
             </div>
 
-            {/* Product Details */}
             <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
-                {/* Product Image */}
                 <div className="flex items-start p-2 rounded-lg">
                     <p className="w-1/3 font-medium">Product Image</p>
                     <div className="w-full">
@@ -131,7 +127,6 @@ const SmallProductView = () => {
                     </div>
                 </div>
 
-                {/* Form Fields */}
                 <div className="space-y-4">
                     <div className="flex items-center pt-3">
                         <p className="w-1/3 block mb-1">Product Name:</p>
@@ -169,9 +164,8 @@ const SmallProductView = () => {
                     </div>
                 </div>
 
-                {/* Edit Button */}
                 <div className="flex justify-center space-x-3 pt-4">
-                    <button onClick={handleEdit} className="bg-teal-700 text-white px-12 py-2 rounded-lg ">
+                    <button onClick={handleEdit} className="bg-teal-700 text-white px-16 py-1.5 rounded-lg ">
                         Edit
                     </button>
                 </div>

@@ -22,11 +22,9 @@ const SmallProductAdd = () => {
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
 
-    // Unified input class
     const inputClass =
         "bg-[#F5FFFF] border border-[#B2D8D5] text-[#0D2E28] text-lg font-medium rounded-lg px-4 py-2 w-full outline-none focus:outline-none placeholder:text-[#0D2E28] placeholder:font-medium";
 
-    // Fetch categories (tabs)
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -47,7 +45,6 @@ const SmallProductAdd = () => {
         fetchCategories();
     }, []);
 
-    // Fetch sub-categories whenever a category is selected
     useEffect(() => {
         if (!productCategory) {
             setSubCategories([]);
@@ -122,7 +119,7 @@ const SmallProductAdd = () => {
             });
 
             if (result.success) {
-                toast.success("Product Added Successfully ✅");
+                toast.success("Product Added Successfully!");
                 navigate(-1);
             } else {
                 toast.error(`Failed to add product: ${result.message || "Unknown error"}`);
@@ -137,7 +134,6 @@ const SmallProductAdd = () => {
 
     return (
         <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28]">
-            {/* Header */}
             <div className="flex bg-white m-2 border rounded-lg shadow-lg p-2">
                 <div className="flex items-center">
                     <button onClick={handleBack} className="text-xl font-semibold text-gray-800 p-2 rounded-lg">
@@ -169,11 +165,9 @@ const SmallProductAdd = () => {
                 </div>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleSubmit}>
                 <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
                     <div className="border border-[#616666] p-4 rounded-lg">
-                        {/* Product Image */}
                         <div className="flex gap-4 mb-6">
                             <label className="w-[240px] font-medium text-lg text-[#0D2E28]">Product Image</label>
                             <div className="rounded-lg p-0 w-[240px] h-[240px] flex flex-col items-center justify-center relative">
@@ -205,7 +199,6 @@ const SmallProductAdd = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {/* Product Name */}
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
                                     Product Name
@@ -221,7 +214,6 @@ const SmallProductAdd = () => {
                                 </div>
                             </div>
 
-                            {/* Product Category */}
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
                                     Product Category
@@ -245,7 +237,6 @@ const SmallProductAdd = () => {
                                 </div>
                             </div>
 
-                            {/* Product Sub-Category */}
                             {subCategories.length > 0 && (
                                 <div className="flex items-start gap-4">
                                     <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
@@ -268,7 +259,6 @@ const SmallProductAdd = () => {
                                 </div>
                             )}
 
-                            {/* Product Price */}
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
                                     Product Price
@@ -284,7 +274,6 @@ const SmallProductAdd = () => {
                                 </div>
                             </div>
 
-                            {/* Product Description */}
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
                                     Product Description
@@ -302,7 +291,6 @@ const SmallProductAdd = () => {
                         </div>
                     </div>
 
-                    {/* Buttons */}
                     <div className="flex justify-center mt-6 gap-4">
                         <button
                             type="button"

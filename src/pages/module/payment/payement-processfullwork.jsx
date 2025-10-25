@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
-import { toast } from "react-toastify";
+import React, {useEffect, useState} from "react";
+import {useParams, useNavigate} from "react-router-dom";
+import {FaSearch} from "react-icons/fa";
+import {toast} from "react-toastify";
 import conf from "../../../config";
 import useFetch from "../../../hook/useFetch";
 import image1 from "../../../assets/image1.png";
@@ -9,7 +9,7 @@ import image2 from "../../../assets/image2.png";
 import image3 from "../../../assets/image3.png";
 
 function PaymentProcessFullwork() {
-    const { id } = useParams();
+    const {id} = useParams();
     const navigate = useNavigate();
     const [fetchData] = useFetch();
 
@@ -35,31 +35,32 @@ function PaymentProcessFullwork() {
                     const customer = order?.customer;
 
                     const formattedData = {
-                        orderNumber: order?.orderId || 'N/A',
-                        customerName: customer?.name || 'N/A',
-                        phoneNumber: customer?.addresses?.[0]?.phone || 'N/A',
-                        address: customer?.addresses?.[0]?.fullAddress || 'N/A',
-                        email: customer?.contact || 'N/A',
-                        orderStatus: order?.orderStatus || 'N/A',
-                        service: order?.specificServiceName || 'N/A',
+                        orderNumber: order?.orderId || "N/A",
+                        customerName: customer?.name || "N/A",
+                        phoneNumber: customer?.addresses?.[0]?.phone || "N/A",
+                        address: customer?.addresses?.[0]?.fullAddress || "N/A",
+                        email: customer?.contact || "N/A",
+                        orderStatus: order?.orderStatus || "N/A",
+                        service: order?.specificServiceName || "N/A",
                         date: new Date(order?.serviceDate || Date.now()).toLocaleDateString("en-IN"),
-                        images: order?.initialRequestImages?.length ? order.initialRequestImages : [image1, image2, image3],
-                        workerAssigned: order?.worker?.name || 'N/A',
+                        images: order?.initialRequestImages?.length
+                            ? order.initialRequestImages
+                            : [image1, image2, image3],
+                        workerAssigned: order?.worker?.name || "N/A",
                         lastUpdate: new Date(order?.updatedAt || Date.now()).toLocaleDateString("en-IN"),
-                        quotationStatus: order?.orderStatus || 'N/A',
-                        totalBill: order?.finalAmount ? `₹${order.finalAmount}` : 'N/A',
-                        paymentMethod: order?.paymentMethod || 'N/A',
-                        paymentStatus: order?.paymentStatus || 'N/A',
-                        amountStatus: payment?.amount ? `₹${(payment.amount / 100).toFixed(2)}` : 'N/A',
+                        quotationStatus: order?.orderStatus || "N/A",
+                        totalBill: order?.finalAmount ? `₹${order.finalAmount}` : "N/A",
+                        paymentMethod: order?.paymentMethod || "N/A",
+                        paymentStatus: order?.paymentStatus || "N/A",
+                        amountStatus: payment?.amount ? `₹${(payment.amount / 100).toFixed(2)}` : "N/A",
                     };
                     setData(formattedData);
 
-                    // Extract products from API and format them
                     if (order?.products && Array.isArray(order.products)) {
-                        const formattedProducts = order.products.map(product => ({
-                            name: product.productName || 'N/A',
-                            details: product.productModel || 'N/A',
-                            qty: product.quantity || 0
+                        const formattedProducts = order.products.map((product) => ({
+                            name: product.productName || "N/A",
+                            details: product.productModel || "N/A",
+                            qty: product.quantity || 0,
                         }));
                         setProducts(formattedProducts);
                     } else {
@@ -87,19 +88,19 @@ function PaymentProcessFullwork() {
             setSettleLoading(true);
             const payload = {
                 shopkeeperId: SHOPKEEPER_ID,
-                paymentId: id
+                paymentId: id,
             };
 
             const result = await fetchData({
                 method: "POST",
                 url: `${conf.apiBaseUrl}/shopkeeper/payments/settle-payment`,
                 data: payload,
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
             });
 
             if (result.success) {
-                toast.success(result.message || "Payment settled successfully! ✅");
-                setTimeout(() => navigate('/payment'), 1500);
+                toast.success(result.message || "Payment settled successfully!");
+                setTimeout(() => navigate("/payment"), 1500);
             } else {
                 toast.error(result.message || "Failed to settle payment");
             }
@@ -127,7 +128,7 @@ function PaymentProcessFullwork() {
                 <div className="text-center">
                     <p className="text-lg text-red-500">Failed to load payment details. Please try again.</p>
                     <button
-                        onClick={() => navigate('/payment')}
+                        onClick={() => navigate("/payment")}
                         className="mt-4 px-6 py-2 bg-teal-700 text-white rounded-md"
                     >
                         Go Back
@@ -140,16 +141,18 @@ function PaymentProcessFullwork() {
     return (
         <div className="flex bg-[#E0E9E9] font-medium">
             <main className="flex-1 p-3 gap-2">
-
-                {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-start items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-24">
-                    <h1 className="text-lg md:text-xl font-semibold" style={{
-                        fontWeight: 500,
-                        fontSize: '20px',
-                        color: 'rgba(51, 51, 51, 1)'
-                    }}>Wallet</h1>
+                    <h1
+                        className="text-lg md:text-xl font-semibold"
+                        style={{
+                            fontWeight: 500,
+                            fontSize: "20px",
+                            color: "rgba(51, 51, 51, 1)",
+                        }}
+                    >
+                        Wallet
+                    </h1>
 
-                    {/* search */}
                     <div className="relative w-full sm:w-96">
                         <FaSearch className="absolute left-4 inset-y-0 my-auto text-[#0D2E28]" />
                         <input
@@ -161,9 +164,7 @@ function PaymentProcessFullwork() {
                     </div>
                 </div>
 
-                {/* Main Card */}
                 <div className="bg-white rounded-lg shadow-md p-6 mx-auto">
-                    {/* Order Number */}
                     <div className="flex items-center gap-3 mb-6">
                         <span className="font-bold text-[#0D2E28] text-lg">Order Number :</span>
                         <span className="px-4 py-1 bg-gray-100 border border-teal-600 rounded-md font-bold text-gray-900">
@@ -171,7 +172,6 @@ function PaymentProcessFullwork() {
                         </span>
                     </div>
 
-                    {/* Customer Details */}
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Details</h3>
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
@@ -226,179 +226,201 @@ function PaymentProcessFullwork() {
 
                     <hr className="my-6 border-gray-300" />
 
-                    {/* Service Details */}
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Service Details</h3>
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="w-40 text-left font-medium text-gray-700">Service Required :</span>
-                            <input type="text" value={data.service} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
+                            <input
+                                type="text"
+                                value={data.service}
+                                disabled
+                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                            />
                         </div>
                         <div className="flex items-center gap-3">
                             <span className="w-40 text-left font-medium text-gray-700">Date :</span>
-                            <input type="text" value={data.date} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
+                            <input
+                                type="text"
+                                value={data.date}
+                                disabled
+                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                            />
                         </div>
                         <div className="flex items-start gap-3">
                             <span className="w-40 text-left font-medium text-gray-700">Photos :</span>
                             <div className="flex gap-2 items-center">
                                 {data.images.map((img, index) => (
-                                    <img key={index} src={img} alt={`img-${index}`} className="w-20 h-16 rounded-md border border-gray-300 object-cover" />
+                                    <img
+                                        key={index}
+                                        src={img}
+                                        alt={`img-${index}`}
+                                        className="w-20 h-16 rounded-md border border-gray-300 object-cover"
+                                    />
                                 ))}
-                                <a href="#" className="text-teal-600 text-sm font-medium underline">View all</a>
+                                <a href="#" className="text-teal-600 text-sm font-medium underline">
+                                    View all
+                                </a>
                             </div>
                         </div>
                     </div>
 
-                    {/* Product List Table - EXACT UI FROM MOCKUP */}
-                   <div className="mt-6 mb-6">
-    <div className="flex items-center gap-3 mb-4">
-        <span className="text-base font-medium text-gray-700">Product List</span>
-        <span className="text-base font-medium text-gray-700">:</span>
-    </div>
-    
-    <div style={{ display: 'inline-block' }}>
-        <table className="border-collapse" style={{ borderColor: '#01050bff' }}>
-            <thead>
-                <tr >
-                    <th 
-                        className="border text-left px-4 py-3"
-                        style={{ 
-                            borderColor: '#020b18ff',
-                            fontSize: '15px',
-                            fontWeight: '600',
-                            color: '#374151'
-                        }}
-                    >
-                        Product Name
-                    </th>
-                    <th 
-                        className="border text-left px-4 py-3"
-                        style={{ 
-                            borderColor: '#01070fff',
-                            fontSize: '15px',
-                            fontWeight: '600',
-                            color: '#374151'
-                        }}
-                    >
-                        Details
-                    </th>
-                    <th 
-                        className="border text-left px-4 py-3"
-                        style={{ 
-                            borderColor: '#020a16ff',
-                            fontSize: '15px',
-                            fontWeight: '600',
-                            color: '#374151'
-                        }}
-                    >
-                        Qty
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {products && products.length > 0 ? (
-                    products.map((product, index) => (
-                        <tr key={index} style={{ backgroundColor: '#FFFFFF' }}>
-                            <td 
-                                className="border px-4 py-3"
-                                style={{ 
-                                    borderColor: '#000812ff',
-                                    fontSize: '14px',
-                                    color: '#374151',
-                                    fontWeight: '500'
-                                }}
-                            >
-                                {product.name}
-                            </td>
-                            <td 
-                                className="border px-4 py-3"
-                                style={{ 
-                                    borderColor: '#00040aff',
-                                    fontSize: '14px',
-                                    color: '#374151',
-                                    fontWeight: '500'
-                                }}
-                            >
-                                {product.details}
-                            </td>
-                            <td 
-                                className="border px-4 py-3"
-                                style={{ 
-                                    borderColor: '#010a17ff',
-                                    fontSize: '14px',
-                                    color: '#374151',
-                                    fontWeight: '500'
-                                }}
-                            >
-                                {product.qty}
-                            </td>
-                        </tr>
-                    ))
-                ) : (
-                    <tr>
-                        <td 
-                            colSpan="3" 
-                            className="border px-4 py-3 text-center"
-                            style={{ 
-                                borderColor: '#01050bff',
-                                fontSize: '14px',
-                                color: '#9CA3AF'
-                            }}
-                        >
-                            No products available
-                        </td>
-                    </tr>
-                )}
-            </tbody>
-        </table>
-    </div>
-</div>
+                    <div className="mt-6 mb-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <span className="text-base font-medium text-gray-700">Product List</span>
+                            <span className="text-base font-medium text-gray-700">:</span>
+                        </div>
+
+                        <div style={{display: "inline-block"}}>
+                            <table className="border-collapse" style={{borderColor: "#01050bff"}}>
+                                <thead>
+                                    <tr>
+                                        <th
+                                            className="border text-left px-4 py-3"
+                                            style={{
+                                                borderColor: "#020b18ff",
+                                                fontSize: "15px",
+                                                fontWeight: "600",
+                                                color: "#374151",
+                                            }}
+                                        >
+                                            Product Name
+                                        </th>
+                                        <th
+                                            className="border text-left px-4 py-3"
+                                            style={{
+                                                borderColor: "#01070fff",
+                                                fontSize: "15px",
+                                                fontWeight: "600",
+                                                color: "#374151",
+                                            }}
+                                        >
+                                            Details
+                                        </th>
+                                        <th
+                                            className="border text-left px-4 py-3"
+                                            style={{
+                                                borderColor: "#020a16ff",
+                                                fontSize: "15px",
+                                                fontWeight: "600",
+                                                color: "#374151",
+                                            }}
+                                        >
+                                            Qty
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {products && products.length > 0 ? (
+                                        products.map((product, index) => (
+                                            <tr key={index} style={{backgroundColor: "#FFFFFF"}}>
+                                                <td
+                                                    className="border px-4 py-3"
+                                                    style={{
+                                                        borderColor: "#000812ff",
+                                                        fontSize: "14px",
+                                                        color: "#374151",
+                                                        fontWeight: "500",
+                                                    }}
+                                                >
+                                                    {product.name}
+                                                </td>
+                                                <td
+                                                    className="border px-4 py-3"
+                                                    style={{
+                                                        borderColor: "#00040aff",
+                                                        fontSize: "14px",
+                                                        color: "#374151",
+                                                        fontWeight: "500",
+                                                    }}
+                                                >
+                                                    {product.details}
+                                                </td>
+                                                <td
+                                                    className="border px-4 py-3"
+                                                    style={{
+                                                        borderColor: "#010a17ff",
+                                                        fontSize: "14px",
+                                                        color: "#374151",
+                                                        fontWeight: "500",
+                                                    }}
+                                                >
+                                                    {product.qty}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td
+                                                colSpan="3"
+                                                className="border px-4 py-3 text-center"
+                                                style={{
+                                                    borderColor: "#01050bff",
+                                                    fontSize: "14px",
+                                                    color: "#9CA3AF",
+                                                }}
+                                            >
+                                                No products available
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                     <hr className="my-6 border-gray-300" />
 
-                    {/* Quotation Details */}
-                   
-                  
-
-                    {/* Payment Details */}
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Details</h3>
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="w-40 text-left font-medium text-gray-700">Total Bill :</span>
-                            <input type="text" value={data.totalBill} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
+                            <input
+                                type="text"
+                                value={data.totalBill}
+                                disabled
+                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                            />
                         </div>
                         <div className="flex items-center gap-3">
                             <span className="w-40 text-left font-medium text-gray-700">Payment Method :</span>
-                            <input type="text" value={data.paymentMethod} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
+                            <input
+                                type="text"
+                                value={data.paymentMethod}
+                                disabled
+                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                            />
                         </div>
                         <div className="flex items-center gap-3">
                             <span className="w-40 text-left font-medium text-gray-700">Payment status :</span>
-                            <input type="text" value={data.paymentStatus} disabled className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium" />
+                            <input
+                                type="text"
+                                value={data.paymentStatus}
+                                disabled
+                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                            />
                         </div>
-                        
                     </div>
 
-                    {/* Button */}
                     <div className="flex justify-center mt-8">
                         <button
                             onClick={handleSettlePayment}
                             disabled={settleLoading}
                             style={{
-                                backgroundColor: settleLoading ? '#9CA3AF' : '#0D7377',
-                                color: '#FFFFFF',
-                                padding: '10px 24px',
-                                borderRadius: '6px',
-                                border: 'none',
-                                fontSize: '15px',
-                                fontWeight: '600',
-                                cursor: settleLoading ? 'not-allowed' : 'pointer',
-                                transition: 'background-color 0.2s'
+                                backgroundColor: settleLoading ? "#9CA3AF" : "#0D7377",
+                                color: "#FFFFFF",
+                                padding: "10px 24px",
+                                borderRadius: "6px",
+                                border: "none",
+                                fontSize: "15px",
+                                fontWeight: "600",
+                                cursor: settleLoading ? "not-allowed" : "pointer",
+                                transition: "background-color 0.2s",
                             }}
                         >
                             {settleLoading ? "Processing..." : "Settle Payment"}
                         </button>
                     </div>
                 </div>
-
             </main>
         </div>
     );
