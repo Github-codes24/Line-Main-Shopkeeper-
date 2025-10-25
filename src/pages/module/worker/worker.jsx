@@ -77,7 +77,6 @@ const Worker = () => {
     const applyFiltersAndPagination = () => {
         let filtered = [...workers];
 
-        // Apply search filter
         if (searchTerm) {
             filtered = filtered.filter(
                 (worker) =>
@@ -87,12 +86,10 @@ const Worker = () => {
             );
         }
 
-        // Apply expertise filter
         if (selectedExpertise.length > 0) {
             filtered = filtered.filter((worker) => selectedExpertise.includes(worker.expertise));
         }
 
-        // Reset page if out of range
         if ((currentPage - 1) * limit >= filtered.length && filtered.length > 0) {
             setCurrentPage(1);
             return;
@@ -169,7 +166,6 @@ const Worker = () => {
             <ToastContainer />
 
             <main className="flex-1 p-3 gap-2">
-                {/* Header */}
                 <div className="flex flex-col md:flex-row justify-start items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-24">
                     <h1
                         className="text-lg md:text-xl font-semibold"
@@ -182,7 +178,6 @@ const Worker = () => {
                         Worker List
                     </h1>
 
-                    {/* Search */}
                     <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
                         <Search className="text-teal-600 mr-2" size={18} />
                         <input
@@ -196,11 +191,8 @@ const Worker = () => {
                             }}
                         />
                     </div>
-
-                    {/* Add Worker */}
                 </div>
 
-                {/* Filters */}
                 <div className="bg-white shadow-xl flex flex-col gap-3 mb-4 relative rounded-lg p-3">
                     <div className="flex flex-wrap items-center gap-2">
                         <button
@@ -241,7 +233,6 @@ const Worker = () => {
                         </button>
                     </div>
 
-                    {/* Dropdown */}
                     {filterOpen && (
                         <div className="absolute top-16 left-3 bg-white border rounded shadow-md p-4 w-64 z-50">
                             <div className="mb-3">
@@ -266,7 +257,6 @@ const Worker = () => {
                         </div>
                     )}
 
-                    {/* Table */}
                     <div className="overflow-x-auto">
                         {isLoading ? (
                             <div className="text-center py-8">
@@ -345,7 +335,6 @@ const Worker = () => {
                     </div>
                 </div>
 
-                {/* Pagination */}
                 {!isLoading && !error && totalPages > 0 && (
                     <div className="w-full flex flex-col bg-white md:flex-row justify-between items-center gap-2 p-3 text-sm font-semibold text-black rounded-lg shadow">
                         <span>

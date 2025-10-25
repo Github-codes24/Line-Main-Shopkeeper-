@@ -29,28 +29,25 @@ const DashboardPage = () => {
             <ToastContainer />
             <Searchbar />
 
-            {/* Stats */}
             <div class="bg-white shadow-xl flex flex-col gap-3 mb-4 relative rounded-lg p-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-40">
-                <Card title="Total Sales" value={stats?.totalSales?.value} change={stats?.totalSales?.change} />
-                <Card title="Total Worker" value={stats?.totalWorker?.value} change={stats?.totalWorker?.change} />
-                <Card
-                    title="Total Customer"
-                    value={stats?.totalCustomer?.value}
-                    change={stats?.totalCustomer?.change}
-                />
-                <Card title="Total Order" value={stats?.totalOrder?.value} change={stats?.totalOrder?.change} />
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-40">
+                    <Card title="Total Sales" value={stats?.totalSales?.value} change={stats?.totalSales?.change} />
+                    <Card title="Total Worker" value={stats?.totalWorker?.value} change={stats?.totalWorker?.change} />
+                    <Card
+                        title="Total Customer"
+                        value={stats?.totalCustomer?.value}
+                        change={stats?.totalCustomer?.change}
+                    />
+                    <Card title="Total Order" value={stats?.totalOrder?.value} change={stats?.totalOrder?.change} />
+                </div>
 
-            {/* Order Table & Products */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <OrderTable orders={orderManagement} />
-                <TopSellinśgProduct products={topSellingProduct} />
-            </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <OrderTable orders={orderManagement} />
+                    <TopSellinśgProduct products={topSellingProduct} />
+                </div>
 
-            {/* Workers */}
-            <TopWorker workers={topWorker} />
-        </div>
+                <TopWorker workers={topWorker} />
+            </div>
         </div>
     );
 };

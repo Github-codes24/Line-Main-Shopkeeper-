@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Eye, X, Search } from "lucide-react";
-import { TbFilter } from "react-icons/tb";
-import { toast } from "react-toastify";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Eye, X, Search} from "lucide-react";
+import {TbFilter} from "react-icons/tb";
+import {toast} from "react-toastify";
 import conf from "../../../config";
 import useFetch from "../../../hook/useFetch";
 
@@ -12,17 +12,15 @@ const Payment = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const [fetchData] = useFetch();
-    
-    // Debug: Check if auth token exists
+
     useEffect(() => {
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
         console.log("🔑 Auth Token exists:", !!token);
         if (!token) {
             console.warn("⚠️ NO AUTH TOKEN FOUND! This might be why the API returns empty data.");
         }
     }, []);
 
-    // State for filtering
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -32,14 +30,7 @@ const Payment = () => {
     const [filters, setFilters] = useState([]);
     const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
 
-    const filterOptions = [
-        "Electrician",
-        "Painter",
-        "Carpenter",
-        "AC Repair",
-        "Tile Fitting",
-        "Plumber",
-    ];
+    const filterOptions = ["Electrician", "Painter", "Carpenter", "AC Repair", "Tile Fitting", "Plumber"];
 
     useEffect(() => {
         const fetchPaymentsData = async () => {
@@ -47,37 +38,24 @@ const Payment = () => {
                 setLoading(true);
                 setError(null);
 
-                // Match Postman request - only send shopkeeperId
                 const payload = {
                     shopkeeperId: SHOPKEEPER_ID,
                 };
 
-                // Debug logging
                 console.log("=== API REQUEST DEBUG ===");
                 console.log("URL:", `${conf.apiBaseUrl}/shopkeeper/payments/`);
                 console.log("Payload:", payload);
                 console.log("Method:", "POST");
 
-                // TEMPORARY: Direct fetch for debugging (bypass useFetch)
                 const response = await fetch(`${conf.apiBaseUrl}/shopkeeper/payments/`, {
                     method: "POST",
-                    headers: { 
+                    headers: {
                         "Content-Type": "application/json",
-                        // Add auth token if needed:
-                        // "Authorization": `Bearer ${your_token_here}`
                     },
                     body: JSON.stringify(payload),
                 });
-                
+
                 const result = await response.json();
-                
-                // Original useFetch call (commented for debugging)
-                // const result = await fetchData({
-                //     method: "POST",
-                //     url: `${conf.apiBaseUrl}/shopkeeper/payments/`,
-                //     data: payload,
-                //     headers: { "Content-Type": "application/json" },
-                // });
 
                 console.log("=== API RESPONSE DEBUG ===");
                 console.log("Full Response:", result);
@@ -86,24 +64,19 @@ const Payment = () => {
                 console.log("Orders Array:", result?.orders);
 
                 if (result && result.success) {
-                    // API returns 'orders' not 'payments'
                     const ordersData = result.orders || [];
-                    
-                    const formattedPayments = ordersData.map(p => ({
+
+                    const formattedPayments = ordersData.map((p) => ({
                         id: p._id,
-                        orderNo: p.orderId || 'N/A',
-                        // API returns workerExperties directly, not worker.experties
-                        role: p.workerExperties || 'N/A',
-                        // API returns workerName directly, not worker.name
-                        name: p.workerName || 'N/A',
+                        orderNo: p.orderId || "N/A",
+                        role: p.workerExperties || "N/A",
+                        name: p.workerName || "N/A",
                         updated: new Date(p.updatedAt || Date.now()).toLocaleDateString("en-IN"),
-                        // API returns 'paymentStatus' not 'status'
-                        status: p.paymentStatus === 'Pending' ? 'Pending' : 'Paid',
-                        bookingType: p.bookingType || 'Normal',
+                        status: p.paymentStatus === "Pending" ? "Pending" : "Paid",
+                        bookingType: p.bookingType || "Normal",
                     }));
-                    
+
                     setPayments(formattedPayments);
-                    // Calculate pagination from total orders
                     const total = result.totalOrders || ordersData.length;
                     setTotalCount(total);
                     setTotalPages(Math.ceil(total / 10));
@@ -121,30 +94,28 @@ const Payment = () => {
         };
 
         fetchPaymentsData();
-    }, []); // Remove dependencies since API doesn't support search/pagination
+    }, []);
 
     const handleView = (id) => {
-    const payment = payments.find(p => p.id === id);
-    if (!payment) return toast.error("Payment not found!");
-    if (payment.bookingType === "Full Work") {
-        navigate(`/payment/process-fullwork/${id}`);
-    } else {
-        navigate(`/payment/process/${id}`);
-    }
-};
+        const payment = payments.find((p) => p.id === id);
+        if (!payment) return toast.error("Payment not found!");
+        if (payment.bookingType === "Full Work") {
+            navigate(`/payment/process-fullwork/${id}`);
+        } else {
+            navigate(`/payment/process/${id}`);
+        }
+    };
 
     const handlePay = (id) => {
-    // Find the clicked payment
-    const payment = payments.find(p => p.id === id);
-    if (!payment) return toast.error("Payment not found!");
+        const payment = payments.find((p) => p.id === id);
+        if (!payment) return toast.error("Payment not found!");
 
-    // Conditional routing based on bookingType
-    if (payment.bookingType === "Full Work") {
-        navigate(`/payment/process-fullwork/${id}`);
-    } else {
-        navigate(`/payment/process/${id}`);
-    }
-};
+        if (payment.bookingType === "Full Work") {
+            navigate(`/payment/process-fullwork/${id}`);
+        } else {
+            navigate(`/payment/process/${id}`);
+        }
+    };
 
     const handleResetFilter = () => {
         setFilters([]);
@@ -153,25 +124,24 @@ const Payment = () => {
     };
 
     const toggleFilter = (option) => {
-        setFilters(prev => prev.includes(option) ? prev.filter(f => f !== option) : [...prev, option]);
+        setFilters((prev) => (prev.includes(option) ? prev.filter((f) => f !== option) : [...prev, option]));
         setCurrentPage(1);
     };
 
     const removeFilter = (option) => {
-        setFilters(prev => prev.filter(f => f !== option));
+        setFilters((prev) => prev.filter((f) => f !== option));
         setCurrentPage(1);
     };
 
-    // Client-side filtering and pagination
     const filteredPayments = payments.filter((item) => {
-        const searchMatch = search === "" || 
+        const searchMatch =
+            search === "" ||
             item.name.toLowerCase().includes(search.toLowerCase()) ||
             item.orderNo.toLowerCase().includes(search.toLowerCase());
         const filterMatch = filters.length === 0 || filters.includes(item.role);
         return searchMatch && filterMatch;
     });
 
-    // Client-side pagination
     const startIndex = (currentPage - 1) * 10;
     const endIndex = startIndex + 10;
     const paginatedPayments = filteredPayments.slice(startIndex, endIndex);
@@ -180,15 +150,18 @@ const Payment = () => {
     return (
         <div className="flex bg-[#E0E9E9] font-medium">
             <main className="flex-1 p-3 gap-2">
-                {/* Header */}
                 <div className="flex flex-col md:flex-row justify-start items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-24">
-                    <h1 className="text-lg md:text-xl font-semibold" style={{
-                        fontWeight: 500,
-                        fontSize: '20px',
-                        color: 'rgba(51, 51, 51, 1)'
-                    }}>Payment Management</h1>
+                    <h1
+                        className="text-lg md:text-xl font-semibold"
+                        style={{
+                            fontWeight: 500,
+                            fontSize: "20px",
+                            color: "rgba(51, 51, 51, 1)",
+                        }}
+                    >
+                        Payment Management
+                    </h1>
 
-                    {/* Search */}
                     <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
                         <Search className="text-teal-600 mr-2" size={18} />
                         <input
@@ -204,7 +177,6 @@ const Payment = () => {
                     </div>
                 </div>
 
-                {/* Filters & Table */}
                 <div className="bg-white shadow-xl flex flex-col gap-3 mb-4 relative rounded-lg p-3">
                     <div className="flex flex-wrap items-center gap-2">
                         <button
@@ -215,7 +187,10 @@ const Payment = () => {
                         </button>
 
                         {filters.map((filter) => (
-                            <span key={filter} className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
+                            <span
+                                key={filter}
+                                className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm"
+                            >
                                 {filter}
                                 <X className="w-4 h-4 ml-2 cursor-pointer " onClick={() => removeFilter(filter)} />
                             </span>
@@ -235,7 +210,6 @@ const Payment = () => {
                         </button>
                     </div>
 
-                    {/* Dropdown */}
                     {filterDropdownOpen && (
                         <div className="absolute top-16 left-3 bg-white border rounded shadow-md p-4 w-64 z-50">
                             <div className="mb-3">
@@ -250,7 +224,9 @@ const Payment = () => {
                                                 onChange={() => toggleFilter(option)}
                                                 className="cursor-pointer"
                                             />
-                                            <label htmlFor={option} className="cursor-pointer">{option}</label>
+                                            <label htmlFor={option} className="cursor-pointer">
+                                                {option}
+                                            </label>
                                         </li>
                                     ))}
                                 </ul>
@@ -258,7 +234,6 @@ const Payment = () => {
                         </div>
                     )}
 
-                    {/* Table */}
                     <div className="overflow-x-auto">
                         {loading ? (
                             <div className="text-center py-8">
@@ -273,7 +248,10 @@ const Payment = () => {
                                 <p className="text-gray-600">No payments found matching your criteria.</p>
                             </div>
                         ) : (
-                            <table className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden" style={{ borderSpacing: 0 }}>
+                            <table
+                                className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden"
+                                style={{borderSpacing: 0}}
+                            >
                                 <thead className="bg-[#e0e9e9] text-sm md:text-base">
                                     <tr>
                                         <th className="px-4 py-3 font-medium text-center">Sr.No</th>
@@ -288,18 +266,24 @@ const Payment = () => {
                                 <tbody className="text-sm md:text-base">
                                     {paginatedPayments.map((item, index) => (
                                         <tr key={item.id} className=" border-b border-gray-200">
-                                            <td className="px-4 py-3 font-normal text-center">{startIndex + index + 1}</td>
+                                            <td className="px-4 py-3 font-normal text-center">
+                                                {startIndex + index + 1}
+                                            </td>
                                             <td className="px-4 py-3 font-normal text-center">{item.orderNo}</td>
                                             <td className="px-4 py-3 font-normal text-center">{item.role}</td>
                                             <td className="px-4 py-3 font-normal text-center">{item.name}</td>
                                             <td className="px-4 py-3 font-normal text-center">{item.updated}</td>
-                                            <td className={`px-4 py-3 font-normal text-center ${item.status === "Paid" ? "text-green-500" : "text-yellow-500"}`}>
+                                            <td
+                                                className={`px-4 py-3 font-normal text-center ${
+                                                    item.status === "Paid" ? "text-green-500" : "text-yellow-500"
+                                                }`}
+                                            >
                                                 {item.status}
                                             </td>
                                             <td className="px-4 py-3 font-normal text-center">
                                                 <div className="flex items-center gap-3 justify-center text-gray-700">
                                                     <Eye
-                                                        onClick={() =>  handlePay(item.id)}
+                                                        onClick={() => handlePay(item.id)}
                                                         className="w-5 h-5 cursor-pointer text-[#06A77D] "
                                                         title="View Payment"
                                                     />
@@ -319,7 +303,6 @@ const Payment = () => {
                     </div>
                 </div>
 
-                {/* Pagination */}
                 {!loading && !error && calculatedTotalPages > 0 && (
                     <div className="w-full flex flex-col bg-white md:flex-row justify-between items-center gap-2 p-3 text-sm font-semibold text-black rounded-lg shadow">
                         <span>
@@ -327,23 +310,25 @@ const Payment = () => {
                         </span>
                         <div className="flex items-center gap-2">
                             <button
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
                                 className="px-3 py-1 text-teal-700  rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 &lt;
                             </button>
-                            {Array.from({ length: calculatedTotalPages }, (_, i) => (
+                            {Array.from({length: calculatedTotalPages}, (_, i) => (
                                 <button
                                     key={i + 1}
                                     onClick={() => setCurrentPage(i + 1)}
-                                    className={`px-3 py-1 rounded transition-colors ${currentPage === i + 1 ? "bg-teal-700 text-white" : "bg-teal-100 text-teal-700 "}`}
+                                    className={`px-3 py-1 rounded transition-colors ${
+                                        currentPage === i + 1 ? "bg-teal-700 text-white" : "bg-teal-100 text-teal-700 "
+                                    }`}
                                 >
                                     {i + 1}
                                 </button>
                             ))}
                             <button
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, calculatedTotalPages))}
+                                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, calculatedTotalPages))}
                                 disabled={currentPage === calculatedTotalPages}
                                 className="px-3 py-1 text-teal-700  rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >

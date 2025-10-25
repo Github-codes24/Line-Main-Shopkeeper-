@@ -80,7 +80,6 @@ const OrderManagement = () => {
     return (
         <div className="p-3 bg-gray-200 min-h-screen">
             <div className="bg-white p-3 rounded-md shadow-sm flex flex-col md:flex-row items-center justify-between mb-3 gap-3">
-                {/* Title */}
                 <h1
                     style={{
                         fontWeight: 500,
@@ -91,7 +90,6 @@ const OrderManagement = () => {
                     Order List
                 </h1>
 
-                {/* Search Bar — Centered */}
                 <div className="flex justify-center w-full md:w-auto">
                     <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
                         <TbSearch className="text-teal-600 mr-2" size={18} />
@@ -104,8 +102,6 @@ const OrderManagement = () => {
                         />
                     </div>
                 </div>
-
-                {/* (Optional) Right-side placeholder if you want to add a button later */}
                 <div className="hidden md:block w-[80px]"></div>
             </div>
 

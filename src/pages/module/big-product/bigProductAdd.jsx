@@ -25,7 +25,6 @@ const AddBigProduct = () => {
     const [imagePreviewUrl, setImagePreviewUrl] = useState("");
     const [shopkeeperId] = useState("68c2cbcdeaa35f894cb1df34"); // Default shopkeeper ID
 
-    // Unified input class
     const inputClass =
         "bg-[#F5FFFF] border border-[#B2D8D5] text-[#0D2E28] text-lg font-medium rounded-lg px-4 py-2 w-full outline-none focus:outline-none placeholder:text-[#0D2E28] placeholder:font-medium";
 
@@ -33,7 +32,6 @@ const AddBigProduct = () => {
         navigate(-1);
     };
 
-    // Fetch categories on mount
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -54,7 +52,6 @@ const AddBigProduct = () => {
         fetchCategories();
     }, []);
 
-    // Fetch sub-categories whenever a category is selected
     useEffect(() => {
         if (!formData.productCategory) {
             setSubCategories([]);
@@ -102,7 +99,6 @@ const AddBigProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validation
         if (!formData.productImage) {
             toast.error("Please select a product image");
             return;
@@ -121,7 +117,6 @@ const AddBigProduct = () => {
         setLoading(true);
 
         try {
-            // Create FormData as per API documentation
             const submitFormData = new FormData();
             submitFormData.append("productCategory", formData.productCategory);
             submitFormData.append("productPrice", formData.productPrice);
@@ -141,7 +136,7 @@ const AddBigProduct = () => {
             });
 
             if (result.success) {
-                toast.success("Product added successfully! ✅");
+                toast.success("Product added successfully!");
                 setTimeout(() => {
                     navigate(-1);
                 }, 1500);
@@ -158,7 +153,6 @@ const AddBigProduct = () => {
 
     return (
         <div className="flex flex-col bg-[#E0E9E9] font-medium text-[#0D2E28]">
-            {/* Header */}
             <div className="flex bg-white m-2 border rounded-lg shadow-lg p-2">
                 <div className="flex items-center">
                     <button onClick={handleBack} className="text-xl font-semibold text-gray-800 p-2 rounded-lg">
@@ -190,11 +184,9 @@ const AddBigProduct = () => {
                 </div>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleSubmit}>
                 <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
                     <div className="border border-[#616666] p-4 rounded-lg">
-                        {/* Product Image */}
                         <div className="flex gap-4 mb-6">
                             <label className="w-[240px] font-medium text-lg text-[#0D2E28]">Product Image</label>
                             <div className="rounded-lg p-0 w-[240px] h-[240px] flex flex-col items-center justify-center relative">
@@ -226,7 +218,6 @@ const AddBigProduct = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {/* Product Name */}
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
                                     Product Name
@@ -244,7 +235,6 @@ const AddBigProduct = () => {
                                 </div>
                             </div>
 
-                            {/* Product Category */}
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
                                     Product Category
@@ -267,7 +257,6 @@ const AddBigProduct = () => {
                                 </div>
                             </div>
 
-                            {/* Product Sub-Category */}
                             {subCategories.length > 0 && (
                                 <div className="flex items-start gap-4">
                                     <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
@@ -292,7 +281,6 @@ const AddBigProduct = () => {
                                 </div>
                             )}
 
-                            {/* Product Price */}
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
                                     Product Price
@@ -310,7 +298,6 @@ const AddBigProduct = () => {
                                 </div>
                             </div>
 
-                            {/* Product Description */}
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
                                     Product Description
@@ -330,7 +317,6 @@ const AddBigProduct = () => {
                         </div>
                     </div>
 
-                    {/* Buttons */}
                     <div className="flex justify-center mt-6 gap-4">
                         <button
                             type="button"

@@ -2,7 +2,6 @@ import React from "react";
 import {useNavigate, useParams, useLocation} from "react-router-dom";
 import {FaArrowLeft} from "react-icons/fa";
 
-// Dummy workers (replace with API data in production)
 const workers = [
     {
         id: 1,
@@ -34,7 +33,6 @@ const WorkerView = () => {
 
     return (
         <div className="p-3 bg-gray-200">
-            {/* Header */}
             <div className="flex items-center gap-3 mb-6 bg-white p-4 rounded-md shadow-md">
                 <div className="flex items-center">
                     <button onClick={() => navigate(-1)} className="text-xl text-black ">
@@ -66,24 +64,18 @@ const WorkerView = () => {
                 </div>
             </div>
 
-            {/* Card */}
             <div className="bg-white border rounded-md p-6 shadow-md min-h-screen flex flex-col">
-                {/* Section Title */}
                 <h3 className="text-lg font-semibold text-gray-700 mb-4">Personal Details</h3>
 
-                {/* Detail rows */}
                 <div className="space-y-4">
                     <DetailRow label="Name" value={worker.name} />
                     <DetailRow label="Expertise" value={worker.expertise} />
                     <DetailRow label="Phone Number" value={worker.phone} />
                     <DetailRow label="Address" value={worker.address} />
-                    {/* <DetailRow label="Email Id" value={worker.email} /> */}
                 </div>
 
-                {/* Divider */}
                 <hr className="my-6 border-gray-300" />
 
-                {/* Edit Button at bottom */}
                 <div className="flex justify-center mt-auto">
                     <button
                         onClick={() => navigate(`/worker/worker-edit/${id}`, {state: worker})}
@@ -97,7 +89,6 @@ const WorkerView = () => {
     );
 };
 
-// Component for showing label and input
 const DetailRow = ({label, value}) => (
     <div className="flex items-center">
         <label className="w-48 font-medium text-gray-700">{label} :</label>

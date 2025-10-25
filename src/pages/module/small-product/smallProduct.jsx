@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect} from "react";
 import {Eye, Trash2, X, Search} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import {FiEdit} from "react-icons/fi";
@@ -8,12 +8,12 @@ import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import conf from "../../../config";
 import useFetch from "../../../hook/useFetch";
+import {IconButton} from "@mui/material";
 
 const SmallProduct = () => {
     const navigate = useNavigate();
     const [fetchData] = useFetch();
 
-    // Categories in the specified sequence
     const categoryOptions = ["Electrician", "Painter", "Carpenter", "AC Repair", "Tile Fitting", "Plumber"];
 
     const [products, setProducts] = useState([]);
@@ -29,7 +29,6 @@ const SmallProduct = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [limit] = useState(10);
 
-    // Fetch all products once
     useEffect(() => {
         const fetchAllProducts = async () => {
             setLoading(true);
@@ -63,7 +62,6 @@ const SmallProduct = () => {
         fetchAllProducts();
     }, []);
 
-    // Apply filters and pagination
     useEffect(() => {
         applyFiltersAndPagination();
     }, [allProducts, searchTerm, selectedCategories, currentPage]);
@@ -71,14 +69,12 @@ const SmallProduct = () => {
     const applyFiltersAndPagination = () => {
         let filtered = [...allProducts];
 
-        // Apply search filter
         if (searchTerm) {
             filtered = filtered.filter((product) =>
                 product.productName.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
-        // Apply category filter
         if (selectedCategories.length > 0) {
             filtered = filtered.filter((product) => {
                 const categoryName =
@@ -89,7 +85,6 @@ const SmallProduct = () => {
             });
         }
 
-        // Reset page if out of range
         if ((currentPage - 1) * limit >= filtered.length && filtered.length > 0) {
             setCurrentPage(1);
             return;
@@ -98,7 +93,6 @@ const SmallProduct = () => {
         setTotalCount(filtered.length);
         setTotalPages(Math.ceil(filtered.length / limit));
 
-        // Paginate
         const start = (currentPage - 1) * limit;
         const end = start + limit;
         setProducts(filtered.slice(start, end));
@@ -128,7 +122,6 @@ const SmallProduct = () => {
 
             if (result.success) {
                 toast.success(result.message || "Product deleted successfully!");
-                // Remove from allProducts state instead of refetching
                 setAllProducts((prev) => prev.filter((product) => product._id !== id));
             } else {
                 toast.error(result.message || "Failed to delete product");
@@ -148,7 +141,6 @@ const SmallProduct = () => {
             <ToastContainer />
 
             <main className="flex-1 p-3 gap-2">
-                {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-3">
                     <h1
                         className="text-lg md:text-xl"
@@ -161,7 +153,6 @@ const SmallProduct = () => {
                         Small Product List
                     </h1>
 
-                    {/* Search */}
                     <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
                         <Search className="text-teal-600 mr-2" size={18} />
                         <input
@@ -176,7 +167,6 @@ const SmallProduct = () => {
                         />
                     </div>
 
-                    {/* Add Product */}
                     <button
                         onClick={handleAdd}
                         className="bg-[#007E74] text-white text-base px-4 py-2 rounded-lg w-full md:w-auto  flex items-center justify-center gap-2"
@@ -185,7 +175,6 @@ const SmallProduct = () => {
                     </button>
                 </div>
 
-                {/* Filters */}
                 <div className="bg-white shadow-xl flex flex-col gap-3 mb-4 relative rounded-lg p-3">
                     <div className="flex flex-wrap items-center gap-2">
                         <button
@@ -223,7 +212,6 @@ const SmallProduct = () => {
                         </button>
                     </div>
 
-                    {/* Dropdown */}
                     {filterOpen && (
                         <div className="absolute top-16 left-3 bg-white border rounded shadow-md p-4 w-64 z-50">
                             <div className="mb-3">
@@ -248,7 +236,6 @@ const SmallProduct = () => {
                         </div>
                     )}
 
-                    {/* Table */}
                     <div className="overflow-x-auto">
                         {loading ? (
                             <div className="text-center py-8">
@@ -302,22 +289,30 @@ const SmallProduct = () => {
                                             </td>
                                             <td className="px-4 py-3 font-normal">₹{product.productPrice}</td>
                                             <td className="px-4 py-3 font-normal">
-                                                <div className="flex items-center gap-3 text-gray-700">
-                                                    <Eye
-                                                        onClick={() => handleView(product._id)}
-                                                        className="w-5 h-5 cursor-pointer text-[#06A77D]"
-                                                        title="View Product"
-                                                    />
-                                                    <FiEdit
-                                                        onClick={() => handleEdit(product._id)}
-                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] "
-                                                        title="Edit Product"
-                                                    />
-                                                    <Trash2
-                                                        onClick={() => handleDelete(product._id, product.productName)}
-                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] "
-                                                        title="Delete Product"
-                                                    />
+                                                <div className="flex items-center gap-1 text-gray-700">
+                                                    <IconButton>
+                                                        <Eye
+                                                            onClick={() => handleView(product._id)}
+                                                            className="w-5 h-5 cursor-pointer text-[#EC2D01]"
+                                                            title="View Product"
+                                                        />
+                                                    </IconButton>
+                                                    <IconButton>
+                                                        <FiEdit
+                                                            onClick={() => handleEdit(product._id)}
+                                                            className="w-5 h-5 cursor-pointer text-[#EC2D01] "
+                                                            title="Edit Product"
+                                                        />
+                                                    </IconButton>
+                                                    <IconButton>
+                                                        <Trash2
+                                                            onClick={() =>
+                                                                handleDelete(product._id, product.productName)
+                                                            }
+                                                            className="w-5 h-5 cursor-pointer text-[#EC2D01] "
+                                                            title="Delete Product"
+                                                        />
+                                                    </IconButton>
                                                 </div>
                                             </td>
                                         </tr>
@@ -328,7 +323,6 @@ const SmallProduct = () => {
                     </div>
                 </div>
 
-                {/* Pagination */}
                 {!loading && !error && totalPages > 0 && (
                     <div className="w-full flex flex-col bg-white md:flex-row justify-between items-center gap-2 p-3 text-sm font-semibold text-black rounded-lg shadow">
                         <span>
