@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import React, {useState, useEffect} from "react";
+import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Eye, Trash2, Search, Filter, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { FiEdit } from "react-icons/fi";
-import { TbFilter } from "react-icons/tb";
-import { FaPlus } from "react-icons/fa6";
+import {Eye, Trash2, Search, Filter, X} from "lucide-react";
+import {useNavigate} from "react-router-dom";
+import {FiEdit} from "react-icons/fi";
+import {TbFilter} from "react-icons/tb";
+import {FaPlus} from "react-icons/fa6";
 import conf from "../../../config";
 import useFetch from "../../../hook/useFetch";
 
@@ -25,14 +25,7 @@ const Worker = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
-    const expertiseOptions = [
-        "Electrician",
-        "Painter",
-        "Carpenter",
-        "AC Repair",
-        "Tile Fitting",
-        "Plumber",
-    ];
+    const expertiseOptions = ["Electrician", "Painter", "Carpenter", "AC Repair", "Tile Fitting", "Plumber"];
 
     useEffect(() => {
         fetchAllWorkers();
@@ -96,9 +89,7 @@ const Worker = () => {
 
         // Apply expertise filter
         if (selectedExpertise.length > 0) {
-            filtered = filtered.filter((worker) =>
-                selectedExpertise.includes(worker.expertise)
-            );
+            filtered = filtered.filter((worker) => selectedExpertise.includes(worker.expertise));
         }
 
         // Reset page if out of range
@@ -124,9 +115,7 @@ const Worker = () => {
         }
 
         if (selectedExpertise.length > 0) {
-            filtered = filtered.filter((worker) =>
-                selectedExpertise.includes(worker.expertise)
-            );
+            filtered = filtered.filter((worker) => selectedExpertise.includes(worker.expertise));
         }
 
         const start = (currentPage - 1) * limit;
@@ -166,9 +155,7 @@ const Worker = () => {
 
     const handleExpertiseToggle = (expertise) => {
         setSelectedExpertise((prev) =>
-            prev.includes(expertise)
-                ? prev.filter((item) => item !== expertise)
-                : [...prev, expertise]
+            prev.includes(expertise) ? prev.filter((item) => item !== expertise) : [...prev, expertise]
         );
         setCurrentPage(1);
     };
@@ -184,11 +171,16 @@ const Worker = () => {
             <main className="flex-1 p-3 gap-2">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-start items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-24">
-                    <h1 className="text-lg md:text-xl font-semibold" style={{
-                        fontWeight: 500,
-                        fontSize: '20px',
-                        color: 'rgba(51, 51, 51, 1)'
-                    }}>Worker List</h1>
+                    <h1
+                        className="text-lg md:text-xl font-semibold"
+                        style={{
+                            fontWeight: 500,
+                            fontSize: "20px",
+                            color: "rgba(51, 51, 51, 1)",
+                        }}
+                    >
+                        Worker List
+                    </h1>
 
                     {/* Search */}
                     <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
@@ -206,7 +198,6 @@ const Worker = () => {
                     </div>
 
                     {/* Add Worker */}
-
                 </div>
 
                 {/* Filters */}
@@ -220,10 +211,7 @@ const Worker = () => {
                         </button>
 
                         {selectedExpertise.map((exp) => (
-                            <span
-                                key={exp}
-                                className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm"
-                            >
+                            <span key={exp} className="flex items-center bg-[#e0e9e9] px-3 py-1 rounded-full text-sm">
                                 {exp}
                                 <X
                                     className="w-4 h-4 ml-2 cursor-pointer "
@@ -293,7 +281,10 @@ const Worker = () => {
                                 <p className="text-gray-600">No workers found matching your criteria.</p>
                             </div>
                         ) : (
-                            <table className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden" style={{ borderSpacing: 0 }}>
+                            <table
+                                className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden"
+                                style={{borderSpacing: 0}}
+                            >
                                 <thead className="bg-[#e0e9e9] text-sm md:text-base">
                                     <tr>
                                         <th className="px-4 py-3 font-medium text-center">Sr.No.</th>
@@ -306,10 +297,7 @@ const Worker = () => {
                                 </thead>
                                 <tbody className="text-sm md:text-base">
                                     {paginatedWorkers.map((worker, index) => (
-                                        <tr
-                                            key={worker.id}
-                                            className="border-b border-gray-200"
-                                        >
+                                        <tr key={worker.id} className="border-b border-gray-200">
                                             <td className="px-4 py-3 font-normal text-center">
                                                 {(currentPage - 1) * limit + index + 1}
                                             </td>
@@ -371,14 +359,13 @@ const Worker = () => {
                             >
                                 &lt;
                             </button>
-                            {Array.from({ length: totalPages }, (_, i) => (
+                            {Array.from({length: totalPages}, (_, i) => (
                                 <button
                                     key={i + 1}
                                     onClick={() => setCurrentPage(i + 1)}
-                                    className={`px-3 py-1 rounded transition-colors ${currentPage === i + 1
-                                            ? "bg-teal-700 text-white"
-                                            : "bg-teal-100 text-teal-700 "
-                                        }`}
+                                    className={`px-3 py-1 rounded transition-colors ${
+                                        currentPage === i + 1 ? "bg-teal-700 text-white" : "bg-teal-100 text-teal-700 "
+                                    }`}
                                 >
                                     {i + 1}
                                 </button>
