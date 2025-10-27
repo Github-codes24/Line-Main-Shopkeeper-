@@ -166,7 +166,7 @@ const Worker = () => {
             <ToastContainer />
 
             <main className="flex-1 p-3 gap-2">
-                <div className="flex flex-col md:flex-row justify-start items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-24">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-4 shadow-xl bg-white border rounded-md p-3">
                     <h1
                         className="text-lg md:text-xl font-semibold"
                         style={{
@@ -178,18 +178,20 @@ const Worker = () => {
                         Worker List
                     </h1>
 
-                    <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
-                        <Search className="text-teal-600 mr-2" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search by Name, Phone or Address..."
-                            value={searchTerm}
-                            className="flex-1 outline-none bg-transparent text-sm placeholder-black"
-                            onChange={(e) => {
-                                setSearchTerm(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                        />
+                    <div className="flex justify-center w-full md:w-auto mt-3 md:mt-0">
+                        <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
+                            <Search className="text-teal-600 mr-2" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search by Name, Phone or Address..."
+                                value={searchTerm}
+                                className="flex-1 outline-none bg-transparent text-sm placeholder-black"
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
 

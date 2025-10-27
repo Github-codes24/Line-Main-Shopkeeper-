@@ -154,23 +154,26 @@ function PaymentProcess() {
                         Wallet
                     </h1>
 
-                    <div className="relative w-full sm:w-96">
-                        <FaSearch className="absolute left-4 inset-y-0 text-[#0D2E28]" />
+                    <div className="relative w-full sm:w-96 flex items-center">
+                        <FaSearch className="absolute left-4 text-[#0D2E28] top-1/2 transform -translate-y-1/2" />
                         <input
                             type="text"
                             placeholder="Search worker name here..."
-                            className="w-full h-5 pl-10 pr-4 py-2 border border-teal-500 rounded-full bg-[#E0E9E9] outline-none shadow-sm focus:border-teal-600 
-                             text-[#0D2E28] text-base font-medium font-poppins placeholder:text-[#0D2E28]"
+                            className="w-full h-10 pl-10 pr-4 py-2 border border-teal-500 rounded-full bg-[#E0E9E9] outline-none shadow-sm focus:border-teal-600 
+         text-[#0D2E28] text-base font-medium font-poppins placeholder:text-[#0D2E28]"
                         />
                     </div>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-md p-6 mx-auto">
                     <div className="flex items-center gap-3 mb-6">
-                        <span className="font-bold text-[#0D2E28] text-lg">Order Number :</span>
-                        <span className="px-4 py-1 bg-gray-100 border border-teal-600 rounded-md font-bold text-gray-900">
-                            {data.orderNumber}
-                        </span>
+                        <span className="w-40 text-left font-bold text-[#0D2E28] text-lg">Order Number :</span>
+                        <input
+                            type="text"
+                            value={data.orderNumber}
+                            disabled
+                            className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-bold text-gray-900"
+                        />
                     </div>
 
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Details</h3>
@@ -181,7 +184,7 @@ function PaymentProcess() {
                                 type="text"
                                 value={data.customerName}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
 
@@ -191,7 +194,7 @@ function PaymentProcess() {
                                 type="text"
                                 value={data.phoneNumber}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
 
@@ -200,7 +203,11 @@ function PaymentProcess() {
                             <textarea
                                 value={data.address}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium resize-none"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium resize-none overflow-y-auto"
+                                style={{
+                                    scrollbarWidth: "thin",
+                                    scrollbarColor: "#0D7377 #E0E9E9",
+                                }}
                             />
                         </div>
 
@@ -210,7 +217,7 @@ function PaymentProcess() {
                                 type="text"
                                 value={data.email}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
 
@@ -220,7 +227,7 @@ function PaymentProcess() {
                                 type="text"
                                 value={data.orderStatus}
                                 disabled
-                                className="flex-1 px-4 py-1 border text-[#FFCC00] border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border text-[#FFCC00] border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
                     </div>
@@ -232,33 +239,36 @@ function PaymentProcess() {
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Quotation Details</h3>
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Worker Assigned:</span>
+                            <span className="w-40 text-left font-medium text-gray-700">Worker Assigned :</span>
                             <input
                                 type="text"
                                 value={data.workerAssigned}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
+
                         <div className="flex items-center gap-3">
                             <span className="w-40 text-left font-medium text-gray-700">Last Update :</span>
                             <input
                                 type="text"
                                 value={data.lastUpdate}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
+
                         <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Quotation status :</span>
+                            <span className="w-40 text-left font-medium text-gray-700">Quotation Status :</span>
                             <input
                                 type="text"
                                 value={data.quotationStatus}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
                     </div>
+
                     <div className="flex items-center gap-3 mb-4"></div>
                     <div style={{display: "inline-block"}}>
                         <table className="border-collapse" style={{borderColor: "#01050bff"}}>
@@ -366,25 +376,27 @@ function PaymentProcess() {
                                 type="text"
                                 value={data.totalBill}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
+
                         <div className="flex items-center gap-3">
                             <span className="w-40 text-left font-medium text-gray-700">Payment Method :</span>
                             <input
                                 type="text"
                                 value={data.paymentMethod}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
+
                         <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Payment status :</span>
+                            <span className="w-40 text-left font-medium text-gray-700">Payment Status :</span>
                             <input
                                 type="text"
                                 value={data.paymentStatus}
                                 disabled
-                                className="flex-1 px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
                             />
                         </div>
                     </div>

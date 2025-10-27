@@ -150,7 +150,7 @@ const Payment = () => {
     return (
         <div className="flex bg-[#E0E9E9] font-medium">
             <main className="flex-1 p-3 gap-2">
-                <div className="flex flex-col md:flex-row justify-start items-center mb-4 shadow-xl bg-white border rounded-md p-3 gap-24">
+                <div className="relative flex items-center mb-4 shadow-xl bg-white border rounded-md p-3">
                     <h1
                         className="text-lg md:text-xl font-semibold"
                         style={{
@@ -162,18 +162,20 @@ const Payment = () => {
                         Payment Management
                     </h1>
 
-                    <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
-                        <Search className="text-teal-600 mr-2" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search by Worker Name or Order No..."
-                            value={search}
-                            className="flex-1 outline-none bg-transparent text-sm placeholder-black"
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                        />
+                    <div className="absolute left-1/2 transform -translate-x-1/2">
+                        <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-[300px] bg-gray-200">
+                            <Search className="text-teal-600 mr-2" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search by Worker Name or Order No..."
+                                value={search}
+                                className="flex-1 outline-none bg-transparent text-sm placeholder-black"
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
 
