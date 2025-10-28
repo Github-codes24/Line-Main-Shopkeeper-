@@ -200,104 +200,106 @@ const SmallProductEdit = () => {
                 <h1 className="ml-4 text-xl font-semibold">Edit Small Product</h1>
             </div>
 
-            <div className="bg-white border border-[#D6E2E2] rounded-lg shadow-sm p-8">
-                <div className="space-y-6">
-                    <div className="flex">
-                        <p className="w-1/4 font-medium pt-2">Product Image</p>
-                        <div className="w-3/4">
-                            <div className="relative w-48 h-48">
-                                <img
-                                    src={imageUrl || "https://via.placeholder.com/150"}
-                                    alt="Product"
-                                    className="w-full h-full object-cover rounded-lg border border-gray-300"
-                                />
-                                <label className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white rounded-lg opacity-0  cursor-pointer">
-                                    Upload Photo
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={handleImageChange}
+            <div className="bg-white border border-[#D6E2E2] rounded-lg shadow-sm p-6">
+                <div className="border border-gray-600 rounded-md p-4">
+                    <div className="space-y-6">
+                        <div className="flex">
+                            <p className="w-1/4 font-medium pt-2">Product Image</p>
+                            <div className="w-3/4">
+                                <div className="relative w-48 h-48">
+                                    <img
+                                        src={imageUrl || "https://via.placeholder.com/150"}
+                                        alt="Product"
+                                        className="w-full h-full object-cover rounded-lg border border-gray-300"
                                     />
-                                </label>
+                                    <label className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white rounded-lg opacity-0  cursor-pointer">
+                                        Upload Photo
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={handleImageChange}
+                                        />
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-center">
-                        <p className="w-1/4 font-medium">Product Name:</p>
-                        <div className="w-3/4">
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="w-full border border-[#A7C4C2]  bg-[#F5FFFF] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] focus:border-transparent outline-none"
-                            />
+                        <div className="flex items-center">
+                            <p className="w-1/4 font-medium">Product Name:</p>
+                            <div className="w-3/4">
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="w-full border border-[#A7C4C2]  bg-[#F5FFFF] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] focus:border-transparent outline-none"
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-center">
-                        <p className="w-1/4 font-medium">Product Category:</p>
-                        <div className="w-3/4">
-                            <select
-                                value={categoryId}
-                                onChange={(e) => {
-                                    setCategoryId(e.target.value);
-                                    setSubCategoryId("");
-                                }}
-                                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none "
-                            >
-                                <option value="">Select Product Category</option>
-                                {categories.map((cat) => (
-                                    <option key={cat._id} value={cat._id}>
-                                        {cat.tabName}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className="flex items-center">
+                            <p className="w-1/4 font-medium">Product Category:</p>
+                            <div className="w-3/4">
+                                <select
+                                    value={categoryId}
+                                    onChange={(e) => {
+                                        setCategoryId(e.target.value);
+                                        setSubCategoryId("");
+                                    }}
+                                    className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none "
+                                >
+                                    <option value="">Select Product Category</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat._id} value={cat._id}>
+                                            {cat.tabName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-center">
-                        <p className="w-1/4 font-medium">Product Sub-Category:</p>
-                        <div className="w-3/4">
-                            <select
-                                value={subCategoryId}
-                                onChange={(e) => setSubCategoryId(e.target.value)}
-                                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none  disabled:bg-gray-100"
-                                disabled={!categoryId || subCategories.length === 0}
-                            >
-                                <option value="">Select Product Sub-Category</option>
-                                {subCategories.map((sub) => (
-                                    <option key={sub._id} value={sub._id}>
-                                        {sub.name}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className="flex items-center">
+                            <p className="w-1/4 font-medium">Product Sub-Category:</p>
+                            <div className="w-3/4">
+                                <select
+                                    value={subCategoryId}
+                                    onChange={(e) => setSubCategoryId(e.target.value)}
+                                    className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none  disabled:bg-gray-100"
+                                    disabled={!categoryId || subCategories.length === 0}
+                                >
+                                    <option value="">Select Product Sub-Category</option>
+                                    {subCategories.map((sub) => (
+                                        <option key={sub._id} value={sub._id}>
+                                            {sub.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-center">
-                        <p className="w-1/4 font-medium">Product Price:</p>
-                        <div className="w-3/4 relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                            <input
-                                type="number"
-                                value={price}
-                                onChange={(e) => setPrice(e.target.value)}
-                                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 pl-8 focus:ring-2 bg-[#F5FFFF] focus:ring-[#007E74] focus:border-transparent outline-none"
-                            />
+                        <div className="flex items-center">
+                            <p className="w-1/4 font-medium">Product Price:</p>
+                            <div className="w-3/4 relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                                <input
+                                    type="number"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 pl-8 focus:ring-2 bg-[#F5FFFF] focus:ring-[#007E74] focus:border-transparent outline-none"
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex">
-                        <p className="w-1/4 font-medium pt-2">Product Description:</p>
-                        <div className="w-3/4">
-                            <textarea
-                                rows="4"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none"
-                            />
+                        <div className="flex">
+                            <p className="w-1/4 font-medium pt-2">Product Description:</p>
+                            <div className="w-3/4">
+                                <textarea
+                                    rows="4"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    className="w-full border border-[#A7C4C2] rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#007E74] bg-[#F5FFFF] focus:border-transparent outline-none"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -305,14 +307,14 @@ const SmallProductEdit = () => {
                 <div className="flex justify-center space-x-4 mt-8">
                     <button
                         onClick={() => navigate("/small-product")}
-                        className="bg-[#E0F2F1] text-[#007E74] border border-[#007E74] font-semibold px-12 py-1.5 rounded-lg"
+                        className="bg-[#E0F2F1] text-[#007E74] border border-[#007E74] font-semibold px-12 py-1.5 rounded-md"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleUpdate}
                         disabled={isLoading}
-                        className="bg-[#007E74] text-white font-semibold px-12 py-1.5 rounded-lg  transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="bg-[#007E74] text-white font-semibold px-12 py-1.5 rounded-md  transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                         {isLoading ? "Updating..." : "Update"}
                     </button>

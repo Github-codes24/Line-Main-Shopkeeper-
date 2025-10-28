@@ -166,238 +166,240 @@ function PaymentProcess() {
                 </div>
 
                 <div className="bg-white rounded-lg shadow-md p-6 mx-auto">
-                    <div className="flex items-center gap-3 mb-6">
-                        <span className="w-40 text-left font-bold text-[#0D2E28] text-lg">Order Number :</span>
-                        <input
-                            type="text"
-                            value={data.orderNumber}
-                            disabled
-                            className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-bold text-gray-900"
-                        />
-                    </div>
-
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Details</h3>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Customer Name :</span>
+                    <div className="border border-gray-600 rounded-md p-4 ">
+                        <div className="flex items-center gap-3 mb-6">
+                            <span className="w-40 text-left font-bold text-[#0D2E28] text-lg">Order Number :</span>
                             <input
                                 type="text"
-                                value={data.customerName}
+                                value={data.orderNumber}
                                 disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-bold text-gray-900"
                             />
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Phone Number :</span>
-                            <input
-                                type="text"
-                                value={data.phoneNumber}
-                                disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                            />
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Details</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Customer Name :</span>
+                                <input
+                                    type="text"
+                                    value={data.customerName}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Phone Number :</span>
+                                <input
+                                    type="text"
+                                    value={data.phoneNumber}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
+
+                            <div className="flex items-start gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Address :</span>
+                                <textarea
+                                    value={data.address}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium resize-none overflow-y-auto"
+                                    style={{
+                                        scrollbarWidth: "thin",
+                                        scrollbarColor: "#0D7377 #E0E9E9",
+                                    }}
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Email Id :</span>
+                                <input
+                                    type="text"
+                                    value={data.email}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Order Status :</span>
+                                <input
+                                    type="text"
+                                    value={data.orderStatus}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border text-[#FFCC00] border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
                         </div>
 
-                        <div className="flex items-start gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Address :</span>
-                            <textarea
-                                value={data.address}
-                                disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium resize-none overflow-y-auto"
-                                style={{
-                                    scrollbarWidth: "thin",
-                                    scrollbarColor: "#0D7377 #E0E9E9",
-                                }}
-                            />
+                        <hr className="my-6 border-gray-300" />
+
+                        <div className="mt-6 mb-6"></div>
+
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Quotation Details</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Worker Assigned :</span>
+                                <input
+                                    type="text"
+                                    value={data.workerAssigned}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Last Update :</span>
+                                <input
+                                    type="text"
+                                    value={data.lastUpdate}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Quotation Status :</span>
+                                <input
+                                    type="text"
+                                    value={data.quotationStatus}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Email Id :</span>
-                            <input
-                                type="text"
-                                value={data.email}
-                                disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                            />
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Order Status :</span>
-                            <input
-                                type="text"
-                                value={data.orderStatus}
-                                disabled
-                                className="w-[350px] px-4 py-1 border text-[#FFCC00] border-teal-600 rounded-md bg-gray-100 font-medium"
-                            />
-                        </div>
-                    </div>
-
-                    <hr className="my-6 border-gray-300" />
-
-                    <div className="mt-6 mb-6"></div>
-
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Quotation Details</h3>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Worker Assigned :</span>
-                            <input
-                                type="text"
-                                value={data.workerAssigned}
-                                disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                            />
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Last Update :</span>
-                            <input
-                                type="text"
-                                value={data.lastUpdate}
-                                disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                            />
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Quotation Status :</span>
-                            <input
-                                type="text"
-                                value={data.quotationStatus}
-                                disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-4"></div>
-                    <div style={{display: "inline-block"}}>
-                        <table className="border-collapse" style={{borderColor: "#01050bff"}}>
-                            <thead>
-                                <tr>
-                                    <th
-                                        className="border text-left px-4 py-3"
-                                        style={{
-                                            borderColor: "#020b18ff",
-                                            fontSize: "15px",
-                                            fontWeight: "600",
-                                            color: "#374151",
-                                        }}
-                                    >
-                                        Product Name
-                                    </th>
-                                    <th
-                                        className="border text-left px-4 py-3"
-                                        style={{
-                                            borderColor: "#01070fff",
-                                            fontSize: "15px",
-                                            fontWeight: "600",
-                                            color: "#374151",
-                                        }}
-                                    >
-                                        Details
-                                    </th>
-                                    <th
-                                        className="border text-left px-4 py-3"
-                                        style={{
-                                            borderColor: "#020a16ff",
-                                            fontSize: "15px",
-                                            fontWeight: "600",
-                                            color: "#374151",
-                                        }}
-                                    >
-                                        Qty
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {products && products.length > 0 ? (
-                                    products.map((product, index) => (
-                                        <tr key={index} style={{backgroundColor: "#FFFFFF"}}>
-                                            <td
-                                                className="border px-4 py-3"
-                                                style={{
-                                                    borderColor: "#000812ff",
-                                                    fontSize: "14px",
-                                                    color: "#374151",
-                                                    fontWeight: "500",
-                                                }}
-                                            >
-                                                {product.name}
-                                            </td>
-                                            <td
-                                                className="border px-4 py-3"
-                                                style={{
-                                                    borderColor: "#00040aff",
-                                                    fontSize: "14px",
-                                                    color: "#374151",
-                                                    fontWeight: "500",
-                                                }}
-                                            >
-                                                {product.details}
-                                            </td>
-                                            <td
-                                                className="border px-4 py-3"
-                                                style={{
-                                                    borderColor: "#010a17ff",
-                                                    fontSize: "14px",
-                                                    color: "#374151",
-                                                    fontWeight: "500",
-                                                }}
-                                            >
-                                                {product.qty}
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
+                        <div className="flex items-center gap-3 mb-4"></div>
+                        <div style={{display: "inline-block"}}>
+                            <table className="border-collapse" style={{borderColor: "#01050bff"}}>
+                                <thead>
                                     <tr>
-                                        <td
-                                            colSpan="3"
-                                            className="border px-4 py-3 text-center"
+                                        <th
+                                            className="border text-left px-4 py-3"
                                             style={{
-                                                borderColor: "#01050bff",
-                                                fontSize: "14px",
-                                                color: "#9CA3AF",
+                                                borderColor: "#020b18ff",
+                                                fontSize: "15px",
+                                                fontWeight: "600",
+                                                color: "#374151",
                                             }}
                                         >
-                                            No products available
-                                        </td>
+                                            Product Name
+                                        </th>
+                                        <th
+                                            className="border text-left px-4 py-3"
+                                            style={{
+                                                borderColor: "#01070fff",
+                                                fontSize: "15px",
+                                                fontWeight: "600",
+                                                color: "#374151",
+                                            }}
+                                        >
+                                            Details
+                                        </th>
+                                        <th
+                                            className="border text-left px-4 py-3"
+                                            style={{
+                                                borderColor: "#020a16ff",
+                                                fontSize: "15px",
+                                                fontWeight: "600",
+                                                color: "#374151",
+                                            }}
+                                        >
+                                            Qty
+                                        </th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                    <hr className="my-6 border-gray-300" />
-
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Details</h3>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Total Bill :</span>
-                            <input
-                                type="text"
-                                value={data.totalBill}
-                                disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                            />
+                                </thead>
+                                <tbody>
+                                    {products && products.length > 0 ? (
+                                        products.map((product, index) => (
+                                            <tr key={index} style={{backgroundColor: "#FFFFFF"}}>
+                                                <td
+                                                    className="border px-4 py-3"
+                                                    style={{
+                                                        borderColor: "#000812ff",
+                                                        fontSize: "14px",
+                                                        color: "#374151",
+                                                        fontWeight: "500",
+                                                    }}
+                                                >
+                                                    {product.name}
+                                                </td>
+                                                <td
+                                                    className="border px-4 py-3"
+                                                    style={{
+                                                        borderColor: "#00040aff",
+                                                        fontSize: "14px",
+                                                        color: "#374151",
+                                                        fontWeight: "500",
+                                                    }}
+                                                >
+                                                    {product.details}
+                                                </td>
+                                                <td
+                                                    className="border px-4 py-3"
+                                                    style={{
+                                                        borderColor: "#010a17ff",
+                                                        fontSize: "14px",
+                                                        color: "#374151",
+                                                        fontWeight: "500",
+                                                    }}
+                                                >
+                                                    {product.qty}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td
+                                                colSpan="3"
+                                                className="border px-4 py-3 text-center"
+                                                style={{
+                                                    borderColor: "#01050bff",
+                                                    fontSize: "14px",
+                                                    color: "#9CA3AF",
+                                                }}
+                                            >
+                                                No products available
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
+                        <hr className="my-6 border-gray-300" />
 
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Payment Method :</span>
-                            <input
-                                type="text"
-                                value={data.paymentMethod}
-                                disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                            />
-                        </div>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Details</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Total Bill :</span>
+                                <input
+                                    type="text"
+                                    value={data.totalBill}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
 
-                        <div className="flex items-center gap-3">
-                            <span className="w-40 text-left font-medium text-gray-700">Payment Status :</span>
-                            <input
-                                type="text"
-                                value={data.paymentStatus}
-                                disabled
-                                className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
-                            />
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Payment Method :</span>
+                                <input
+                                    type="text"
+                                    value={data.paymentMethod}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <span className="w-40 text-left font-medium text-gray-700">Payment Status :</span>
+                                <input
+                                    type="text"
+                                    value={data.paymentStatus}
+                                    disabled
+                                    className="w-[350px] px-4 py-1 border border-teal-600 rounded-md bg-gray-100 font-medium"
+                                />
+                            </div>
                         </div>
                     </div>
 

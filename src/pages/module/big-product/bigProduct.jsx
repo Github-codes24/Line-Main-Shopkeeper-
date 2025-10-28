@@ -279,7 +279,7 @@ const BigProduct = () => {
                                         <th className="px-4 py-3 font-medium text-center">Category</th>
                                         <th className="px-4 py-3 font-medium text-center">Sub-Category</th>
                                         <th className="px-4 py-3 font-medium text-center">Price</th>
-                                        <th className="px-4 py-3 font-medium text-center">Status</th>
+                                        <th className="px-4 py-3 font-medium text-center">Approval Status</th>
                                         <th className="px-4 py-3 font-medium text-center">Action</th>
                                     </tr>
                                 </thead>

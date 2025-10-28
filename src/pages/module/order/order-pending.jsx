@@ -142,7 +142,7 @@ const OrderPending = () => {
 
     return (
         <div className="h-screen bg-gray-100 p-4 ">
-            <div className="bg-white shadow-sm rounded-lg px-4 py-3 flex items-center space-x-4">
+            <div className="bg-white shadow-sm rounded-md px-4 py-3 flex items-center space-x-4">
                 <IoArrowBackCircleOutline
                     className=" text-[#0D2E28] cursor-pointer hover:text-[#007E74] transition"
                     style={{fontSize: "32px"}}
@@ -164,156 +164,175 @@ const OrderPending = () => {
                     <CircularProgress />
                 </div>
             ) : (
-                <div className="bg-white shadow rounded-lg p-6 mt-5 flex flex-col h-auto ">
-                    <div className="overflow-y-auto flex-1 space-y-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                        <LabelInput label="Order Number" value={getOrderById?.data?.orderId || "-"} />
-                        <h3 className="font-bold text-lg mb-3 text-gray-800">Customer Details</h3>
-                        <LabelInput label="Customer Name" value={getOrderById?.data?.customer?.name || "-"} />
-                        <LabelInput label="Contact" value={getOrderById?.data?.customer?.contact || "-"} />
-                        <LabelInput label="Address" value={getOrderById?.data?.deliveryAddress?.fullAddress || "-"} />
-
-                        <div className="flex items-center mb-2">
-                            <label className="font-medium w-40 text-gray-700">Order Status</label>
-                            <span className="font-medium mr-2">:</span>
-                            <input
-                                className="border border-[#007E74] bg-[#E0E9E9] px-3 py-1 rounded-lg w-80 font-semibold"
-                                style={{
-                                    color:
-                                        getOrderById?.data?.orderStatus === "Pending"
-                                            ? "#FFCC00"
-                                            : getOrderById?.data?.orderStatus === "WorkInProgress"
-                                            ? "#0088FF"
-                                            : getOrderById?.data?.orderStatus === "Rejected"
-                                            ? "#EC2D01"
-                                            : getOrderById?.data?.orderStatus === "Completed"
-                                            ? "#34C759"
-                                            : "black",
-                                }}
-                                readOnly
-                                value={
-                                    getOrderById?.data?.orderStatus === "Pending"
-                                        ? "Pending"
-                                        : getOrderById?.data?.orderStatus === "WorkInProgress"
-                                        ? "Work In Progress"
-                                        : getOrderById?.data?.orderStatus === "Rejected"
-                                        ? "Rejected"
-                                        : getOrderById?.data?.orderStatus === "Completed"
-                                        ? "Completed"
-                                        : "Unwanted Status"
-                                }
+                <div className="bg-white shadow rounded-md p-6 mt-5 flex flex-col h-auto">
+                    <div className="border border-gray-600 rounded-md p-4">
+                        <div className="overflow-y-auto flex-1 space-y-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                            <LabelInput label="Order Number" value={getOrderById?.data?.orderId || "-"} />
+                            <h3 className="font-bold text-lg mb-3 text-gray-800">Customer Details</h3>
+                            <LabelInput label="Customer Name" value={getOrderById?.data?.customer?.name || "-"} />
+                            <LabelInput label="Contact" value={getOrderById?.data?.customer?.contact || "-"} />
+                            <LabelInput
+                                label="Address"
+                                value={getOrderById?.data?.deliveryAddress?.fullAddress || "-"}
                             />
-                        </div>
 
-                        <h3 className="font-bold text-lg mb-3 text-gray-800">Service Details</h3>
-                        <LabelInput label="Service Required" value={getOrderById?.data?.specificServiceName || "-"} />
-                        <LabelInput
-                            label="Date"
-                            value={
-                                getOrderById?.data?.serviceDate
-                                    ? new Date(getOrderById.data.serviceDate).toLocaleString("en-IN", {
-                                          year: "numeric",
-                                          month: "long",
-                                          day: "numeric",
-                                      })
-                                    : "-"
-                            }
-                        />
-                        {getOrderById?.data?.initialRequestImages && (
-                            <div className="flex items-center mb-4">
-                                <label className="font-medium w-40 text-gray-700">Photos</label>
+                            <div className="flex items-center mb-2">
+                                <label className="font-medium w-40 text-gray-700">Order Status</label>
                                 <span className="font-medium mr-2">:</span>
-                                <img
-                                    src={getOrderById?.data?.initialRequestImages}
-                                    alt="service"
-                                    className="w-32 h-32 object-cover border rounded shadow-sm"
-                                />
-                            </div>
-                        )}
-
-                        <div className="overflow-x-auto mt-4 rounded-lg border border-gray-200 shadow-sm">
-                            <h4 className="font-medium mb-2 text-gray-700 p-2 bg-gray-100 rounded-t-lg">
-                                Product List
-                            </h4>
-                            <table className="min-w-full text-sm divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-3 py-2 text-left font-medium text-gray-600">#</th>
-                                        <th className="px-3 py-2 text-left font-medium text-gray-600">Product</th>
-                                        <th className="px-3 py-2 text-right font-medium text-gray-600">Price</th>
-                                        <th className="px-3 py-2 text-right font-medium text-gray-600">Qty</th>
-                                        <th className="px-3 py-2 text-right font-medium text-gray-600">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {(getOrderById?.data?.products || []).map((item, index) => {
-                                        const price = Number(item?.priceAtPurchase) || 0;
-                                        const quantity = Number(item?.quantity) || 0;
-                                        const name = item?.productName || "-";
-                                        return (
-                                            <tr key={index} className="hover:bg-gray-50 transition">
-                                                <td className="px-3 py-2">{index + 1}</td>
-                                                <td className="px-3 py-2">{name}</td>
-                                                <td className="px-3 py-2 text-right">{price.toLocaleString()}</td>
-                                                <td className="px-3 py-2 text-right">{quantity.toLocaleString()}</td>
-                                                <td className="px-3 py-2 text-right">
-                                                    {(price * quantity).toLocaleString()}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                                <tfoot>
-                                    <tr className="font-semibold bg-gray-50">
-                                        <td colSpan="4" className="px-3 py-2 text-right">
-                                            Final Amount
-                                        </td>
-                                        <td className="px-3 py-2 text-right">
-                                            {(Number(getOrderById?.data?.totalProductCost) || 0).toLocaleString()}
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-
-                        {["WorkInProgress", "Completed"].includes(getOrderById?.data?.orderStatus) && (
-                            <div>
-                                <h3 className="font-bold text-lg mb-3 text-gray-800">Work Details</h3>
-                                <LabelInput label="Worker Assigned" value={getOrderById?.data?.worker?.name || "-"} />
-                                <LabelInput
-                                    label="Last Update"
+                                <input
+                                    className="border border-[#007E74] bg-[#E0E9E9] px-3 py-1 rounded-lg w-80 font-semibold"
+                                    style={{
+                                        color:
+                                            getOrderById?.data?.orderStatus === "Pending"
+                                                ? "#FFCC00"
+                                                : getOrderById?.data?.orderStatus === "WorkInProgress"
+                                                ? "#0088FF"
+                                                : getOrderById?.data?.orderStatus === "Rejected"
+                                                ? "#EC2D01"
+                                                : getOrderById?.data?.orderStatus === "Completed"
+                                                ? "#34C759"
+                                                : "black",
+                                    }}
+                                    readOnly
                                     value={
-                                        getOrderById?.data?.updatedAt
-                                            ? new Date(getOrderById.data.updatedAt).toLocaleString("en-IN", {
-                                                  year: "numeric",
-                                                  month: "long",
-                                                  day: "numeric",
-                                              })
-                                            : "-"
+                                        getOrderById?.data?.orderStatus === "Pending"
+                                            ? "Pending"
+                                            : getOrderById?.data?.orderStatus === "WorkInProgress"
+                                            ? "Work In Progress"
+                                            : getOrderById?.data?.orderStatus === "Rejected"
+                                            ? "Rejected"
+                                            : getOrderById?.data?.orderStatus === "Completed"
+                                            ? "Completed"
+                                            : "Unwanted Status"
                                     }
                                 />
-                                {getOrderById?.data?.paymentMethod === "COD" && (
-                                    <LabelInput
-                                        label="Quotation Status"
-                                        value={getOrderById?.data?.updatedAt ? "Pending" : "-"}
-                                    />
-                                )}
-
-                                <h3 className="font-bold text-lg mb-3 text-gray-800 mt-4">Payment Details</h3>
-                                <LabelInput label="Total Bill" value={getOrderById?.data?.finalAmount || "-"} />
-                                <LabelInput label="Payment Method" value={getOrderById?.data?.paymentMethod || "-"} />
-                                {getOrderById?.data?.paymentMethod !== "COD" && (
-                                    <LabelInput
-                                        label="Transaction Id"
-                                        value={getOrderById?.paymentObj?.orderId || "-"}
-                                    />
-                                )}
-                                <LabelInput label="Payment Status" value={getOrderById?.data?.paymentStatus || "-"} />
-                                <LabelInput
-                                    label="Customer Feedback"
-                                    value={getOrderById?.data?.workDoneConformationByCustomer || "-"}
-                                />
                             </div>
-                        )}
+
+                            <h3 className="font-bold text-lg mb-3 text-gray-800">Service Details</h3>
+                            <LabelInput
+                                label="Service Required"
+                                value={getOrderById?.data?.specificServiceName || "-"}
+                            />
+                            <LabelInput
+                                label="Date"
+                                value={
+                                    getOrderById?.data?.serviceDate
+                                        ? new Date(getOrderById.data.serviceDate).toLocaleString("en-IN", {
+                                              year: "numeric",
+                                              month: "long",
+                                              day: "numeric",
+                                          })
+                                        : "-"
+                                }
+                            />
+                            {getOrderById?.data?.initialRequestImages && (
+                                <div className="flex items-center mb-4">
+                                    <label className="font-medium w-40 text-gray-700">Photos</label>
+                                    <span className="font-medium mr-2">:</span>
+                                    <img
+                                        src={getOrderById?.data?.initialRequestImages}
+                                        alt="service"
+                                        className="w-32 h-32 object-cover border rounded shadow-sm"
+                                    />
+                                </div>
+                            )}
+
+                            <div className="overflow-x-auto mt-4 rounded-lg border border-gray-200 shadow-sm">
+                                <h4 className="font-medium mb-2 text-gray-700 p-2 bg-gray-100 rounded-t-lg">
+                                    Product List
+                                </h4>
+                                <table className="min-w-full text-sm divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-3 py-2 text-left font-medium text-gray-600">#</th>
+                                            <th className="px-3 py-2 text-left font-medium text-gray-600">Product</th>
+                                            <th className="px-3 py-2 text-right font-medium text-gray-600">Price</th>
+                                            <th className="px-3 py-2 text-right font-medium text-gray-600">Qty</th>
+                                            <th className="px-3 py-2 text-right font-medium text-gray-600">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {(getOrderById?.data?.products || []).map((item, index) => {
+                                            const price = Number(item?.priceAtPurchase) || 0;
+                                            const quantity = Number(item?.quantity) || 0;
+                                            const name = item?.productName || "-";
+                                            return (
+                                                <tr key={index} className="hover:bg-gray-50 transition">
+                                                    <td className="px-3 py-2">{index + 1}</td>
+                                                    <td className="px-3 py-2">{name}</td>
+                                                    <td className="px-3 py-2 text-right">{price.toLocaleString()}</td>
+                                                    <td className="px-3 py-2 text-right">
+                                                        {quantity.toLocaleString()}
+                                                    </td>
+                                                    <td className="px-3 py-2 text-right">
+                                                        {(price * quantity).toLocaleString()}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr className="font-semibold bg-gray-50">
+                                            <td colSpan="4" className="px-3 py-2 text-right">
+                                                Final Amount
+                                            </td>
+                                            <td className="px-3 py-2 text-right">
+                                                {(Number(getOrderById?.data?.totalProductCost) || 0).toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            {["WorkInProgress", "Completed"].includes(getOrderById?.data?.orderStatus) && (
+                                <div>
+                                    <h3 className="font-bold text-lg mb-3 text-gray-800">Work Details</h3>
+                                    <LabelInput
+                                        label="Worker Assigned"
+                                        value={getOrderById?.data?.worker?.name || "-"}
+                                    />
+                                    <LabelInput
+                                        label="Last Update"
+                                        value={
+                                            getOrderById?.data?.updatedAt
+                                                ? new Date(getOrderById.data.updatedAt).toLocaleString("en-IN", {
+                                                      year: "numeric",
+                                                      month: "long",
+                                                      day: "numeric",
+                                                  })
+                                                : "-"
+                                        }
+                                    />
+                                    {getOrderById?.data?.paymentMethod === "COD" && (
+                                        <LabelInput
+                                            label="Quotation Status"
+                                            value={getOrderById?.data?.updatedAt ? "Pending" : "-"}
+                                        />
+                                    )}
+
+                                    <h3 className="font-bold text-lg mb-3 text-gray-800 mt-4">Payment Details</h3>
+                                    <LabelInput label="Total Bill" value={getOrderById?.data?.finalAmount || "-"} />
+                                    <LabelInput
+                                        label="Payment Method"
+                                        value={getOrderById?.data?.paymentMethod || "-"}
+                                    />
+                                    {getOrderById?.data?.paymentMethod !== "COD" && (
+                                        <LabelInput
+                                            label="Transaction Id"
+                                            value={getOrderById?.paymentObj?.orderId || "-"}
+                                        />
+                                    )}
+                                    <LabelInput
+                                        label="Payment Status"
+                                        value={getOrderById?.data?.paymentStatus || "-"}
+                                    />
+                                    <LabelInput
+                                        label="Customer Feedback"
+                                        value={getOrderById?.data?.workDoneConformationByCustomer || "-"}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex flex-col md:flex-row justify-center space-y-3 md:space-y-0 md:space-x-5 mt-6">

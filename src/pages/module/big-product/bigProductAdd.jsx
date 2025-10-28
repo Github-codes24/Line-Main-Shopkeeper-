@@ -220,7 +220,7 @@ const AddBigProduct = () => {
                         <div className="space-y-4">
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                    Product Name
+                                    Product Name:
                                 </label>
                                 <div className="w-full">
                                     <input
@@ -237,7 +237,7 @@ const AddBigProduct = () => {
 
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                    Product Category
+                                    Product Category:
                                 </label>
                                 <div className="w-full">
                                     <select
@@ -260,7 +260,7 @@ const AddBigProduct = () => {
                             {subCategories.length > 0 && (
                                 <div className="flex items-start gap-4">
                                     <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                        Product Sub-Category
+                                        Product Sub-Category:
                                     </label>
                                     <div className="w-full">
                                         <select
@@ -283,7 +283,7 @@ const AddBigProduct = () => {
 
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                    Product Price
+                                    Product Price:
                                 </label>
                                 <div className="w-full">
                                     <input
@@ -300,7 +300,7 @@ const AddBigProduct = () => {
 
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                    Product Description
+                                    Product Description:
                                 </label>
                                 <div className="w-full">
                                     <textarea
@@ -321,7 +321,7 @@ const AddBigProduct = () => {
                         <button
                             type="button"
                             onClick={handleBack}
-                            className="w-[200px] bg-[#E6F2F1] text-[#007E74] border border-[#007E74] font-medium px-10 py-2 rounded-lg "
+                            className="w-[200px] bg-[#E6F2F1] text-[#007E74] border border-[#007E74] font-medium px-10 py-2 rounded-md "
                             disabled={loading}
                         >
                             Cancel
@@ -329,7 +329,7 @@ const AddBigProduct = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-[200px] font-medium px-10 py-2 rounded-lg bg-[#007E74] text-white  transition-colors disabled:bg-gray-400"
+                            className="w-[200px] font-medium px-10 py-2 rounded-md bg-[#007E74] text-white  transition-colors disabled:bg-gray-400"
                         >
                             {loading ? "Adding..." : "Add Product"}
                         </button>

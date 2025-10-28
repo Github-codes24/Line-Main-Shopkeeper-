@@ -14,7 +14,14 @@ const SmallProduct = () => {
     const navigate = useNavigate();
     const [fetchData] = useFetch();
 
-    const categoryOptions = ["Electrician", "Painter", "Carpenter", "AC Repair", "Tile Fitting", "Plumber"];
+    const categoryOptions = [
+        "Electrician",
+        "Painter",
+        "Carpenter",
+        "AC / Refrigerator Repair",
+        "Tile Fitting",
+        "Plumbing",
+    ];
 
     const [products, setProducts] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
@@ -251,7 +258,7 @@ const SmallProduct = () => {
                             </div>
                         ) : (
                             <table
-                                className="hidden sm:table w-full text-left rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden"
+                                className="hidden sm:table w-full text-center align-middle rounded-md shadow-lg border border-[#616666] border-separate overflow-hidden"
                                 style={{borderSpacing: 0}}
                             >
                                 <thead className="bg-[#e0e9e9] text-sm md:text-base">

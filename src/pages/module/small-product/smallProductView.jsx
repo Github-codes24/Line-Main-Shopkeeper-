@@ -116,56 +116,58 @@ const SmallProductView = () => {
             </div>
 
             <div className="flex flex-col border rounded-md p-6 space-y-5 shadow-lg m-2 bg-white">
-                <div className="flex items-start p-2 rounded-lg">
-                    <p className="w-1/3 font-medium">Product Image</p>
-                    <div className="w-full">
-                        <img
-                            src={product.productImageUrl || "https://via.placeholder.com/300?text=No+Image"}
-                            alt={product.productName}
-                            className="max-w-xs rounded-lg border border-black"
-                        />
-                    </div>
-                </div>
-
-                <div className="space-y-4">
-                    <div className="flex items-center pt-3">
-                        <p className="w-1/3 block mb-1">Product Name:</p>
-                        <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] rounded-lg p-2.5">
-                            {product.productName || "N/A"}
+                <div className="border border-gray-600 rounded-md p-4">
+                    <div className="flex items-start p-2 rounded-lg">
+                        <p className="w-1/3 font-medium">Product Image</p>
+                        <div className="w-full">
+                            <img
+                                src={product.productImageUrl || "https://via.placeholder.com/300?text=No+Image"}
+                                alt={product.productName}
+                                className="max-w-xs rounded-lg border border-black"
+                            />
                         </div>
                     </div>
 
-                    <div className="flex items-center">
-                        <label className="w-1/3 block mb-1">Product Category:</label>
-                        <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] rounded-lg p-2.5">
-                            {product.productCategory?.tabName || "N/A"}
+                    <div className="space-y-4">
+                        <div className="flex items-center pt-3">
+                            <p className="w-1/3 block mb-1">Product Name:</p>
+                            <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] rounded-lg p-2.5">
+                                {product.productName || "N/A"}
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-center">
-                        <label className="w-1/3 block mb-1">Product Sub-Category:</label>
-                        <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] rounded-lg p-2.5">
-                            {product.productSubCategory?.name || "N/A"}
+                        <div className="flex items-center">
+                            <label className="w-1/3 block mb-1">Product Category:</label>
+                            <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] rounded-lg p-2.5">
+                                {product.productCategory?.tabName || "N/A"}
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-center">
-                        <label className="w-1/3 block mb-1">Product Price:</label>
-                        <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] rounded-lg p-2.5">
-                            ₹{product.productPrice || "0"}
+                        <div className="flex items-center">
+                            <label className="w-1/3 block mb-1">Product Sub-Category:</label>
+                            <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] rounded-lg p-2.5">
+                                {product.productSubCategory?.name || "N/A"}
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-center">
-                        <label className="w-1/3 block mb-1">Product Description:</label>
-                        <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] p-2.5 rounded-lg min-h-[80px]">
-                            {product.productDescription || "No description available for this product."}
+                        <div className="flex items-center">
+                            <label className="w-1/3 block mb-1">Product Price:</label>
+                            <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] rounded-lg p-2.5">
+                                ₹{product.productPrice || "0"}
+                            </div>
+                        </div>
+
+                        <div className="flex items-center">
+                            <label className="w-1/3 block mb-1">Product Description:</label>
+                            <div className="w-full border-1 border-[#007E74] bg-[#E0E9E9] p-2.5 rounded-lg min-h-[80px]">
+                                {product.productDescription || "No description available for this product."}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex justify-center space-x-3 pt-4">
-                    <button onClick={handleEdit} className="bg-teal-700 text-white px-16 py-1.5 rounded-lg ">
+                    <button onClick={handleEdit} className="bg-teal-700 text-white px-16 py-1.5 rounded-md ">
                         Edit
                     </button>
                 </div>
