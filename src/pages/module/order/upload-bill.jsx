@@ -105,60 +105,62 @@ const UploadBill = () => {
             </div>
 
             <div className="bg-white p-3 rounded-lg shadow-sm mt-3 min-h-screen">
-                <div className="mb-6 rounded-md px-10 py-8">
-                    <div className="flex items-center mb-3">
-                        <label className="w-40 font-bold text-[#000000] text-lg">Upload Bill</label>
-                        <span className="font-medium mr-4">:</span>
-                        <div className="w-80 border border-[#19A699] rounded-md px-3 py-2 bg-[#F5FFFF]">
-                            <input
-                                type="file"
-                                id="bill"
-                                onChange={handleFileChange}
-                                className="block w-full text-sm text-[#0D2E28] file:mr-4 file:py-1 file:px-4
+                <div className="border border-gray-600 rounded-md p-4 min-h-screen">
+                    <div className="mb-6 rounded-md px-10 py-8">
+                        <div className="flex items-center mb-3">
+                            <label className="w-40 font-semibold text-[#000000] text-lg">Upload Bill</label>
+                            <span className="font-medium mr-4">:</span>
+                            <div className="w-80 border border-[#19A699] rounded-md px-3 py-2 bg-[#F5FFFF]">
+                                <input
+                                    type="file"
+                                    id="bill"
+                                    onChange={handleFileChange}
+                                    className="block w-full text-sm text-[#0D2E28] file:mr-4 file:py-1 file:px-4
                   file:rounded-md file:border-0 file:text-sm file:font-semibold
                   file:bg-[#007E74] file:text-white"
-                            />
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-start relative">
-                        <label className="w-40 font-bold text-[#000000] text-lg mt-2">Add Products</label>
-                        <span className="font-medium mr-4 mt-2">:</span>
-                        <div className="w-80 relative">
-                            <button
-                                onClick={toggleDropdown}
-                                className="w-full border border-[#19A699] rounded-md px-3 py-2 text-left text-[#0D2E28] bg-[#F5FFFF]"
-                            >
-                                {selectedProducts.length > 0 ? selectedNames : "Select Products"}
-                            </button>
+                        <div className="flex items-start relative">
+                            <label className="w-40 font-semibold text-[#000000] text-lg mt-2">Add Products</label>
+                            <span className="font-medium mr-4 mt-2">:</span>
+                            <div className="w-80 relative">
+                                <button
+                                    onClick={toggleDropdown}
+                                    className="w-full border border-[#19A699] rounded-md px-3 py-2 text-left text-[#0D2E28] bg-[#F5FFFF]"
+                                >
+                                    {selectedProducts.length > 0 ? selectedNames : "Select Products"}
+                                </button>
 
-                            {dropdownOpen && (
-                                <div className="absolute z-10 mt-1 w-full max-h-96 overflow-y-auto border border-[#19A699] bg-[#F2FFFE] shadow-sm scrollbar-hide rounded-md">
-                                    {getOrderById?.data?.products?.length > 0 ? (
-                                        getOrderById.data.products.map((item, index) => (
-                                            <div
-                                                key={item.productId}
-                                                className="flex items-center justify-between px-3 py-2 border-b border-gray-300"
-                                            >
-                                                <div className="flex items-center space-x-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedProducts.includes(item.productId)}
-                                                        onChange={() => handleProductSelect(item.productId)}
-                                                        className="accent-[#007E74] w-4 h-4"
-                                                    />
-                                                    <span className="text-[#1D4864] text-sm font-medium">
-                                                        {item.productName}
-                                                    </span>
+                                {dropdownOpen && (
+                                    <div className="absolute z-10 mt-1 w-full max-h-96 overflow-y-auto border border-[#19A699] bg-[#F2FFFE] shadow-sm scrollbar-hide rounded-md">
+                                        {getOrderById?.data?.products?.length > 0 ? (
+                                            getOrderById.data.products.map((item, index) => (
+                                                <div
+                                                    key={item.productId}
+                                                    className="flex items-center justify-between px-3 py-2 border-b border-gray-300"
+                                                >
+                                                    <div className="flex items-center space-x-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedProducts.includes(item.productId)}
+                                                            onChange={() => handleProductSelect(item.productId)}
+                                                            className="accent-[#007E74] w-4 h-4"
+                                                        />
+                                                        <span className="text-[#1D4864] text-sm font-medium">
+                                                            {item.productName}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-sm text-[#555]">Qty: {item.quantity}</span>
                                                 </div>
-                                                <span className="text-sm text-[#555]">Qty: {item.quantity}</span>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="px-3 py-2 text-gray-500">No Products Found</p>
-                                    )}
-                                </div>
-                            )}
+                                            ))
+                                        ) : (
+                                            <p className="px-3 py-2 text-gray-500">No Products Found</p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

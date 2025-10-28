@@ -8,6 +8,7 @@ import {TbFilter} from "react-icons/tb";
 import {FaPlus} from "react-icons/fa6";
 import conf from "../../../config";
 import useFetch from "../../../hook/useFetch";
+import {IconButton} from "@mui/material";
 
 const Worker = () => {
     const navigate = useNavigate();
@@ -178,8 +179,8 @@ const Worker = () => {
                         Worker List
                     </h1>
 
-                    <div className="flex justify-center w-full md:w-auto mt-3 md:mt-0">
-                        <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[300px] bg-gray-200">
+                    <div className="flex justify-center items-center flex-1 mt-3 md:mt-0">
+                        <div className="flex items-center border border-teal-600 rounded-full px-3 py-1 w-full sm:w-[350px] bg-gray-200 mx-auto">
                             <Search className="text-teal-600 mr-2" size={18} />
                             <input
                                 type="text"
@@ -303,30 +304,36 @@ const Worker = () => {
                                             </td>
 
                                             <td className="px-4 py-3 font-normal">
-                                                <div className="flex items-center gap-3 text-gray-700 text-center">
-                                                    <Eye
-                                                        onClick={() =>
-                                                            navigate(`/worker/worker-view/${worker.id}`, {
-                                                                state: worker,
-                                                            })
-                                                        }
-                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] "
-                                                        title="View Worker"
-                                                    />
-                                                    <FiEdit
-                                                        onClick={() =>
-                                                            navigate(`/worker/worker-edit/${worker.id}`, {
-                                                                state: worker,
-                                                            })
-                                                        }
-                                                        className="w-5 h-5 cursor-pointer text-[#06A77D] "
-                                                        title="Edit Worker"
-                                                    />
-                                                    <Trash2
-                                                        onClick={() => handleDeleteWorker(worker.id, worker.name)}
-                                                        className="w-5 h-5 cursor-pointer text-[#06A77D]"
-                                                        title="Delete Worker"
-                                                    />
+                                                <div className="flex items-center gap-1 text-gray-700 text-center">
+                                                    <IconButton>
+                                                        <Eye
+                                                            onClick={() =>
+                                                                navigate(`/worker/worker-view/${worker.id}`, {
+                                                                    state: worker,
+                                                                })
+                                                            }
+                                                            className="w-5 h-5 cursor-pointer text-[#06A77D] "
+                                                            title="View Worker"
+                                                        />
+                                                    </IconButton>
+                                                    <IconButton>
+                                                        <FiEdit
+                                                            onClick={() =>
+                                                                navigate(`/worker/worker-edit/${worker.id}`, {
+                                                                    state: worker,
+                                                                })
+                                                            }
+                                                            className="w-5 h-5 cursor-pointer text-[#06A77D] "
+                                                            title="Edit Worker"
+                                                        />
+                                                    </IconButton>
+                                                    <IconButton>
+                                                        <Trash2
+                                                            onClick={() => handleDeleteWorker(worker.id, worker.name)}
+                                                            className="w-5 h-5 cursor-pointer text-[#06A77D]"
+                                                            title="Delete Worker"
+                                                        />
+                                                    </IconButton>
                                                 </div>
                                             </td>
                                         </tr>

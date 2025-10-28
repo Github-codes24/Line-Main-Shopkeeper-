@@ -1,6 +1,5 @@
 import React from "react";
 import {useNavigate, useParams, useLocation} from "react-router-dom";
-import {FaArrowLeft} from "react-icons/fa";
 
 const workers = [
     {
@@ -65,21 +64,24 @@ const WorkerView = () => {
             </div>
 
             <div className="bg-white border rounded-md p-6 shadow-md min-h-screen flex flex-col">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">Personal Details</h3>
+                <div className="border border-gray-400 rounded-md bg-white p-6 min-h-screen">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4 border-bpb-2">Personal Details</h3>
 
-                <div className="space-y-4">
-                    <DetailRow label="Name" value={worker.name} />
-                    <DetailRow label="Expertise" value={worker.expertise} />
-                    <DetailRow label="Phone Number" value={worker.phone} />
-                    <DetailRow label="Address" value={worker.address} />
+                    <div className="space-y-4">
+                        <DetailRow label="Name" value={worker.name} />
+                        <DetailRow label="Expertise" value={worker.expertise} />
+                        <DetailRow label="Phone Number" value={worker.phone} />
+                        <DetailRow label="Address" value={worker.address} />
+                        {/* <DetailRow label="Email Id" value={worker.email} /> */}
+                    </div>
+
+                    <div className="border-b border-gray-300 mt-6"></div>
                 </div>
 
-                <hr className="my-6 border-gray-300" />
-
-                <div className="flex justify-center mt-auto">
+                <div className="flex justify-center mt-6">
                     <button
                         onClick={() => navigate(`/worker/worker-edit/${id}`, {state: worker})}
-                        className="px-16 py-2 bg-teal-700 text-white rounded "
+                        className="px-16 py-2 bg-teal-700 text-white rounded"
                     >
                         Edit
                     </button>
@@ -91,7 +93,10 @@ const WorkerView = () => {
 
 const DetailRow = ({label, value}) => (
     <div className="flex items-center">
-        <label className="w-48 font-medium text-gray-700">{label} :</label>
+        <div className="w-56 flex justify-between pr-4">
+            <label className="font-medium text-gray-700">{label}</label>
+            <span>:</span>
+        </div>
         <input
             type="text"
             value={value}

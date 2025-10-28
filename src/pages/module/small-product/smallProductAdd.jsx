@@ -201,7 +201,7 @@ const SmallProductAdd = () => {
                         <div className="space-y-4">
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                    Product Name
+                                    Product Name:
                                 </label>
                                 <div className="w-full">
                                     <input
@@ -216,7 +216,7 @@ const SmallProductAdd = () => {
 
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                    Product Category
+                                    Product Category:
                                 </label>
                                 <div className="w-full">
                                     <select
@@ -240,7 +240,7 @@ const SmallProductAdd = () => {
                             {subCategories.length > 0 && (
                                 <div className="flex items-start gap-4">
                                     <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                        Product Sub-Category
+                                        Product Sub-Category:
                                     </label>
                                     <div className="w-full">
                                         <select
@@ -261,7 +261,7 @@ const SmallProductAdd = () => {
 
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                    Product Price
+                                    Product Price:
                                 </label>
                                 <div className="w-full">
                                     <input
@@ -276,7 +276,7 @@ const SmallProductAdd = () => {
 
                             <div className="flex items-start gap-4">
                                 <label className="min-w-[240px] font-medium text-lg text-[#0D2E28] pt-2">
-                                    Product Description
+                                    Product Description:
                                 </label>
                                 <div className="w-full">
                                     <textarea
